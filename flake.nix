@@ -1,0 +1,40 @@
+{
+  description = "tree-sitter-koka";
+
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
+    utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, utils }: {
+    overlays.default = _: prev: {
+      tree-sitter = prev.tree-sitter.override {
+        extraGrammars.tree-sitter-koka = {
+          language = "koka";
+          inherit (prev.tree-sitter) version;
+          src = _: builtins.path { path = ./.; name = "tree-sitter-koka-src"; };
+        };
+      };
+    };
+  } // utils.lib.eachDefaultSystem (system:
+    let
+      pkgs = import nixpkgs {
+        overlays = [ self.overlays.default ];
+        inherit system;
+      };
+      inherit (pkgs) mkShell nodejs nodePackages python3 tree-sitter typescript;
+    in
+    {
+      packages.default = tree-sitter.builtGrammars.tree-sitter-koka;
+
+      devShells.default = mkShell {
+        packages = [
+          nodejs
+          nodePackages.typescript-language-server
+          python3
+          tree-sitter
+          typescript
+        ];
+      };
+    });
+}
