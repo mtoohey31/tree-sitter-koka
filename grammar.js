@@ -9,6 +9,15 @@ module.exports = grammar({
     $._semicolon,
     $._raw_string,
   ],
+  conflicts: ($) => [
+    // Context-free syntax doesn't specify operator precedences.
+    [$.prefixexpr, $.appexpr],
+    // TODO: Investigate these.
+    [$.float, $.int],
+    [$.basicexpr, $.opexpr],
+    [$.ntlprefixexpr, $.ntlappexpr],
+    [$.ntlexpr, $.ntlopexpr],
+  ],
   rules: {
     // Program
     program: ($) =>
@@ -347,10 +356,12 @@ module.exports = grammar({
     fnexpr: ($) => seq("fn", $.funbody),
     returnexpr: ($) => seq("return", $.expr),
     ifexpr: ($) =>
-      choice(
-        seq("if", $.ntlexpr, "then", $.blockexpr, $.elifs),
-        seq("if", $.ntlexpr, "then", $.blockexpr),
-        seq("if", $.ntlexpr, "return", $.expr),
+      prec.right(
+        choice(
+          seq("if", $.ntlexpr, "then", $.blockexpr, $.elifs),
+          seq("if", $.ntlexpr, "then", $.blockexpr),
+          seq("if", $.ntlexpr, "return", $.expr),
+        ),
       ),
     elifs: ($) =>
       choice(
@@ -371,7 +382,7 @@ module.exports = grammar({
         seq($.appexpr, $.fnexpr),
         $.atom,
       ),
-    ntlexpr: ($) => $.ntlexpr,
+    ntlexpr: ($) => $.ntlopexpr,
     ntlopexpr: ($) =>
       choice(seq($.ntlopexpr, $.qoperator, $.ntlprefixexpr), $.ntlprefixexpr),
     ntlprefixexpr: ($) =>
@@ -427,29 +438,31 @@ module.exports = grammar({
 
     // Identifiers and operators
     qoperator: ($) => $.op,
-    qidentifier: ($) => choice($.qvarid, $.qidop, $.identifier),
+    qidentifier: ($) => prec.right(choice($.qvarid, $.qidop, $.identifier)),
     identifier: ($) => choice($.varid, $.idop),
     qvarid: ($) => $.qid,
     varid: ($) =>
-      choice(
-        $.id,
-        "c",
-        "cs",
-        "js",
-        "file",
-        "inline",
-        "noinline",
-        "open",
-        "extend",
-        "linear",
-        "behind",
-        "value",
-        "reference",
-        "scoped",
-        "initially",
-        "finally",
-        "rec",
-        "co",
+      prec.right(
+        choice(
+          $.id,
+          "c",
+          "cs",
+          "js",
+          "file",
+          "inline",
+          "noinline",
+          "open",
+          "extend",
+          "linear",
+          "behind",
+          "value",
+          "reference",
+          "scoped",
+          "initially",
+          "finally",
+          "rec",
+          "co",
+        ),
       ),
     qconstructor: ($) => choice($.conid, $.qconid),
 
@@ -604,33 +617,35 @@ module.exports = grammar({
     katom: ($) => $.conid,
 
     // Character classes
-    symbols: ($) => choice(repeat1($.symbol), "/"),
+    symbols: ($) => prec.right(choice(repeat1($.symbol), "/")),
     symbol: (_) =>
-      choice(
-        "$",
-        "%",
-        "&",
-        "*",
-        "+",
-        "@",
-        "!",
-        "\\",
-        "^",
-        "~",
-        "=",
-        ".",
-        "-",
-        ":",
-        "?",
-        "|",
-        "<",
-        ">",
+      prec.right(
+        choice(
+          "$",
+          "%",
+          "&",
+          "*",
+          "+",
+          "@",
+          "!",
+          "\\",
+          "^",
+          "~",
+          "=",
+          ".",
+          "-",
+          ":",
+          "?",
+          "|",
+          "<",
+          ">",
+        ),
       ),
     anglebar: (_) => choice("<", ">", "|"),
     angle: (_) => choice("<", ">"),
     sign: (_) => "-",
-    conid: ($) => seq($.upper, repeat($.idchar), repeat($.final)),
-    id: ($) => seq($.lower, repeat($.idchar), repeat($.final)),
+    conid: ($) => prec.right(seq($.upper, repeat($.idchar), repeat($.final))),
+    id: ($) => prec.right(seq($.lower, repeat($.idchar), repeat($.final))),
     idchar: ($) => choice($.letter, $.digit, "_", "-"),
     hexesc: ($) =>
       choice(
@@ -719,11 +734,11 @@ module.exports = grammar({
 
     // Identifiers and operators
     qconid: ($) => seq(repeat1(seq($.id, "/")), $.conid),
-    qid: ($) => seq(repeat1(seq($.id, "/")), $.id),
+    qid: ($) => prec.right(seq(repeat1(seq($.id, "/")), $.id)),
     qidop: ($) => seq(repeat1(seq($.id, "/")), "(", $.symbols, ")"),
     idop: ($) => seq("(", $.symbols, ")"),
     op: ($) => $.symbols,
-    wildcard: ($) => seq("_", repeat($.idchar)),
+    wildcard: ($) => prec.right(seq("_", repeat($.idchar))),
 
     // String
     string: ($) =>
