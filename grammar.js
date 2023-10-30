@@ -617,8 +617,8 @@ module.exports = grammar({
     katom: ($) => $.conid,
 
     // Character classes
-    symbols: ($) => prec.right(choice(repeat1($.symbol), "/")),
-    symbol: (_) =>
+    symbols: ($) => prec.right(choice(repeat1($._symbol), "/")),
+    _symbol: (_) =>
       prec.right(
         choice(
           "$",
@@ -641,95 +641,94 @@ module.exports = grammar({
           ">",
         ),
       ),
-    anglebar: (_) => choice("<", ">", "|"),
-    angle: (_) => choice("<", ">"),
-    sign: (_) => "-",
-    conid: ($) => prec.right(seq($.upper, repeat($.idchar), repeat($.final))),
-    id: ($) => prec.right(seq($.lower, repeat($.idchar), repeat($.final))),
-    idchar: ($) => choice($.letter, $.digit, "_", "-"),
-    hexesc: ($) =>
+    _sign: (_) => "-",
+    conid: ($) =>
+      prec.right(seq($._upper, repeat($._idchar), repeat($._final))),
+    id: ($) => prec.right(seq($._lower, repeat($._idchar), repeat($._final))),
+    _idchar: ($) => choice($._letter, $._digit, "_", "-"),
+    _hexesc: ($) =>
       choice(
-        seq("x", $.hex, $.hex),
-        seq("u", $.hex, $.hex, $.hex, $.hex),
-        seq("U", $.hex, $.hex, $.hex, $.hex, $.hex, $.hex),
+        seq("x", $._hex, $._hex),
+        seq("u", $._hex, $._hex, $._hex, $._hex),
+        seq("U", $._hex, $._hex, $._hex, $._hex, $._hex, $._hex),
       ),
-    charesc: (_) => choice("n", "r", "t", "\\", '"', "'"),
-    decimal: ($) =>
-      choice("0", seq(/[1-9]/, optional(seq(optional("_"), $.digits)))),
-    hexadecimal: ($) => seq("0", choice("x", "X"), $.hexdigits),
-    digits: ($) => seq(repeat1($.digit), repeat($.digitsep)),
-    hexdigits: ($) => seq(repeat1($.hex), repeat($.hexsep)),
-    digitsep: ($) => seq("_", repeat1($.digit)),
-    hexsep: ($) => seq("_", repeat1($.hex)),
-    letter: ($) => choice($.lower, $.upper),
-    upper: (_) => /[A-Z]/,
-    lower: (_) => /[a-z]/,
-    digit: (_) => /[0-9]/,
-    hex: (_) => /[0-9a-fA-F]/,
-    space: (_) => /[ \t]/,
-    newline: (_) => /\r?\n/,
-    final: (_) => "'",
-    graphicchar: (_) => /[ \x21-\x26\x28-\[\]-\x7E]/,
-    graphicstr: (_) => /[ \x21\x23-\[\]-\x7E]/,
-    uc: (_) => /[\x80-\xBF]/,
-    u2: ($) => seq(/[\xC2-\xDF]/, $.uc),
-    u3: ($) =>
+    _charesc: (_) => choice("n", "r", "t", "\\", '"', "'"),
+    _decimal: ($) =>
+      choice("0", seq(/[1-9]/, optional(seq(optional("_"), $._digits)))),
+    _hexadecimal: ($) => seq("0", choice("x", "X"), $._hexdigits),
+    _digits: ($) => seq(repeat1($._digit), repeat($._digitsep)),
+    _hexdigits: ($) => seq(repeat1($._hex), repeat($._hexsep)),
+    _digitsep: ($) => seq("_", repeat1($._digit)),
+    _hexsep: ($) => seq("_", repeat1($._hex)),
+    _letter: ($) => choice($._lower, $._upper),
+    _upper: (_) => /[A-Z]/,
+    _lower: (_) => /[a-z]/,
+    _digit: (_) => /[0-9]/,
+    _hex: (_) => /[0-9a-fA-F]/,
+    _space: (_) => /[ \t]/,
+    _newline: (_) => /\r?\n/,
+    _final: (_) => "'",
+    _graphicchar: (_) => /[ \x21-\x26\x28-\[\]-\x7E]/,
+    _graphicstr: (_) => /[ \x21\x23-\[\]-\x7E]/,
+    _uc: (_) => /[\x80-\xBF]/,
+    _u2: ($) => seq(/[\xC2-\xDF]/, $._uc),
+    _u3: ($) =>
       choice(
-        seq(/[\xE0][\xA0-\xBF]/, $.uc),
-        seq(/[\xE1-\xEC]/, $.uc, $.uc),
-        seq(/[\xED][\x80-\x9F]/, $.uc),
-        seq(/[\xEE-\xEF]/, $.uc, $.uc),
+        seq(/[\xE0][\xA0-\xBF]/, $._uc),
+        seq(/[\xE1-\xEC]/, $._uc, $._uc),
+        seq(/[\xED][\x80-\x9F]/, $._uc),
+        seq(/[\xEE-\xEF]/, $._uc, $._uc),
       ),
-    u4: ($) =>
+    _u4: ($) =>
       choice(
-        seq(/[\xF0][\x90-\xBF]/, $.uc),
-        seq(/[\xF1-\xF3]/, $.uc, $.uc, $.uc),
-        seq(/[\xF4][\x80-\x8F]/, $.uc, $.uc),
+        seq(/[\xF0][\x90-\xBF]/, $._uc),
+        seq(/[\xF1-\xF3]/, $._uc, $._uc, $._uc),
+        seq(/[\xF4][\x80-\x8F]/, $._uc, $._uc),
       ),
-    utf8: ($) => choice($.u2, $.u3, $.u4),
+    _utf8: ($) => choice($._u2, $._u3, $._u4),
 
     // Numbers
     float: ($) =>
       choice(
         seq(
-          optional($.sign),
-          $.decimal,
+          optional($._sign),
+          $._decimal,
           ".",
-          $.digits,
+          $._digits,
           choice("e", "E"),
           optional(choice("-", "+")),
-          repeat1($.digit),
+          repeat1($._digit),
         ),
         seq(
-          optional($.sign),
-          $.decimal,
+          optional($._sign),
+          $._decimal,
           choice("e", "E"),
           optional(choice("-", "+")),
-          repeat1($.digit),
+          repeat1($._digit),
         ),
-        seq(optional($.sign), $.decimal, ".", $.digits),
+        seq(optional($._sign), $._decimal, ".", $._digits),
         seq(
-          optional($.sign),
-          $.hexadecimal,
+          optional($._sign),
+          $._hexadecimal,
           ".",
-          $.hexdigits,
+          $._hexdigits,
           choice("p", "P"),
           optional(choice("-", "+")),
-          repeat1($.digit),
+          repeat1($._digit),
         ),
         seq(
-          optional($.sign),
-          $.hexadecimal,
+          optional($._sign),
+          $._hexadecimal,
           choice("p", "P"),
           optional(choice("-", "+")),
-          repeat1($.digit),
+          repeat1($._digit),
         ),
-        seq(optional($.sign), $.hexadecimal, ".", $.hexdigits),
+        seq(optional($._sign), $._hexadecimal, ".", $._hexdigits),
       ),
     int: ($) =>
       choice(
-        seq(optional($.sign), $.hexadecimal),
-        seq(optional($.sign), $.decimal),
+        seq(optional($._sign), $._hexadecimal),
+        seq(optional($._sign), $._decimal),
       ),
 
     // Identifiers and operators
@@ -738,7 +737,7 @@ module.exports = grammar({
     qidop: ($) => seq(repeat1(seq($.id, "/")), "(", $.symbols, ")"),
     idop: ($) => seq("(", $.symbols, ")"),
     op: ($) => $.symbols,
-    wildcard: ($) => prec.right(seq("_", repeat($.idchar))),
+    wildcard: ($) => prec.right(seq("_", repeat($._idchar))),
 
     // String
     string: ($) =>
@@ -748,10 +747,10 @@ module.exports = grammar({
           '"',
           repeat(
             choice(
-              $.graphicstr,
-              seq("\\", $.hexesc),
-              seq("\\", $.charesc),
-              $.utf8,
+              $._graphicstr,
+              alias(seq("\\", $._hexesc), "esc"),
+              alias(seq("\\", $._charesc), "esc"),
+              $._utf8,
             ),
           ),
           '"',
@@ -759,10 +758,10 @@ module.exports = grammar({
       ),
     char: ($) =>
       choice(
-        seq("'", $.graphicchar, "'"),
-        seq("'", "\\", $.hexesc, "'"),
-        seq("'", "\\", $.charesc, "'"),
-        seq("'", $.utf8, "'"),
+        seq("'", $._graphicchar, "'"),
+        seq("'", "\\", alias($._hexesc, "esc"), "'"),
+        seq("'", "\\", alias($._charesc, "esc"), "'"),
+        seq("'", $._utf8, "'"),
       ),
   },
 });
