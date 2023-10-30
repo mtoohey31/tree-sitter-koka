@@ -4,6 +4,28 @@
 module.exports = grammar({
   name: "koka",
   externals: ($) => [$._open_brace, $._close_brace, $._semicolon],
+  conflicts: ($) => [
+    // Context-free syntax doesn't specify operator precedences.
+    [$.prefixexpr, $.appexpr],
+    // TODO: Investigate these.
+    [$.binder, $.anntype],
+    [$.ntlprefixexpr, $.ntlappexpr],
+    [$.binder, $.qidentifier],
+    [$.tarrow, $.tresult],
+    [$.type],
+    [$.tbasic],
+    [$.tparam],
+    [$.typescheme, $.type],
+    [$.qidentifier, $.argument],
+    [$.pparameter, $.anntype],
+    [$.tresult, $.tatom],
+    [$.opdecl, $.tarrow],
+    [$.tatom, $.tparam],
+    [$.typecon, $.tparam],
+    [$.parameter, $.anntype],
+    [$.typeapp, $.tparam],
+    [$.oparg, $.anntype],
+  ],
   rules: {
     // 4.4. Context-free syntax
 
@@ -65,13 +87,16 @@ module.exports = grammar({
 
     // 4.4.3. Type Declarations
     aliasdecl: ($) =>
-      seq(
-        "alias",
-        $.typeid,
-        optional($.typeparams),
-        optional($.kannot),
-        "=",
-        $.type,
+      prec.right(
+        1,
+        seq(
+          "alias",
+          $.typeid,
+          optional($.typeparams),
+          optional($.kannot),
+          "=",
+          $.type,
+        ),
       ),
     typedecl: ($) =>
       choice(
@@ -200,16 +225,18 @@ module.exports = grammar({
     basicexpr: ($) =>
       choice($.ifexpr, $.fnexpr, $.matchexpr, $.handlerexpr, $.opexpr),
     ifexpr: ($) =>
-      choice(
-        seq(
-          "if",
-          $.ntlexpr,
-          "then",
-          $.blockexpr,
-          repeat($.elif),
-          optional(seq("else", $.blockexpr)),
+      prec.right(
+        choice(
+          seq(
+            "if",
+            $.ntlexpr,
+            "then",
+            $.blockexpr,
+            repeat($.elif),
+            optional(seq("else", $.blockexpr)),
+          ),
+          seq("if", $.ntlexpr, "return", $.expr),
         ),
-        seq("if", $.ntlexpr, "return", $.expr),
       ),
     elif: ($) => seq("elif", $.ntlexpr, "then", $.blockexpr),
     matchexpr: ($) =>
@@ -227,7 +254,6 @@ module.exports = grammar({
     withexpr: ($) => seq($.withstat, "in", $.expr),
     withstat: ($) =>
       choice(
-        seq($.withstat, "in", $.expr),
         seq("with", $.basicexpr),
         seq("with", $.binder, "<-", $.basicexpr),
         seq(
@@ -246,7 +272,8 @@ module.exports = grammar({
       ),
 
     // 4.4.7. Operator expressions
-    opexpr: ($) => seq($.prefixexpr, repeat(seq($.qoperator, $.prefixexpr))),
+    opexpr: ($) =>
+      prec.right(seq($.prefixexpr, repeat(seq($.qoperator, $.prefixexpr)))),
     prefixexpr: ($) => seq(repeat(choice("!", "~")), $.appexpr),
     appexpr: ($) =>
       choice(
@@ -277,7 +304,6 @@ module.exports = grammar({
         $.literal,
         $.mask,
         seq("(", ")"),
-        seq("(", $.annexpr, ")"),
         seq("(", $.annexprs, ")"),
         seq(
           "[",
@@ -293,22 +319,24 @@ module.exports = grammar({
         $.stringlit,
       ),
     mask: ($) => seq("mask", optional("behind"), "<", $.tbasic, ">"),
-    annexprs: ($) => seq($.annexpr, repeat(seq(",", $.annexpr))),
+    annexprs: ($) => prec.right(seq($.annexpr, repeat(seq(",", $.annexpr)))),
     annexpr: ($) => seq($.expr, optional(seq(":", $.typescheme))),
 
     // 4.4.9. Matching
     matchrule: ($) =>
       seq($.patterns, optional(seq("|", $.expr)), "->", $.blockexpr),
-    apattern: ($) => seq($.pattern, optional($.typescheme)),
+    apattern: ($) => prec.right(seq($.pattern, optional($.typescheme))),
     pattern: ($) =>
-      choice(
-        $.identifier,
-        seq($.identifier, "as", $.apattern),
-        seq($.qconstructor, optional(seq("(", optional($.patargs), ")"))),
-        seq("(", optional($.apatterns), ")"),
-        seq("[", optional($.apatterns), "]"),
-        $.literal,
-        $.wildcard,
+      prec.right(
+        choice(
+          $.identifier,
+          seq($.identifier, "as", $.apattern),
+          seq($.qconstructor, optional(seq("(", optional($.patargs), ")"))),
+          seq("(", optional($.apatterns), ")"),
+          seq("[", optional($.apatterns), "]"),
+          $.literal,
+          $.wildcard,
+        ),
       ),
     patterns: ($) => seq($.pattern, repeat(seq(",", $.pattern))),
     apatterns: ($) => seq($.apattern, repeat(seq(",", $.apattern))),
@@ -317,37 +345,40 @@ module.exports = grammar({
 
     // 4.4.10. Effect Declarations
     effectdecl: ($) =>
-      choice(
-        seq(
-          optional($.named),
-          optional("linear"),
-          optional("rec"),
-          "effect",
-          $.varid,
-          optional($.typeparams),
-          optional($.kannot),
-          optional($.opdecls),
-        ),
-        seq(
-          "named",
-          optional("linear"),
-          optional("rec"),
-          "effect",
-          optional($.typeparams),
-          optional($.kannot),
-          $.opdecl,
-        ),
-        seq(
-          $.named,
-          optional("linear"),
-          optional("rec"),
-          "effect",
-          $.varid,
-          optional($.typeparams),
-          optional($.kannot),
-          "in",
-          $.type,
-          optional($.opdecls),
+      prec.right(
+        1,
+        choice(
+          seq(
+            optional($.named),
+            optional("linear"),
+            optional("rec"),
+            "effect",
+            $.varid,
+            optional($.typeparams),
+            optional($.kannot),
+            optional($.opdecls),
+          ),
+          seq(
+            "named",
+            optional("linear"),
+            optional("rec"),
+            "effect",
+            optional($.typeparams),
+            optional($.kannot),
+            $.opdecl,
+          ),
+          seq(
+            $.named,
+            optional("linear"),
+            optional("rec"),
+            "effect",
+            $.varid,
+            optional($.typeparams),
+            optional($.kannot),
+            "in",
+            $.type,
+            optional($.opdecls),
+          ),
         ),
       ),
     named: (_) => "named",
@@ -431,42 +462,50 @@ module.exports = grammar({
         optional($.qualifier),
       ),
     type: ($) =>
-      seq(
-        optional(seq("forall", $.typeparams)),
-        $.tarrow,
-        optional($.qualifier),
+      prec.right(
+        seq(
+          optional(seq("forall", $.typeparams)),
+          $.tarrow,
+          optional($.qualifier),
+        ),
       ),
     qualifier: ($) => seq("with", "(", $.predicates, ")"),
     predicates: ($) => seq($.predicate, repeat(seq(",", $.predicate))),
     predicate: ($) => $.typeapp,
 
     // 4.4.13. Types
-    tarrow: ($) => seq($.tatom, optional(seq("->", $.tresult))),
+    tarrow: ($) => prec.right(seq($.tatom, optional(seq("->", $.tresult)))),
     tresult: ($) => seq($.tatom, optional($.tbasic)),
     tatom: ($) =>
-      choice(
-        $.tbasic,
-        seq(
-          "<",
-          $.anntype,
-          repeat(seq(",", $.anntype)),
-          optional(seq("|", $.tatom)),
-          ">",
+      prec.right(
+        choice(
+          $.tbasic,
+          seq(
+            "<",
+            $.anntype,
+            repeat(seq(",", $.anntype)),
+            optional(seq("|", $.tatom)),
+            ">",
+          ),
+          seq("<", ">"),
         ),
-        seq("<", ">"),
       ),
     tbasic: ($) =>
-      choice(
-        $.typeapp,
-        seq("(", ")"),
-        seq("(", $.tparam, ")"),
-        seq($.tparam, repeat(seq(",", $.tparam))),
-        seq("[", $.anntype, "]"),
+      prec.right(
+        choice(
+          $.typeapp,
+          seq("(", ")"),
+          seq("(", $.tparam, ")"),
+          seq($.tparam, repeat(seq(",", $.tparam))),
+          seq("[", $.anntype, "]"),
+        ),
       ),
     typeapp: ($) =>
-      seq(
-        $.typecon,
-        optional(seq("<", $.anntype, repeat(seq(",", $.anntype)), ">")),
+      prec.right(
+        seq(
+          $.typecon,
+          optional(seq("<", $.anntype, repeat(seq(",", $.anntype)), ">")),
+        ),
       ),
     typecon: ($) =>
       choice(
@@ -477,16 +516,18 @@ module.exports = grammar({
         seq("[", "]"),
         seq("(", "->", ")"),
       ),
-    tparam: ($) => seq(optional(seq($.varid, ":")), $.anntype),
-    anntype: ($) => seq($.type, optional($.kannot)),
+    tparam: ($) => prec.right(seq(optional(seq($.varid, ":")), $.anntype)),
+    anntype: ($) => prec.right(seq($.type, optional($.kannot))),
 
     // 4.4.14. Kinds
     kannot: ($) => seq("::", $.kind),
     kind: ($) =>
-      choice(
-        seq("(", $.kind, repeat(seq(",", $.kind)), ")", "->", $.kind),
-        seq($.katom, "->", $.kind),
-        $.katom,
+      prec.right(
+        choice(
+          seq("(", $.kind, repeat(seq(",", $.kind)), ")", "->", $.kind),
+          seq($.katom, "->", $.kind),
+          $.katom,
+        ),
       ),
     katom: (_) => choice("V", "X", "E", "H", "P", "S", "HX", "HX1"),
 
@@ -495,17 +536,20 @@ module.exports = grammar({
     // 4.2.2. Identifiers
     qconid: ($) => seq($.modulepath, $.conid),
     qvarid: ($) => seq($.modulepath, $.lowerid),
-    modulepath: ($) => seq($.lowerid, "/", repeat(seq($.lowerid, "/"))),
+    modulepath: ($) =>
+      prec.right(seq($.lowerid, "/", repeat(seq($.lowerid, "/")))),
     conid: ($) => $.upperid,
-    varid: ($) => $.lowerid, // TODO: !reserved
-    lowerid: ($) => seq($.lower, seq(repeat($.idchar), repeat("'"))),
-    upperid: ($) => seq($.upper, seq(repeat($.idchar), repeat("'"))),
-    wildcard: ($) => seq("_", seq(repeat($.idchar), repeat("'"))),
+    varid: ($) => prec.right($.lowerid), // TODO: !reserved
+    lowerid: ($) =>
+      prec.right(seq($.lower, seq(repeat($.idchar), repeat("'")))),
+    upperid: ($) =>
+      prec.right(seq($.upper, seq(repeat($.idchar), repeat("'")))),
+    wildcard: ($) => prec.right(seq("_", seq(repeat($.idchar), repeat("'")))),
     idchar: ($) => choice($.letter, $.digit, "_", "-"),
 
     // 4.2.3. Operators and symbols
     op: ($) => choice($.symbols, "||"), // TODO: !opreserved | optype
-    symbols: ($) => choice(seq($.symbol, repeat($.symbol)), "|"),
+    symbols: ($) => prec.right(choice(seq($.symbol, repeat($.symbol)), "/")),
     symbol: ($) =>
       choice(
         "$",
@@ -552,9 +596,11 @@ module.exports = grammar({
       seq($.decimal, choice(seq(".", $.digits, optional($.decexp)), $.decexp)),
     decexp: ($) => seq(choice("e", "E"), $.exponent),
     hexfloat: ($) =>
-      seq(
-        $.hexadecimal,
-        choice(".", $.hexdigits, optional($.hexexp), $.hexexp),
+      prec.right(
+        seq(
+          $.hexadecimal,
+          choice(".", $.hexdigits, optional($.hexexp), $.hexexp),
+        ),
       ),
     hexexp: ($) => seq(choice("p", "P"), $.exponent),
     exponent: ($) => seq(optional(choice("-", "+")), $.digit, repeat($.digit)),
@@ -563,12 +609,20 @@ module.exports = grammar({
       choice("0", seq($.posdigit, optional(seq(optional("_"), $.digits)))),
     hexadecimal: ($) => seq("0", choice("x", "X"), $.hexdigits),
     digits: ($) =>
-      seq($.digit, repeat($.digit), repeat(seq("_", $.digit, repeat($.digit)))),
+      prec.right(
+        seq(
+          $.digit,
+          repeat($.digit),
+          repeat(seq("_", $.digit, repeat($.digit))),
+        ),
+      ),
     hexdigits: ($) =>
-      seq(
-        $.hexdigit,
-        repeat($.hexdigit),
-        repeat(seq("_", $.hexdigit, repeat($.hexdigit))),
+      prec.right(
+        seq(
+          $.hexdigit,
+          repeat($.hexdigit),
+          repeat(prec.right(seq("_", $.hexdigit, repeat($.hexdigit)))),
+        ),
       ),
 
     // 4.2.6. Character classes
