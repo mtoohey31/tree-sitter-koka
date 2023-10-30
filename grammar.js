@@ -8,20 +8,32 @@ module.exports = grammar({
     // 4.4. Context-free syntax
 
     // 4.4.1. Modules
-    module: ($) => seq(optional($.moduledecl), $.modulebody),
-    moduledecl: ($) => seq($.semis, $.moduleid),
-    moduleid: ($) => choice($.qvarid, $.varid),
-    modulebody: ($) =>
-      choice(
-        seq("{", $.semis, $.declarations, "}", $.semis),
-        seq($.semis, $.declarations),
+    module: ($) =>
+      seq(
+        optional($.moduledecl),
+        choice(
+          seq(
+            "{",
+            repeat(";"),
+            repeat($.importdecl),
+            repeat($.fixitydecl),
+            repeat($.topdecl),
+            "}",
+            repeat(";"),
+          ),
+          seq(
+            repeat(";"),
+            repeat($.importdecl),
+            repeat($.fixitydecl),
+            repeat($.topdecl),
+          ),
+        ),
       ),
-    semis: (_) => repeat(";"),
-    semi: ($) => seq(";", $.semis),
+    moduledecl: ($) => seq(repeat(";"), $.moduleid),
+    moduleid: ($) => choice($.qvarid, $.varid),
+    semi: (_) => seq(";", repeat(";")),
 
     // 4.4.2. Top level declarations
-    declarations: ($) =>
-      seq(repeat($.importdecl), repeat($.fixitydecl), $.topdecls),
     importdecl: ($) =>
       seq(
         optional($.pub),
@@ -40,7 +52,6 @@ module.exports = grammar({
         $.semi,
       ),
     fixity: (_) => choice("infixl", "infixr", "infix"),
-    topdecls: ($) => repeat(seq($.topdecl, $.semi)),
     topdecl: ($) =>
       choice(
         seq(optional($.pub), $.puredecl),
@@ -96,7 +107,7 @@ module.exports = grammar({
     tbinders: ($) => seq($.tbinder, repeat(seq(",", $.tbinder))),
     tbinder: ($) => seq($.varid, optional($.kannot)),
     typebody: ($) =>
-      seq("{", $.semis, repeat(seq($.constructor_, $.semi)), "}"),
+      seq("{", repeat(";"), repeat(seq($.constructor_, $.semi)), "}"),
     constructor_: ($) =>
       seq(
         optional($.pub),
@@ -105,7 +116,8 @@ module.exports = grammar({
         optional($.typeparams),
         optional($.conparams),
       ),
-    conparams: ($) => seq("{", $.semis, repeat(seq($.parameter, $.semi)), "}"),
+    conparams: ($) =>
+      seq("{", repeat(";"), repeat(seq($.parameter, $.semi)), "}"),
 
     // 4.4.4. Value and Function Declarations
     puredecl: ($) =>
@@ -165,7 +177,7 @@ module.exports = grammar({
     qconstructor: ($) => choice($.conid, $.qconid),
 
     // 4.4.5. Statements
-    block: ($) => seq("{", $.semis, repeat(seq($.statement, $.semi)), "}"),
+    block: ($) => seq("{", repeat(";"), repeat(seq($.statement, $.semi)), "}"),
     statement: ($) =>
       choice(
         $.decl,
@@ -205,7 +217,7 @@ module.exports = grammar({
         "match",
         $.ntlexpr,
         "{",
-        $.semis,
+        repeat(";"),
         repeat(seq($.matchrule, $.semi)),
         "}",
       ),
@@ -218,8 +230,19 @@ module.exports = grammar({
         seq($.withstat, "in", $.expr),
         seq("with", $.basicexpr),
         seq("with", $.binder, "<-", $.basicexpr),
-        seq("with", optional("override"), $.heff, $.opclause),
-        seq("with", $.binder, "<-", $.heff, $.opclause),
+        seq(
+          "with",
+          optional("override"),
+          optional(seq("<", $.tbasic, ">")),
+          $.opclause,
+        ),
+        seq(
+          "with",
+          $.binder,
+          "<-",
+          optional(seq("<", $.tbasic, ">")),
+          $.opclause,
+        ),
       ),
 
     // 4.4.7. Operator expressions
@@ -297,7 +320,8 @@ module.exports = grammar({
       choice(
         seq(
           optional($.named),
-          $.effectmod,
+          optional("linear"),
+          optional("rec"),
           "effect",
           $.varid,
           optional($.typeparams),
@@ -306,7 +330,8 @@ module.exports = grammar({
         ),
         seq(
           "named",
-          $.effectmod,
+          optional("linear"),
+          optional("rec"),
           "effect",
           optional($.typeparams),
           optional($.kannot),
@@ -314,7 +339,8 @@ module.exports = grammar({
         ),
         seq(
           $.named,
-          $.effectmod,
+          optional("linear"),
+          optional("rec"),
           "effect",
           $.varid,
           optional($.typeparams),
@@ -324,9 +350,8 @@ module.exports = grammar({
           optional($.opdecls),
         ),
       ),
-    effectmod: (_) => seq(optional("linear"), optional("rec")),
     named: (_) => "named",
-    opdecls: ($) => seq("{", $.semis, repeat(seq($.opdecl, $.semi)), "}"),
+    opdecls: ($) => seq("{", repeat(";"), repeat(seq($.opdecl, $.semi)), "}"),
     opdecl: ($) =>
       choice(
         seq(
@@ -351,21 +376,34 @@ module.exports = grammar({
     // 4.4.11. Handler Expressions
     handlerexpr: ($) =>
       choice(
-        seq(optional("override"), "handler", $.heff, $.opclauses),
+        seq(
+          optional("override"),
+          "handler",
+          optional(seq("<", $.tbasic, ">")),
+          $.opclauses,
+        ),
         seq(
           optional("override"),
           "handle",
-          $.heff,
+          optional(seq("<", $.tbasic, ">")),
           "(",
           $.expr,
           ")",
           $.opclauses,
         ),
-        seq("named", "handler", $.heff, $.opclauses),
-        seq("named", "handle", $.heff, "(", $.expr, ")", $.opclauses),
+        seq("named", "handler", optional(seq("<", $.tbasic, ">")), $.opclauses),
+        seq(
+          "named",
+          "handle",
+          optional(seq("<", $.tbasic, ">")),
+          "(",
+          $.expr,
+          ")",
+          $.opclauses,
+        ),
       ),
-    heff: ($) => optional(seq("<", $.tbasic, ">")),
-    opclauses: ($) => seq("{", $.semis, repeat(seq($.opclausex, $.semi)), "}"),
+    opclauses: ($) =>
+      seq("{", repeat(";"), repeat(seq($.opclausex, $.semi)), "}"),
     opclausex: ($) =>
       choice(
         $.opclause,
@@ -385,10 +423,19 @@ module.exports = grammar({
     oparg: ($) => seq($.paramid, optional(seq(":", $.type))),
 
     // 4.4.12. Type schemes
-    typescheme: ($) => seq($.somes, $.foralls, $.tarrow, optional($.qualifier)),
-    type: ($) => seq($.foralls, $.tarrow, optional($.qualifier)),
-    foralls: ($) => optional(seq("forall", $.typeparams)),
-    somes: ($) => optional(seq("some", $.typeparams)),
+    typescheme: ($) =>
+      seq(
+        optional(seq("some", $.typeparams)),
+        optional(seq("forall", $.typeparams)),
+        $.tarrow,
+        optional($.qualifier),
+      ),
+    type: ($) =>
+      seq(
+        optional(seq("forall", $.typeparams)),
+        $.tarrow,
+        optional($.qualifier),
+      ),
     qualifier: ($) => seq("with", "(", $.predicates, ")"),
     predicates: ($) => seq($.predicate, repeat(seq(",", $.predicate))),
     predicate: ($) => $.typeapp,
@@ -451,12 +498,10 @@ module.exports = grammar({
     modulepath: ($) => seq($.lowerid, "/", repeat(seq($.lowerid, "/"))),
     conid: ($) => $.upperid,
     varid: ($) => $.lowerid, // TODO: !reserved
-    lowerid: ($) => seq($.lower, $.idtail),
-    upperid: ($) => seq($.upper, $.idtail),
-    wildcard: ($) => seq("_", $.idtail),
-    idtail: ($) => seq(repeat($.idchar), optional($.idfinal)),
+    lowerid: ($) => seq($.lower, seq(repeat($.idchar), repeat("'"))),
+    upperid: ($) => seq($.upper, seq(repeat($.idchar), repeat("'"))),
+    wildcard: ($) => seq("_", seq(repeat($.idchar), repeat("'"))),
     idchar: ($) => choice($.letter, $.digit, "_", "-"),
-    idfinal: (_) => repeat("'"),
 
     // 4.2.3. Operators and symbols
     op: ($) => choice($.symbols, "||"), // TODO: !opreserved | optype
