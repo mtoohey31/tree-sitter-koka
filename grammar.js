@@ -3,211 +3,233 @@
 
 module.exports = grammar({
   name: "koka",
-  externals: ($) => [$._open_brace, $._close_brace, $._semicolon],
-  conflicts: ($) => [
-    // Context-free syntax doesn't specify operator precedences.
-    [$.prefixexpr, $.appexpr],
-    // TODO: Investigate these.
-    [$.binder, $.anntype],
-    [$.ntlprefixexpr, $.ntlappexpr],
-    [$.binder, $.qidentifier],
-    [$.tarrow, $.tresult],
-    [$.type],
-    [$.tbasic],
-    [$.tparam],
-    [$.typescheme, $.type],
-    [$.qidentifier, $.argument],
-    [$.pparameter, $.anntype],
-    [$.tresult, $.tatom],
-    [$.opdecl, $.tarrow],
-    [$.tatom, $.tparam],
-    [$.typecon, $.tparam],
-    [$.parameter, $.anntype],
-    [$.typeapp, $.tparam],
-    [$.oparg, $.anntype],
+  externals: ($) => [
+    $._open_brace,
+    $._close_brace,
+    $._semicolon,
+    $._raw_string,
   ],
   rules: {
-    // 4.4. Context-free syntax
-
-    // 4.4.1. Modules
-    module: ($) =>
-      seq(
-        optional($.moduledecl),
-        choice(
-          seq(
-            "{",
-            repeat(";"),
-            repeat($.importdecl),
-            repeat($.fixitydecl),
-            repeat($.topdecl),
-            "}",
-            repeat(";"),
-          ),
-          seq(
-            repeat(";"),
-            repeat($.importdecl),
-            repeat($.fixitydecl),
-            repeat($.topdecl),
-          ),
-        ),
+    // Program
+    program: ($) =>
+      choice(seq($.semis, "module", $.modulepath, $.moduledecl), $.moduledecl),
+    moduledecl: ($) =>
+      choice(
+        seq($._open_brace, $.semis, $.modulebody, $._close_brace, $.semis),
+        seq($.semis, $.modulebody),
       ),
-    moduledecl: ($) => seq(repeat(";"), $.moduleid),
-    moduleid: ($) => choice($.qvarid, $.varid),
-    semi: (_) => seq(";", repeat(";")),
-
-    // 4.4.2. Top level declarations
+    modulebody: ($) =>
+      choice(seq($.importdecl, $.semis1, $.modulebody), $.declarations),
     importdecl: ($) =>
-      seq(
-        optional($.pub),
-        "import",
-        optional(seq($.moduleid, "=")),
-        $.moduleid,
-        $.semi,
+      choice(
+        seq($.pub, "import", $.modulepath),
+        seq($.pub, "import", $.modulepath, "=", $.modulepath),
       ),
-    fixitydecl: ($) =>
-      seq(
-        optional($.pub),
-        $.fixity,
-        $.integer,
-        $.identifier,
-        repeat(seq(",", $.identifier)),
-        $.semi,
-      ),
-    fixity: (_) => choice("infixl", "infixr", "infix"),
+    modulepath: ($) => choice($.varid, $.qvarid),
+    pub: (_) => optional("pub"),
+    semis1: ($) => choice(seq($.semis1, $.semi), $.semi),
+    semis: ($) => optional(seq($.semis, $.semi)),
+    semi: ($) => $._semicolon,
+
+    // Top level declarations
+    declarations: ($) =>
+      choice(seq($.fixitydecl, $.semis1, $.declarations), $.topdecls),
+    fixitydecl: ($) => seq($.pub, $.fixity, $.oplist1),
+    fixity: ($) =>
+      choice(seq("infix", $.int), seq("infixr", $.int), seq("infixl", $.int)),
+    oplist1: ($) => choice(seq($.oplist1, ",", $.identifier), $.identifier),
+    topdecls: ($) => optional($.topdecls1),
+    topdecls1: ($) =>
+      choice(seq($.topdecls1, $.topdecl, $.semis1), seq($.topdecl, $.semis1)),
     topdecl: ($) =>
       choice(
-        seq(optional($.pub), $.puredecl),
-        seq(optional($.pub), $.aliasdecl),
-        // TODO: Where is externdecl defined? `seq(optional($.pub), $.externdecl),`
-        seq(optional($.pubabstract), $.typedecl),
-        seq(optional($.pubabstract), $.effectdecl),
+        seq($.pub, $.puredecl),
+        seq($.pub, $.aliasdecl),
+        seq($.pub, $.externdecl),
+        seq($.pub, $.typedecl),
+        seq("abstract", $.typedecl),
       ),
-    pub: (_) => "pub",
-    pubabstract: (_) => choice("pub", "abstract"),
 
-    // 4.4.3. Type Declarations
-    aliasdecl: ($) =>
-      prec.right(
-        1,
-        seq(
-          "alias",
-          $.typeid,
-          optional($.typeparams),
-          optional($.kannot),
-          "=",
-          $.type,
-        ),
+    // External declarations
+    externdecl: ($) =>
+      choice(
+        seq("inline", "extern", $.funid, $.externtype, $.externbody),
+        seq("noinline", "extern", $.funid, $.externtype, $.externbody),
+        seq("extern", $.funid, $.externtype, $.externbody),
+        seq("extern", "import", $.externimpbody),
       ),
+    externtype: ($) =>
+      choice(
+        seq(":", $.typescheme),
+        seq($.typeparams, "(", $.parameters, ")", $.annotres),
+      ),
+    externbody: ($) =>
+      choice(
+        seq($._open_brace, $.semis, $.externstats1, $._close_brace),
+        seq($._open_brace, $.semis, $._close_brace),
+      ),
+    externstats1: ($) =>
+      choice(
+        seq($.externstats1, $.externstat, $.semis1),
+        seq($.externstat, $.semis1),
+      ),
+    externstat: ($) =>
+      choice(
+        seq($.externtarget, $.externinline, $.string),
+        seq($.externinline, $.string),
+      ),
+    externinline: (_) => optional("inline"),
+    externimpbody: ($) =>
+      choice(
+        seq("=", $.externimp),
+        seq($._open_brace, $.semis, $.externimps1, $._close_brace),
+      ),
+    externimps1: ($) =>
+      choice(
+        seq($.externimps1, $.externimp, $.semis1),
+        seq($.externimp, $.semis1),
+      ),
+    externimp: ($) =>
+      choice(
+        seq($.externtarget, $.varid, $.string),
+        seq($.externtarget, $._open_brace, $.externvals1, $._close_brace),
+      ),
+    externvals1: ($) =>
+      choice(
+        seq($.externvals1, $.externval, $.semis1),
+        seq($.externval, $.semis1),
+      ),
+    externval: ($) => seq($.varid, "=", $.string),
+    externtarget: (_) => choice("cs", "js", "c"),
+
+    // Type declarations
+    aliasdecl: ($) =>
+      seq("alias", $.typeid, $.typeparams, $.kannot, "=", $.type),
     typedecl: ($) =>
       choice(
-        seq(
-          $.typemod,
-          "type",
-          $.typeid,
-          optional($.typeparams),
-          optional($.kannot),
-          optional($.typebody),
-        ),
+        seq($.typemod, "type", $.typeid, $.typeparams, $.kannot, $.typebody),
         seq(
           $.structmod,
           "struct",
           $.typeid,
-          optional($.typeparams),
-          optional($.kannot),
-          optional($.conparams),
+          $.typeparams,
+          $.kannot,
+          $.conparams,
+        ),
+        seq($.effectmod, "effect", $.varid, $.typeparams, $.kannot, $.opdecls),
+        seq($.effectmod, "effect", $.typeparams, $.kannot, $.operation),
+        seq(
+          $.effectmod,
+          "effect",
+          $.varid,
+          $.typeparams,
+          $.kannot,
+          "in",
+          $.type,
+          $.opdecls,
         ),
       ),
-    typemod: ($) => choice("co", "rec", "open", "extend", $.structmod),
-    structmod: (_) => choice("value", "reference"),
-    // TODO: Check this, what is the spec trying to say?
+    typemod: ($) => choice($.structmod, "open", "extend", "co", "rec"),
+    structmod: (_) => optional(choice("value", "reference")),
+    effectmod: (_) => optional(choice("rec", "linear", seq("linear", "rec"))),
+    typebody: ($) =>
+      optional(seq($._open_brace, $.semis, $.constructors, $._close_brace)),
     typeid: ($) =>
       choice(
-        $.varid,
-        "[]",
-        seq("(", repeat(","), ")"),
+        seq("(", $.commas, ")"),
+        seq("[", "]"),
         seq("<", ">"),
         seq("<", "|", ">"),
+        $.varid,
       ),
-    typeparams: ($) => seq("<", optional($.tbinders), ">"),
-    tbinders: ($) => seq($.tbinder, repeat(seq(",", $.tbinder))),
-    tbinder: ($) => seq($.varid, optional($.kannot)),
-    typebody: ($) =>
-      seq("{", repeat(";"), repeat(seq($.constructor_, $.semi)), "}"),
-    constructor_: ($) =>
-      seq(
-        optional($.pub),
-        optional("con"),
-        $.conid,
-        optional($.typeparams),
-        optional($.conparams),
+    commas: ($) => optional($.commas1),
+    commas1: ($) => seq($.commas, ","),
+    constructors: ($) => optional(seq($.constructors1, $.semis1)),
+    constructors1: ($) =>
+      choice(seq($.constructors1, $.semis1, $.constructor), $.constructor),
+    constructor: ($) =>
+      choice(
+        seq($.pub, $.con, $.conid, $.typeparams, $.conparams),
+        seq($.pub, $.con, $.string, $.typeparams, $.conparams),
       ),
+    con: (_) => optional("con"),
     conparams: ($) =>
-      seq("{", repeat(";"), repeat(seq($.parameter, $.semi)), "}"),
+      optional(
+        choice(
+          seq("(", $.parameters1, ")"),
+          seq($._open_brace, $.semis, $.sconparams, $._close_brace),
+        ),
+      ),
+    sconparams: ($) => optional(seq($.sconparams, $.parameter, $.semis1)),
 
-    // 4.4.4. Value and Function Declarations
+    // Effect declarations
+    opdecls: ($) => seq($._open_brace, $.semis, $.operations, $._close_brace),
+    operations: ($) => optional(seq($.operations, $.operation, $.semis1)),
+    operation: ($) =>
+      choice(
+        seq($.pub, "val", $.identifier, $.typeparams, ":", $.tatomic),
+        seq(
+          $.pub,
+          "fun",
+          $.identifier,
+          $.typeparams,
+          "(",
+          $.parameters,
+          ")",
+          ":",
+          $.tatomic,
+        ),
+        seq(
+          $.pub,
+          "ctl",
+          $.identifier,
+          $.typeparams,
+          "(",
+          $.parameters,
+          ")",
+          ":",
+          $.tatomic,
+        ),
+      ),
+
+    // Pure (top-level) Declarations
     puredecl: ($) =>
       choice(
-        seq(optional($.inlinemod), "val", $.valdecl),
-        seq(optional($.inlinemod), "fun", $.fundecl),
+        seq($.inlinemod, "val", $.binder, "=", $.blockexpr),
+        seq($.inlinemod, "fun", $.funid, $.funbody),
       ),
-    inlinemod: (_) => choice("inline", "noinline"),
-    valdecl: ($) => seq($.binder, "=", $.blockexpr),
-    binder: ($) => seq($.identifier, optional(seq(":", $.type))),
+    inlinemod: (_) => optional(choice("inline", "noinline")),
     fundecl: ($) => seq($.funid, $.funbody),
-    funbody: ($) => seq($.funparam, $.blockexpr),
-    funparam: ($) =>
-      seq(
-        optional($.typeparams),
-        $.pparameters,
-        optional(seq(":", $.tresult)),
-        $.qualifier,
-      ),
-    funid: ($) => choice($.identifier, seq("[", repeat(","), "]")),
-    parameters: ($) =>
-      seq("(", optional(seq($.parameter, repeat(seq(",", $.parameter)))), ")"),
-    parameter: ($) =>
-      seq(
-        optional($.borrow),
-        $.paramid,
-        optional(seq(":", $.type)),
-        optional(seq("=", $.expr)),
-      ),
-    pparameters: ($) =>
-      seq(
-        "(",
-        optional(seq($.pparameter, repeat(seq(",", $.pparameter)))),
-        ")",
-      ),
-    pparameter: ($) =>
-      seq(
-        optional($.borrow),
-        $.pattern,
-        optional(seq(":", $.type)),
-        optional(seq("=", $.expr)),
-      ),
-    paramid: ($) => choice($.identifier, $.wildcard),
-    borrow: (_) => "^",
-    qidentifier: ($) =>
+    binder: ($) => choice($.identifier, seq($.identifier, ":", $.type)),
+    funid: ($) => choice($.identifier, seq("[", $.commas, "]"), $.string),
+    funbody: ($) =>
       choice(
-        $.qvarid,
-        // TODO: Where is qidop defined? `$.qidop,`
-        $.identifier,
+        seq($.typeparams, "(", $.pparameters, ")", $.bodyexpr),
+        seq(
+          $.typeparams,
+          "(",
+          $.pparameters,
+          ")",
+          ":",
+          $.tresult,
+          $.qualifier,
+          $.block,
+        ),
       ),
-    identifier: ($) =>
-      choice(
-        $.varid,
-        // TODO: Where is idop defined? `$.idop`
-      ),
-    qoperator: ($) => $.op,
-    qconstructor: ($) => choice($.conid, $.qconid),
+    annotres: ($) => optional(seq(":", $.tresult)),
 
-    // 4.4.5. Statements
-    block: ($) => seq("{", repeat(";"), repeat(seq($.statement, $.semi)), "}"),
+    // Statements
+    block: ($) => seq($._open_brace, $.semis, $.statements1, $._close_brace),
+    statements1: ($) =>
+      choice(
+        seq($.statements1, $.statement, $.semis1),
+        seq($.statement, $.semis1),
+      ),
     statement: ($) =>
       choice(
         $.decl,
         $.withstat,
-        seq($.withstat, "in", $.expr),
+        seq($.withstat, "in", $.blockexpr),
         $.returnexpr,
         $.basicexpr,
       ),
@@ -218,420 +240,403 @@ module.exports = grammar({
         seq("var", $.binder, ":=", $.blockexpr),
       ),
 
-    // 4.4.6. Expressions
+    // Expressions
+    bodyexpr: ($) => choice($.blockexpr, seq("->", $.blockexpr)),
     blockexpr: ($) => $.expr,
     expr: ($) =>
       choice($.withexpr, $.block, $.returnexpr, $.valexpr, $.basicexpr),
     basicexpr: ($) =>
-      choice($.ifexpr, $.fnexpr, $.matchexpr, $.handlerexpr, $.opexpr),
-    ifexpr: ($) =>
-      prec.right(
-        choice(
-          seq(
-            "if",
-            $.ntlexpr,
-            "then",
-            $.blockexpr,
-            repeat($.elif),
-            optional(seq("else", $.blockexpr)),
-          ),
-          seq("if", $.ntlexpr, "return", $.expr),
-        ),
-      ),
-    elif: ($) => seq("elif", $.ntlexpr, "then", $.blockexpr),
-    matchexpr: ($) =>
-      seq(
-        "match",
-        $.ntlexpr,
-        "{",
-        repeat(";"),
-        repeat(seq($.matchrule, $.semi)),
-        "}",
-      ),
-    returnexpr: ($) => seq("return", $.expr),
+      choice($.ifexpr, $.matchexpr, $.handlerexpr, $.fnexpr, $.opexpr),
+    matchexpr: ($) => seq("match", $.ntlexpr),
     fnexpr: ($) => seq("fn", $.funbody),
-    valexpr: ($) => seq("val", $.apattern, "=", $.blockexpr, "in", $.expr),
-    withexpr: ($) => seq($.withstat, "in", $.expr),
-    withstat: ($) =>
+    returnexpr: ($) => seq("return", $.expr),
+    ifexpr: ($) =>
       choice(
-        seq("with", $.basicexpr),
-        seq("with", $.binder, "<-", $.basicexpr),
-        seq(
-          "with",
-          optional("override"),
-          optional(seq("<", $.tbasic, ">")),
-          $.opclause,
-        ),
-        seq(
-          "with",
-          $.binder,
-          "<-",
-          optional(seq("<", $.tbasic, ">")),
-          $.opclause,
-        ),
+        seq("if", $.ntlexpr, "then", $.blockexpr, $.elifs),
+        seq("if", $.ntlexpr, "then", $.blockexpr),
+        seq("if", $.ntlexpr, "return", $.expr),
       ),
-
-    // 4.4.7. Operator expressions
+    elifs: ($) =>
+      choice(
+        seq("elif", $.ntlexpr, "then", $.blockexpr, $.elifs),
+        seq("else", $.blockexpr),
+      ),
+    valexpr: ($) => seq("val", $.apattern, "=", $.blockexpr, "in", $.expr),
     opexpr: ($) =>
-      prec.right(seq($.prefixexpr, repeat(seq($.qoperator, $.prefixexpr)))),
-    prefixexpr: ($) => seq(repeat(choice("!", "~")), $.appexpr),
+      choice(seq($.opexpr, $.qoperator, $.prefixexpr), $.prefixexpr),
+    prefixexpr: ($) =>
+      choice(seq("!", $.prefixexpr), seq("~", $.prefixexpr), $.appexpr),
     appexpr: ($) =>
       choice(
-        seq($.appexpr, "(", optional($.arguments), ")"),
-        seq($.appexpr, "[", optional($.arguments), "]"),
-        seq($.appexpr, choice($.fnexpr, $.block)),
+        seq($.appexpr, "(", $.arguments, ")"),
+        seq($.appexpr, "[", $.arguments, "]"),
         seq($.appexpr, ".", $.atom),
+        seq($.appexpr, $.block),
+        seq($.appexpr, $.fnexpr),
         $.atom,
       ),
-    ntlexpr: ($) =>
-      seq($.ntlprefixexpr, repeat(seq($.qoperator, $.ntlprefixexpr))),
-    ntlprefixexpr: ($) => seq(repeat(choice("!", "~")), $.ntlappexpr),
+    ntlexpr: ($) => $.ntlexpr,
+    ntlopexpr: ($) =>
+      choice(seq($.ntlopexpr, $.qoperator, $.ntlprefixexpr), $.ntlprefixexpr),
+    ntlprefixexpr: ($) =>
+      choice(
+        seq("!", $.ntlprefixexpr),
+        seq("~", $.ntlprefixexpr),
+        $.ntlappexpr,
+      ),
     ntlappexpr: ($) =>
       choice(
-        seq($.ntlappexpr, "(", optional($.arguments), ")"),
-        seq($.ntlappexpr, "[", optional($.arguments), "]"),
+        seq($.ntlappexpr, "(", $.arguments, ")"),
+        seq($.ntlappexpr, "[", $.arguments, "]"),
         seq($.ntlappexpr, ".", $.atom),
         $.atom,
       ),
-    arguments: ($) => seq($.argument, repeat(seq(",", $.argument))),
-    argument: ($) => seq(optional(seq($.identifier, "=")), $.expr),
-
-    // 4.4.8. Atomic expressions
     atom: ($) =>
       choice(
         $.qidentifier,
         $.qconstructor,
         $.literal,
         $.mask,
-        seq("(", ")"),
-        seq("(", $.annexprs, ")"),
-        seq(
-          "[",
-          optional(seq($.annexpr, repeat(seq(",", $.annexprs)), optional(","))),
-          "]",
-        ),
+        seq("(", $.aexprs, ")"),
+        seq("[", $.cexprs, "]"),
       ),
-    literal: ($) =>
+    literal: ($) => choice($.int, $.float, $.char, $.string),
+    mask: ($) => seq("mask", $.behind, "<", $.tbasic, ">"),
+    behind: (_) => optional("behind"),
+    arguments: ($) => optional($.arguments1),
+    arguments1: ($) => choice(seq($.arguments1, ",", $.argument), $.argument),
+    argument: ($) => choice($.expr, seq($.identifier, "=", $.expr)),
+    parameters: ($) => optional($.parameters1),
+    parameters1: ($) =>
+      choice(seq($.parameters1, ",", $.parameter), $.parameter),
+    parameter: ($) =>
       choice(
-        // TODO: Where is natural defined? `$.natural,`
-        $.float,
-        $.charlit,
-        $.stringlit,
+        seq($.borrow, $.paramid, ":", $.type),
+        seq($.borrow, $.paramid, ":", $.type, "=", $.expr),
       ),
-    mask: ($) => seq("mask", optional("behind"), "<", $.tbasic, ">"),
-    annexprs: ($) => prec.right(seq($.annexpr, repeat(seq(",", $.annexpr)))),
-    annexpr: ($) => seq($.expr, optional(seq(":", $.typescheme))),
+    paramid: ($) => choice($.identifier, $.wildcard),
+    borrow: (_) => optional("^"),
+    pparameters: ($) => optional($.pparameters1),
+    pparameters1: ($) =>
+      choice(seq($.pparameters1, ",", $.pparameter), $.pparameter),
+    pparameter: ($) =>
+      choice(
+        seq($.borrow, $.pattern),
+        seq($.borrow, $.pattern, ":", $.type),
+        seq($.borrow, $.pattern, ":", $.type, "=", $.expr),
+        seq($.borrow, $.pattern, "=", $.expr),
+      ),
+    aexprs: ($) => optional($.aexprs1),
+    aexprs1: ($) => choice(seq($.aexprs1, ",", $.aexpr), $.aexpr),
+    cexprs: ($) => choice($.cexprs0, seq($.cexprs0, $.aexpr)),
+    cexprs0: ($) => optional(seq($.cexprs0, $.aexpr, ",")),
+    aexpr: ($) => seq($.expr, $.annot),
+    annot: ($) => optional(seq(":", $.typescheme)),
 
-    // 4.4.9. Matching
+    // Identifiers and operators
+    qoperator: ($) => $.op,
+    qidentifier: ($) => choice($.qvarid, $.qidop, $.identifier),
+    identifier: ($) => choice($.varid, $.idop),
+    qvarid: ($) => $.qid,
+    varid: ($) =>
+      choice(
+        $.id,
+        "c",
+        "cs",
+        "js",
+        "file",
+        "inline",
+        "noinline",
+        "open",
+        "extend",
+        "linear",
+        "behind",
+        "value",
+        "reference",
+        "scoped",
+        "initially",
+        "finally",
+        "rec",
+        "co",
+      ),
+    qconstructor: ($) => choice($.conid, $.qconid),
+
+    // Matching
+    matchrules: ($) => optional(seq($.matchrules1, $.semis1)),
+    matchrules1: ($) =>
+      choice(seq($.matchrules1, $.semis1, $.matchrule), $.matchrule),
     matchrule: ($) =>
-      seq($.patterns, optional(seq("|", $.expr)), "->", $.blockexpr),
-    apattern: ($) => prec.right(seq($.pattern, optional($.typescheme))),
-    pattern: ($) =>
-      prec.right(
-        choice(
-          $.identifier,
-          seq($.identifier, "as", $.apattern),
-          seq($.qconstructor, optional(seq("(", optional($.patargs), ")"))),
-          seq("(", optional($.apatterns), ")"),
-          seq("[", optional($.apatterns), "]"),
-          $.literal,
-          $.wildcard,
-        ),
-      ),
-    patterns: ($) => seq($.pattern, repeat(seq(",", $.pattern))),
-    apatterns: ($) => seq($.apattern, repeat(seq(",", $.apattern))),
-    patargs: ($) => seq($.patarg, repeat(seq(",", $.patarg))),
-    patarg: ($) => seq(optional(seq($.identifier, "=")), $.apattern),
-
-    // 4.4.10. Effect Declarations
-    effectdecl: ($) =>
-      prec.right(
-        1,
-        choice(
-          seq(
-            optional($.named),
-            optional("linear"),
-            optional("rec"),
-            "effect",
-            $.varid,
-            optional($.typeparams),
-            optional($.kannot),
-            optional($.opdecls),
-          ),
-          seq(
-            "named",
-            optional("linear"),
-            optional("rec"),
-            "effect",
-            optional($.typeparams),
-            optional($.kannot),
-            $.opdecl,
-          ),
-          seq(
-            $.named,
-            optional("linear"),
-            optional("rec"),
-            "effect",
-            $.varid,
-            optional($.typeparams),
-            optional($.kannot),
-            "in",
-            $.type,
-            optional($.opdecls),
-          ),
-        ),
-      ),
-    named: (_) => "named",
-    opdecls: ($) => seq("{", repeat(";"), repeat(seq($.opdecl, $.semi)), "}"),
-    opdecl: ($) =>
       choice(
-        seq(
-          optional($.pub),
-          "val",
-          $.identifier,
-          optional($.typeparams),
-          ":",
-          $.tatom,
-        ),
-        seq(
-          optional($.pub),
-          choice("fun", "ctl"),
-          $.identifier,
-          optional($.typeparams),
-          $.parameters,
-          ":",
-          $.tatom,
-        ),
+        seq($.patterns1, "|", $.expr, "->", $.blockexpr),
+        seq($.patterns1, "->", $.blockexpr),
       ),
+    patterns1: ($) => choice(seq($.patterns1, ",", $.pattern), $.pattern),
+    apatterns: ($) => optional($.apatterns1),
+    apatterns1: ($) => choice(seq($.apatterns1, ",", $.apattern), $.apattern),
+    apattern: ($) => seq($.pattern, $.annot),
+    pattern: ($) =>
+      choice(
+        $.identifier,
+        seq($.identifier, "as", $.pattern),
+        $.conid,
+        seq($.conid, "(", $.patargs, ")"),
+        seq("(", $.apatterns, ")"),
+        seq("[", $.apatterns, "]"),
+        $.literal,
+        $.wildcard,
+      ),
+    patargs: ($) => optional($.patargs1),
+    patargs1: ($) => choice(seq($.patargs, ",", $.patarg), $.patarg),
+    patarg: ($) => choice(seq($.identifier, "=", $.apattern), $.apattern),
 
-    // 4.4.11. Handler Expressions
+    // Handlers
     handlerexpr: ($) =>
       choice(
-        seq(
-          optional("override"),
-          "handler",
-          optional(seq("<", $.tbasic, ">")),
-          $.opclauses,
-        ),
-        seq(
-          optional("override"),
-          "handle",
-          optional(seq("<", $.tbasic, ">")),
-          "(",
-          $.expr,
-          ")",
-          $.opclauses,
-        ),
-        seq("named", "handler", optional(seq("<", $.tbasic, ">")), $.opclauses),
-        seq(
-          "named",
-          "handle",
-          optional(seq("<", $.tbasic, ">")),
-          "(",
-          $.expr,
-          ")",
-          $.opclauses,
-        ),
+        seq($.override, "handler", $.witheff, $.opclauses),
+        seq($.override, "handle", $.witheff, $.ntlexpr, $.opclauses),
+        seq("named", "handler", $.witheff, $.opclauses),
+        seq("named", "handle", $.witheff, $.ntlexpr, $.opclauses),
       ),
+    override: (_) => optional("override"),
+    witheff: ($) => optional(seq("<", $.anntype, ">")),
+    withstat: ($) =>
+      choice(
+        seq("with", $.basicexpr),
+        seq("with", $.binder, "<-", $.basicexpr),
+        seq("with", $.override, $.witheff, $.opclause),
+        seq("with", $.binder, "<-", $.witheff, $.opclause),
+      ),
+    withexpr: ($) => seq($.withstat, "in", $.blockexpr),
     opclauses: ($) =>
-      seq("{", repeat(";"), repeat(seq($.opclausex, $.semi)), "}"),
+      choice(
+        seq($._open_brace, $.semis, $.opclauses1, $.semis1, $._close_brace),
+        seq($._open_brace, $.semis, $._close_brace),
+      ),
+    opclauses1: ($) =>
+      choice(seq($.opclauses1, $.semis1, $.opclausex), $.opclausex),
     opclausex: ($) =>
       choice(
+        seq("finally", $.bodyexpr),
+        seq("initially", "(", $.opparam, ")", $.bodyexpr),
         $.opclause,
-        seq("finally", $.blockexpr),
-        seq("initially", "(", $.oparg, ")", $.blockexpr),
       ),
     opclause: ($) =>
       choice(
-        seq("val", $.qidentifier, optional($.type), "=", $.blockexpr),
-        seq("fun", $.qidentifier, $.opargs, $.blockexpr),
-        seq(optional($.ctlmod), "ctl", $.qidentifier, $.opargs, $.blockexpr),
-        seq("return", "(", $.oparg, ")", $.blockexpr),
+        seq("val", $.qidentifier, "=", $.blockexpr),
+        seq("val", $.qidentifier, ":", $.type, "=", $.blockexpr),
+        seq("fun", $.qidentifier, $.opparams, $.bodyexpr),
+        seq($.controlmod, "ctl", $.qidentifier, $.opparams, $.bodyexpr),
+        seq("return", "(", $.opparam, ")", $.bodyexpr),
       ),
-    ctlmod: (_) => choice("final", "raw"),
-    opargs: ($) =>
-      seq("(", optional(seq($.oparg, repeat(seq(",", $.oparg)))), ")"),
-    oparg: ($) => seq($.paramid, optional(seq(":", $.type))),
+    controlmod: (_) => optional(choice("final", "raw")),
+    opparams: ($) => seq("(", $.opparams0, ")"),
+    opparams0: ($) => optional($.opparams1),
+    opparams1: ($) => choice(seq($.opparams1, ",", $.opparam), $.opparam),
+    opparam: ($) => choice($.paramid, seq($.paramid, ":", $.type)),
 
-    // 4.4.12. Type schemes
-    typescheme: ($) =>
-      seq(
-        optional(seq("some", $.typeparams)),
-        optional(seq("forall", $.typeparams)),
-        $.tarrow,
-        optional($.qualifier),
-      ),
+    // Types
+    tbinders: ($) => optional($.tbinders1),
+    tbinders1: ($) => choice(seq($.tbinders1, ",", $.tbinder), $.tbinder),
+    tbinder: ($) => seq($.varid, $.kannot),
+    typescheme: ($) => seq($.someforalls, $.tarrow, $.qualifier),
     type: ($) =>
-      prec.right(
-        seq(
-          optional(seq("forall", $.typeparams)),
-          $.tarrow,
-          optional($.qualifier),
+      choice(
+        seq("forall", $.typeparams1, $.tarrow, $.qualifier),
+        seq($.tarrow, $.qualifier),
+      ),
+    someforalls: ($) =>
+      optional(
+        choice(
+          seq("some", $.typeparams1, "forall", $.typeparams1),
+          seq("some", $.typeparams1),
+          seq("forall", $.typeparams1),
         ),
       ),
-    qualifier: ($) => seq("with", "(", $.predicates, ")"),
-    predicates: ($) => seq($.predicate, repeat(seq(",", $.predicate))),
+    typeparams: ($) => optional($.typeparams1),
+    typeparams1: ($) => seq("<", $.tbinders, ">"),
+    qualifier: ($) => optional(seq("with", "(", $.predicates1, ")")),
+    predicates1: ($) =>
+      choice(seq($.predicates1, ",", $.predicate), $.predicate),
     predicate: ($) => $.typeapp,
-
-    // 4.4.13. Types
-    tarrow: ($) => prec.right(seq($.tatom, optional(seq("->", $.tresult)))),
-    tresult: ($) => seq($.tatom, optional($.tbasic)),
-    tatom: ($) =>
-      prec.right(
-        choice(
-          $.tbasic,
-          seq(
-            "<",
-            $.anntype,
-            repeat(seq(",", $.anntype)),
-            optional(seq("|", $.tatom)),
-            ">",
-          ),
-          seq("<", ">"),
-        ),
+    tarrow: ($) => choice(seq($.tatomic, "->", $.tresult), $.tatomic),
+    tresult: ($) => choice(seq($.tatomic, $.tbasic), $.tatomic),
+    tatomic: ($) =>
+      choice(
+        $.tbasic,
+        seq("<", $.targuments1, "|", $.tatomic, ">"),
+        seq("<", $.targuments, ">"),
       ),
     tbasic: ($) =>
-      prec.right(
-        choice(
-          $.typeapp,
-          seq("(", ")"),
-          seq("(", $.tparam, ")"),
-          seq($.tparam, repeat(seq(",", $.tparam))),
-          seq("[", $.anntype, "]"),
-        ),
-      ),
-    typeapp: ($) =>
-      prec.right(
-        seq(
-          $.typecon,
-          optional(seq("<", $.anntype, repeat(seq(",", $.anntype)), ">")),
-        ),
-      ),
+      choice($.typeapp, seq("(", $.tparams, ")"), seq("[", $.anntype, "]")),
+    typeapp: ($) => choice($.typecon, seq($.typecon, "<", $.targuments, ">")),
     typecon: ($) =>
       choice(
         $.varid,
         $.qvarid,
         $.wildcard,
-        seq("(", ",", repeat(","), ")"),
+        seq("(", $.commas1, ")"),
         seq("[", "]"),
         seq("(", "->", ")"),
       ),
-    tparam: ($) => prec.right(seq(optional(seq($.varid, ":")), $.anntype)),
-    anntype: ($) => prec.right(seq($.type, optional($.kannot))),
+    tparams: ($) => optional($.tparams1),
+    tparams1: ($) => choice(seq($.tparams1, ",", $.tparam), $.tparam),
+    tparam: ($) => choice(seq($.identifier, ":", $.anntype), $.anntype),
+    targuments: ($) => optional($.targuments1),
+    targuments1: ($) => choice(seq($.targuments1, ",", $.anntype), $.anntype),
+    anntype: ($) => seq($.type, $.kannot),
 
-    // 4.4.14. Kinds
-    kannot: ($) => seq("::", $.kind),
+    // Kinds
+    kannot: ($) => optional(seq("::", $.kind)),
     kind: ($) =>
-      prec.right(
-        choice(
-          seq("(", $.kind, repeat(seq(",", $.kind)), ")", "->", $.kind),
-          seq($.katom, "->", $.kind),
-          $.katom,
-        ),
+      choice(
+        seq("(", $.kinds1, ")", "->", $.katom),
+        seq($.katom, "->", $.kind),
+        $.katom,
       ),
-    katom: (_) => choice("V", "X", "E", "H", "P", "S", "HX", "HX1"),
+    kinds1: ($) => choice(seq($.kinds1, ",", $.kind), $.kind),
+    katom: ($) => $.conid,
 
-    // 4.2. Lexical grammar
-
-    // 4.2.2. Identifiers
-    qconid: ($) => seq($.modulepath, $.conid),
-    qvarid: ($) => seq($.modulepath, $.lowerid),
-    modulepath: ($) =>
-      prec.right(seq($.lowerid, "/", repeat(seq($.lowerid, "/")))),
-    conid: ($) => $.upperid,
-    varid: ($) => prec.right($.lowerid), // TODO: !reserved
-    lowerid: ($) =>
-      prec.right(seq($._lower, seq(repeat($._idchar), repeat("'")))),
-    upperid: ($) =>
-      prec.right(seq($._upper, seq(repeat($._idchar), repeat("'")))),
-    wildcard: ($) => prec.right(seq("_", seq(repeat($._idchar), repeat("'")))),
-    _idchar: ($) => choice($._letter, $._digit, "_", "-"),
-
-    // 4.2.3. Operators and symbols
-    op: ($) => choice($.symbols, "||"), // TODO: !opreserved | optype
-    symbols: ($) => prec.right(choice(seq($.symbol, repeat($.symbol)), "/")),
-    symbol: ($) =>
+    // Character classes
+    symbols: ($) => choice(repeat($.symbol), "/"),
+    symbol: (_) =>
       choice(
         "$",
         "%",
         "&",
         "*",
         "+",
-        "~",
+        "@",
         "!",
         "\\",
         "^",
-        "#",
+        "~",
         "=",
         ".",
-        ":",
         "-",
+        ":",
         "?",
-        $.anglebar,
+        "|",
+        "<",
+        ">",
       ),
     anglebar: (_) => choice("<", ">", "|"),
-
-    // 4.2.4. Literals
-    // TODO: handle chars in stuff better
-    charlit: ($) => seq("'", choice(/[^'\\]/, $.escape), "'"),
-    stringlit: ($) => seq('"', repeat(choice(/[^"\\]/, $.escape)), '"'), // TODO: rawchars string literal
-    escape: ($) => seq("\\", choice($.charesc, $.hexesc)),
-    charesc: (_) => choice("n", "r", "t", "\\", '"', "'"),
+    angle: (_) => choice("<", ">"),
+    sign: (_) => optional("-"),
+    conid: ($) => seq($.upper, repeat($.idchar), repeat($.final)),
+    id: ($) => seq($.lower, repeat($.idchar), repeat($.final)),
+    idchar: ($) => choice($.letter, $.digit, "_", "-"),
     hexesc: ($) =>
       choice(
-        seq("x", $._hex_digit, $._hex_digit),
-        seq("u", $._hex_digit, $._hex_digit, $._hex_digit, $._hex_digit),
-        seq(
-          "U",
-          $._hex_digit,
-          $._hex_digit,
-          $._hex_digit,
-          $._hex_digit,
-          $._hex_digit,
-          $._hex_digit,
-        ),
+        seq("x", $.hex, $.hex),
+        seq("u", $.hex, $.hex, $.hex, $.hex),
+        seq("U", $.hex, $.hex, $.hex, $.hex, $.hex, $.hex),
       ),
-    float: ($) => seq(optional("-"), choice($.decfloat, $.hexfloat)),
-    decfloat: ($) =>
-      seq($.decimal, choice(seq(".", $._digits, optional($.decexp)), $.decexp)),
-    decexp: ($) => seq(choice("e", "E"), $.exponent),
-    hexfloat: ($) =>
-      prec.right(
-        seq(
-          $.hexadecimal,
-          choice(".", $._hex_digits, optional($.hexexp), $.hexexp),
-        ),
-      ),
-    hexexp: ($) => seq(choice("p", "P"), $.exponent),
-    exponent: ($) =>
-      seq(optional(choice("-", "+")), $._digit, repeat($._digit)),
-    integer: ($) => seq(optional("-"), choice($.decimal, $.hexadecimal)),
+    charesc: (_) => choice("n", "r", "t", "\\", '"', "'"),
     decimal: ($) =>
-      choice("0", seq($._pos_digit, optional(seq(optional("_"), $._digits)))),
-    hexadecimal: ($) => seq("0", choice("x", "X"), $._hex_digits),
-    _digits: ($) =>
-      prec.right(
-        seq(
-          $._digit,
-          repeat($._digit),
-          repeat(seq("_", $._digit, repeat($._digit))),
-        ),
+      choice("0", seq(/[1-9]/, optional(seq(optional("_"), $.digits)))),
+    hexadecimal: ($) => seq("0", choice("x", "X"), $.hexdigits),
+    digits: ($) => seq(repeat1($.digit), repeat($.digitsep)),
+    hexdigits: ($) => seq(repeat1($.hex), repeat($.hexsep)),
+    digitsep: ($) => seq("_", repeat1($.digit)),
+    hexsep: ($) => seq("_", repeat1($.hex)),
+    letter: ($) => choice($.lower, $.upper),
+    upper: (_) => /[A-Z]/,
+    lower: (_) => /[a-z]/,
+    digit: (_) => /[0-9]/,
+    hex: (_) => /[0-9a-fA-F]/,
+    space: (_) => /[ \t]/,
+    newline: (_) => /\r?\n/,
+    final: (_) => "'",
+    graphicchar: (_) => /[ \x21-\x26\x28-\[\]-\x7E]/,
+    graphicstr: (_) => /[ \x21\x23-\[\]-\x7E]/,
+    uc: (_) => /[\x80-\xBF]/,
+    u2: ($) => seq(/[\xC2-\xDF]/, $.uc),
+    u3: ($) =>
+      choice(
+        seq(/[\xE0][\xA0-\xBF]/, $.uc),
+        seq(/[\xE1-\xEC]/, $.uc, $.uc),
+        seq(/[\xED][\x80-\x9F]/, $.uc),
+        seq(/[\xEE-\xEF]/, $.uc, $.uc),
       ),
-    _hex_digits: ($) =>
-      prec.right(
-        seq(
-          $._hex_digit,
-          repeat($._hex_digit),
-          repeat(prec.right(seq("_", $._hex_digit, repeat($._hex_digit)))),
-        ),
+    u4: ($) =>
+      choice(
+        seq(/[\xF0][\x90-\xBF]/, $.uc),
+        seq(/[\xF1-\xF3]/, $.uc, $.uc, $.uc),
+        seq(/[\xF4][\x80-\x8F]/, $.uc, $.uc),
       ),
+    utf8: ($) => choice($.u2, $.u3, $.u4),
 
-    // 4.2.6. Character classes
-    _letter: ($) => choice($._upper, $._lower),
-    _upper: (_) => /[A-Z]/,
-    _lower: (_) => /[a-z]/,
-    _digit: (_) => /[0-9]/,
-    _pos_digit: (_) => /[1-9]/,
-    _hex_digit: (_) => /[a-fA-F0-9]/,
+    // Numbers
+    float: ($) =>
+      choice(
+        seq(
+          $.sign,
+          $.decimal,
+          ".",
+          $.digits,
+          choice("e", "E"),
+          optional(choice("-", "+")),
+          repeat1($.digit),
+        ),
+        seq(
+          $.sign,
+          $.decimal,
+          choice("e", "E"),
+          optional(choice("-", "+")),
+          repeat1($.digit),
+        ),
+        seq($.sign, $.decimal, ".", $.digits),
+        seq(
+          $.sign,
+          $.hexadecimal,
+          ".",
+          $.hexdigits,
+          choice("p", "P"),
+          optional(choice("-", "+")),
+          repeat1($.digit),
+        ),
+        seq(
+          $.sign,
+          $.hexadecimal,
+          choice("p", "P"),
+          optional(choice("-", "+")),
+          repeat1($.digit),
+        ),
+        seq($.sign, $.hexadecimal, ".", $.hexdigits),
+      ),
+    int: ($) => choice(seq($.sign, $.hexadecimal), seq($.sign, $.decimal)),
+
+    // Identifiers and operators
+    qconid: ($) => seq(repeat1(seq($.id, "/")), $.conid),
+    qid: ($) => seq(repeat1(seq($.id, "/")), $.id),
+    qidop: ($) => seq(repeat1(seq($.id, "/")), "(", $.symbols, ")"),
+    idop: ($) => seq("(", $.symbols, ")"),
+    op: ($) => $.symbols,
+    wildcard: ($) => seq("_", repeat($.idchar)),
+
+    // String
+    string: ($) =>
+      choice(
+        $._raw_string,
+        seq(
+          '"',
+          repeat(
+            choice(
+              $.graphicstr,
+              seq("\\", $.hexesc),
+              seq("\\", $.charesc),
+              $.utf8,
+            ),
+          ),
+          '"',
+        ),
+      ),
+    char: ($) =>
+      choice(
+        seq("'", $.graphicchar, "'"),
+        seq("'", "\\", $.hexesc, "'"),
+        seq("'", "\\", $.charesc, "'"),
+        seq("'", $.utf8, "'"),
+      ),
   },
 });

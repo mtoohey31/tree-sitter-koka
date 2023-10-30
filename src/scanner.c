@@ -1,6 +1,6 @@
 #include <tree_sitter/parser.h>
 
-enum TokenType { OpenBrace, CloseBrace, Semicolon };
+enum TokenType { OpenBrace, CloseBrace, Semicolon, RawString };
 
 void *tree_sitter_koka_external_scanner_create() { return NULL; }
 
