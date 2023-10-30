@@ -8,26 +8,35 @@
 #define LANGUAGE_VERSION 14
 #define STATE_COUNT 3
 #define LARGE_STATE_COUNT 2
-#define SYMBOL_COUNT 2
+#define SYMBOL_COUNT 5
 #define ALIAS_COUNT 0
-#define TOKEN_COUNT 1
-#define EXTERNAL_TOKEN_COUNT 0
+#define TOKEN_COUNT 4
+#define EXTERNAL_TOKEN_COUNT 3
 #define FIELD_COUNT 0
 #define MAX_ALIAS_SEQUENCE_LENGTH 1
 #define PRODUCTION_ID_COUNT 1
 
 enum {
-  sym_source_file = 1,
+  sym__open_brace = 1,
+  sym__close_brace = 2,
+  sym__semicolon = 3,
+  sym_module = 4,
 };
 
 static const char * const ts_symbol_names[] = {
   [ts_builtin_sym_end] = "end",
-  [sym_source_file] = "source_file",
+  [sym__open_brace] = "_open_brace",
+  [sym__close_brace] = "_close_brace",
+  [sym__semicolon] = "_semicolon",
+  [sym_module] = "module",
 };
 
 static const TSSymbol ts_symbol_map[] = {
   [ts_builtin_sym_end] = ts_builtin_sym_end,
-  [sym_source_file] = sym_source_file,
+  [sym__open_brace] = sym__open_brace,
+  [sym__close_brace] = sym__close_brace,
+  [sym__semicolon] = sym__semicolon,
+  [sym_module] = sym_module,
 };
 
 static const TSSymbolMetadata ts_symbol_metadata[] = {
@@ -35,7 +44,19 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = false,
     .named = true,
   },
-  [sym_source_file] = {
+  [sym__open_brace] = {
+    .visible = false,
+    .named = true,
+  },
+  [sym__close_brace] = {
+    .visible = false,
+    .named = true,
+  },
+  [sym__semicolon] = {
+    .visible = false,
+    .named = true,
+  },
+  [sym_module] = {
     .visible = true,
     .named = true,
   },
@@ -72,17 +93,40 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
 }
 
 static const TSLexMode ts_lex_modes[STATE_COUNT] = {
-  [0] = {.lex_state = 0},
+  [0] = {.lex_state = 0, .external_lex_state = 1},
   [1] = {.lex_state = 0},
   [2] = {.lex_state = 0},
+};
+
+enum {
+  ts_external_token__open_brace = 0,
+  ts_external_token__close_brace = 1,
+  ts_external_token__semicolon = 2,
+};
+
+static const TSSymbol ts_external_scanner_symbol_map[EXTERNAL_TOKEN_COUNT] = {
+  [ts_external_token__open_brace] = sym__open_brace,
+  [ts_external_token__close_brace] = sym__close_brace,
+  [ts_external_token__semicolon] = sym__semicolon,
+};
+
+static const bool ts_external_scanner_states[2][EXTERNAL_TOKEN_COUNT] = {
+  [1] = {
+    [ts_external_token__open_brace] = true,
+    [ts_external_token__close_brace] = true,
+    [ts_external_token__semicolon] = true,
+  },
 };
 
 static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
   [0] = {
     [ts_builtin_sym_end] = ACTIONS(1),
+    [sym__open_brace] = ACTIONS(1),
+    [sym__close_brace] = ACTIONS(1),
+    [sym__semicolon] = ACTIONS(1),
   },
   [1] = {
-    [sym_source_file] = STATE(2),
+    [sym_module] = STATE(2),
     [ts_builtin_sym_end] = ACTIONS(3),
   },
 };
@@ -100,13 +144,19 @@ static const uint32_t ts_small_parse_table_map[] = {
 static const TSParseActionEntry ts_parse_actions[] = {
   [0] = {.entry = {.count = 0, .reusable = false}},
   [1] = {.entry = {.count = 1, .reusable = false}}, RECOVER(),
-  [3] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_source_file, 0),
+  [3] = {.entry = {.count = 1, .reusable = true}}, REDUCE(sym_module, 0),
   [5] = {.entry = {.count = 1, .reusable = true}},  ACCEPT_INPUT(),
 };
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+void *tree_sitter_koka_external_scanner_create(void);
+void tree_sitter_koka_external_scanner_destroy(void *);
+bool tree_sitter_koka_external_scanner_scan(void *, TSLexer *, const bool *);
+unsigned tree_sitter_koka_external_scanner_serialize(void *, char *);
+void tree_sitter_koka_external_scanner_deserialize(void *, const char *, unsigned);
+
 #ifdef _WIN32
 #define extern __declspec(dllexport)
 #endif
@@ -134,6 +184,15 @@ extern const TSLanguage *tree_sitter_koka(void) {
     .alias_sequences = &ts_alias_sequences[0][0],
     .lex_modes = ts_lex_modes,
     .lex_fn = ts_lex,
+    .external_scanner = {
+      &ts_external_scanner_states[0][0],
+      ts_external_scanner_symbol_map,
+      tree_sitter_koka_external_scanner_create,
+      tree_sitter_koka_external_scanner_destroy,
+      tree_sitter_koka_external_scanner_scan,
+      tree_sitter_koka_external_scanner_serialize,
+      tree_sitter_koka_external_scanner_deserialize,
+    },
     .primary_state_ids = ts_primary_state_ids,
   };
   return &language;

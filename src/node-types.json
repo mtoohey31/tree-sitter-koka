@@ -1,6 +1,6 @@
 [
   {
-    "type": "source_file",
+    "type": "module",
     "named": true,
     "fields": {}
   }

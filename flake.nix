@@ -22,18 +22,22 @@
         overlays = [ self.overlays.default ];
         inherit system;
       };
-      inherit (pkgs) mkShell nodejs nodePackages python3 tree-sitter typescript;
+      inherit (pkgs) clang-tools mkShell nodejs nodePackages python3 tree-sitter
+        typescript;
+      inherit (nodePackages) prettier typescript-language-server;
     in
     {
       packages.default = tree-sitter.builtGrammars.tree-sitter-koka;
 
       devShells.default = mkShell {
         packages = [
+          clang-tools
           nodejs
-          nodePackages.typescript-language-server
+          prettier
           python3
           tree-sitter
           typescript
+          typescript-language-server
         ];
       };
     });
