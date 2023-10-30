@@ -541,11 +541,11 @@ module.exports = grammar({
     conid: ($) => $.upperid,
     varid: ($) => prec.right($.lowerid), // TODO: !reserved
     lowerid: ($) =>
-      prec.right(seq($.lower, seq(repeat($.idchar), repeat("'")))),
+      prec.right(seq($._lower, seq(repeat($._idchar), repeat("'")))),
     upperid: ($) =>
-      prec.right(seq($.upper, seq(repeat($.idchar), repeat("'")))),
-    wildcard: ($) => prec.right(seq("_", seq(repeat($.idchar), repeat("'")))),
-    idchar: ($) => choice($.letter, $.digit, "_", "-"),
+      prec.right(seq($._upper, seq(repeat($._idchar), repeat("'")))),
+    wildcard: ($) => prec.right(seq("_", seq(repeat($._idchar), repeat("'")))),
+    _idchar: ($) => choice($._letter, $._digit, "_", "-"),
 
     // 4.2.3. Operators and symbols
     op: ($) => choice($.symbols, "||"), // TODO: !opreserved | optype
@@ -579,58 +579,59 @@ module.exports = grammar({
     charesc: (_) => choice("n", "r", "t", "\\", '"', "'"),
     hexesc: ($) =>
       choice(
-        seq("x", $.hexdigit, $.hexdigit),
-        seq("u", $.hexdigit, $.hexdigit, $.hexdigit, $.hexdigit),
+        seq("x", $._hex_digit, $._hex_digit),
+        seq("u", $._hex_digit, $._hex_digit, $._hex_digit, $._hex_digit),
         seq(
           "U",
-          $.hexdigit,
-          $.hexdigit,
-          $.hexdigit,
-          $.hexdigit,
-          $.hexdigit,
-          $.hexdigit,
+          $._hex_digit,
+          $._hex_digit,
+          $._hex_digit,
+          $._hex_digit,
+          $._hex_digit,
+          $._hex_digit,
         ),
       ),
     float: ($) => seq(optional("-"), choice($.decfloat, $.hexfloat)),
     decfloat: ($) =>
-      seq($.decimal, choice(seq(".", $.digits, optional($.decexp)), $.decexp)),
+      seq($.decimal, choice(seq(".", $._digits, optional($.decexp)), $.decexp)),
     decexp: ($) => seq(choice("e", "E"), $.exponent),
     hexfloat: ($) =>
       prec.right(
         seq(
           $.hexadecimal,
-          choice(".", $.hexdigits, optional($.hexexp), $.hexexp),
+          choice(".", $._hex_digits, optional($.hexexp), $.hexexp),
         ),
       ),
     hexexp: ($) => seq(choice("p", "P"), $.exponent),
-    exponent: ($) => seq(optional(choice("-", "+")), $.digit, repeat($.digit)),
+    exponent: ($) =>
+      seq(optional(choice("-", "+")), $._digit, repeat($._digit)),
     integer: ($) => seq(optional("-"), choice($.decimal, $.hexadecimal)),
     decimal: ($) =>
-      choice("0", seq($.posdigit, optional(seq(optional("_"), $.digits)))),
-    hexadecimal: ($) => seq("0", choice("x", "X"), $.hexdigits),
-    digits: ($) =>
+      choice("0", seq($._pos_digit, optional(seq(optional("_"), $._digits)))),
+    hexadecimal: ($) => seq("0", choice("x", "X"), $._hex_digits),
+    _digits: ($) =>
       prec.right(
         seq(
-          $.digit,
-          repeat($.digit),
-          repeat(seq("_", $.digit, repeat($.digit))),
+          $._digit,
+          repeat($._digit),
+          repeat(seq("_", $._digit, repeat($._digit))),
         ),
       ),
-    hexdigits: ($) =>
+    _hex_digits: ($) =>
       prec.right(
         seq(
-          $.hexdigit,
-          repeat($.hexdigit),
-          repeat(prec.right(seq("_", $.hexdigit, repeat($.hexdigit)))),
+          $._hex_digit,
+          repeat($._hex_digit),
+          repeat(prec.right(seq("_", $._hex_digit, repeat($._hex_digit)))),
         ),
       ),
 
     // 4.2.6. Character classes
-    letter: ($) => choice($.upper, $.lower),
-    upper: (_) => /[A-Z]/,
-    lower: (_) => /[a-z]/,
-    digit: (_) => /[0-9]/,
-    posdigit: (_) => /[1-9]/,
-    hexdigit: (_) => /[a-fA-F0-9]/,
+    _letter: ($) => choice($._upper, $._lower),
+    _upper: (_) => /[A-Z]/,
+    _lower: (_) => /[a-z]/,
+    _digit: (_) => /[0-9]/,
+    _pos_digit: (_) => /[1-9]/,
+    _hex_digit: (_) => /[a-fA-F0-9]/,
   },
 });

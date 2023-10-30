@@ -423,10 +423,6 @@
         {
           "type": "decimal",
           "named": true
-        },
-        {
-          "type": "digits",
-          "named": true
         }
       ]
     }
@@ -434,21 +430,7 @@
   {
     "type": "decimal",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "digits",
-          "named": true
-        },
-        {
-          "type": "posdigit",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "decl",
@@ -472,21 +454,6 @@
         },
         {
           "type": "fundecl",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "digits",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "digit",
           "named": true
         }
       ]
@@ -572,17 +539,7 @@
   {
     "type": "exponent",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "digit",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "expr",
@@ -791,47 +748,12 @@
   {
     "type": "hexadecimal",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "hexdigits",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "hexdigits",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "hexdigit",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "hexesc",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "hexdigit",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "hexexp",
@@ -861,30 +783,7 @@
           "named": true
         },
         {
-          "type": "hexdigits",
-          "named": true
-        },
-        {
           "type": "hexexp",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "idchar",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "digit",
-          "named": true
-        },
-        {
-          "type": "letter",
           "named": true
         }
       ]
@@ -1019,25 +918,6 @@
     }
   },
   {
-    "type": "letter",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "lower",
-          "named": true
-        },
-        {
-          "type": "upper",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "literal",
     "named": true,
     "fields": {},
@@ -1063,21 +943,7 @@
   {
     "type": "lowerid",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "idchar",
-          "named": true
-        },
-        {
-          "type": "lower",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "mask",
@@ -2315,21 +2181,7 @@
   {
     "type": "upperid",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "idchar",
-          "named": true
-        },
-        {
-          "type": "upper",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "valdecl",
@@ -2391,17 +2243,7 @@
   {
     "type": "wildcard",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "idchar",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "withexpr",
@@ -2642,10 +2484,6 @@
     "named": false
   },
   {
-    "type": "digit",
-    "named": true
-  },
-  {
     "type": "e",
     "named": false
   },
@@ -2694,10 +2532,6 @@
     "named": false
   },
   {
-    "type": "hexdigit",
-    "named": true
-  },
-  {
     "type": "if",
     "named": false
   },
@@ -2734,10 +2568,6 @@
     "named": false
   },
   {
-    "type": "lower",
-    "named": true
-  },
-  {
     "type": "mask",
     "named": false
   },
@@ -2768,10 +2598,6 @@
   {
     "type": "p",
     "named": false
-  },
-  {
-    "type": "posdigit",
-    "named": true
   },
   {
     "type": "pub",
@@ -2820,10 +2646,6 @@
   {
     "type": "u",
     "named": false
-  },
-  {
-    "type": "upper",
-    "named": true
   },
   {
     "type": "val",

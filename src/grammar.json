@@ -4383,7 +4383,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "lower"
+            "name": "_lower"
           },
           {
             "type": "SEQ",
@@ -4392,7 +4392,7 @@
                 "type": "REPEAT",
                 "content": {
                   "type": "SYMBOL",
-                  "name": "idchar"
+                  "name": "_idchar"
                 }
               },
               {
@@ -4415,7 +4415,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "upper"
+            "name": "_upper"
           },
           {
             "type": "SEQ",
@@ -4424,7 +4424,7 @@
                 "type": "REPEAT",
                 "content": {
                   "type": "SYMBOL",
-                  "name": "idchar"
+                  "name": "_idchar"
                 }
               },
               {
@@ -4456,7 +4456,7 @@
                 "type": "REPEAT",
                 "content": {
                   "type": "SYMBOL",
-                  "name": "idchar"
+                  "name": "_idchar"
                 }
               },
               {
@@ -4471,16 +4471,16 @@
         ]
       }
     },
-    "idchar": {
+    "_idchar": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "letter"
+          "name": "_letter"
         },
         {
           "type": "SYMBOL",
-          "name": "digit"
+          "name": "_digit"
         },
         {
           "type": "STRING",
@@ -4738,11 +4738,11 @@
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             }
           ]
         },
@@ -4755,19 +4755,19 @@
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             }
           ]
         },
@@ -4780,27 +4780,27 @@
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             },
             {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             }
           ]
         }
@@ -4855,7 +4855,7 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "digits"
+                  "name": "_digits"
                 },
                 {
                   "type": "CHOICE",
@@ -4920,7 +4920,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "hexdigits"
+                "name": "_hex_digits"
               },
               {
                 "type": "CHOICE",
@@ -4991,13 +4991,13 @@
         },
         {
           "type": "SYMBOL",
-          "name": "digit"
+          "name": "_digit"
         },
         {
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
-            "name": "digit"
+            "name": "_digit"
           }
         }
       ]
@@ -5044,7 +5044,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "posdigit"
+              "name": "_pos_digit"
             },
             {
               "type": "CHOICE",
@@ -5066,7 +5066,7 @@
                     },
                     {
                       "type": "SYMBOL",
-                      "name": "digits"
+                      "name": "_digits"
                     }
                   ]
                 },
@@ -5101,11 +5101,11 @@
         },
         {
           "type": "SYMBOL",
-          "name": "hexdigits"
+          "name": "_hex_digits"
         }
       ]
     },
-    "digits": {
+    "_digits": {
       "type": "PREC_RIGHT",
       "value": 0,
       "content": {
@@ -5113,13 +5113,13 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "digit"
+            "name": "_digit"
           },
           {
             "type": "REPEAT",
             "content": {
               "type": "SYMBOL",
-              "name": "digit"
+              "name": "_digit"
             }
           },
           {
@@ -5133,13 +5133,13 @@
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "digit"
+                  "name": "_digit"
                 },
                 {
                   "type": "REPEAT",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "digit"
+                    "name": "_digit"
                   }
                 }
               ]
@@ -5148,7 +5148,7 @@
         ]
       }
     },
-    "hexdigits": {
+    "_hex_digits": {
       "type": "PREC_RIGHT",
       "value": 0,
       "content": {
@@ -5156,13 +5156,13 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "hexdigit"
+            "name": "_hex_digit"
           },
           {
             "type": "REPEAT",
             "content": {
               "type": "SYMBOL",
-              "name": "hexdigit"
+              "name": "_hex_digit"
             }
           },
           {
@@ -5179,13 +5179,13 @@
                   },
                   {
                     "type": "SYMBOL",
-                    "name": "hexdigit"
+                    "name": "_hex_digit"
                   },
                   {
                     "type": "REPEAT",
                     "content": {
                       "type": "SYMBOL",
-                      "name": "hexdigit"
+                      "name": "_hex_digit"
                     }
                   }
                 ]
@@ -5195,36 +5195,36 @@
         ]
       }
     },
-    "letter": {
+    "_letter": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "upper"
+          "name": "_upper"
         },
         {
           "type": "SYMBOL",
-          "name": "lower"
+          "name": "_lower"
         }
       ]
     },
-    "upper": {
+    "_upper": {
       "type": "PATTERN",
       "value": "[A-Z]"
     },
-    "lower": {
+    "_lower": {
       "type": "PATTERN",
       "value": "[a-z]"
     },
-    "digit": {
+    "_digit": {
       "type": "PATTERN",
       "value": "[0-9]"
     },
-    "posdigit": {
+    "_pos_digit": {
       "type": "PATTERN",
       "value": "[1-9]"
     },
-    "hexdigit": {
+    "_hex_digit": {
       "type": "PATTERN",
       "value": "[a-fA-F0-9]"
     }
