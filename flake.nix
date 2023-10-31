@@ -22,8 +22,8 @@
         overlays = [ self.overlays.default ];
         inherit system;
       };
-      inherit (pkgs) clang-tools mkShell nodejs nodePackages python3 tree-sitter
-        typescript;
+      inherit (pkgs) clang-tools gdb mkShell nodejs nodePackages python3
+        tree-sitter typescript valgrind;
       inherit (nodePackages) prettier typescript-language-server;
     in
     {
@@ -32,12 +32,14 @@
       devShells.default = mkShell {
         packages = [
           clang-tools
+          gdb
           nodejs
           prettier
           python3
           tree-sitter
           typescript
           typescript-language-server
+          valgrind
         ];
       };
     });

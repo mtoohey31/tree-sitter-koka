@@ -3724,81 +3724,8 @@
       "type": "PREC_RIGHT",
       "value": 0,
       "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "id"
-          },
-          {
-            "type": "STRING",
-            "value": "c"
-          },
-          {
-            "type": "STRING",
-            "value": "cs"
-          },
-          {
-            "type": "STRING",
-            "value": "js"
-          },
-          {
-            "type": "STRING",
-            "value": "file"
-          },
-          {
-            "type": "STRING",
-            "value": "inline"
-          },
-          {
-            "type": "STRING",
-            "value": "noinline"
-          },
-          {
-            "type": "STRING",
-            "value": "open"
-          },
-          {
-            "type": "STRING",
-            "value": "extend"
-          },
-          {
-            "type": "STRING",
-            "value": "linear"
-          },
-          {
-            "type": "STRING",
-            "value": "behind"
-          },
-          {
-            "type": "STRING",
-            "value": "value"
-          },
-          {
-            "type": "STRING",
-            "value": "reference"
-          },
-          {
-            "type": "STRING",
-            "value": "scoped"
-          },
-          {
-            "type": "STRING",
-            "value": "initially"
-          },
-          {
-            "type": "STRING",
-            "value": "finally"
-          },
-          {
-            "type": "STRING",
-            "value": "rec"
-          },
-          {
-            "type": "STRING",
-            "value": "co"
-          }
-        ]
+        "type": "SYMBOL",
+        "name": "id"
       }
     },
     "qconstructor": {

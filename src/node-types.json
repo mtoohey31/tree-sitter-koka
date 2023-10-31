@@ -287,11 +287,6 @@
     }
   },
   {
-    "type": "behind",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "binder",
     "named": true,
     "fields": {},
@@ -2690,7 +2685,7 @@
     "fields": {},
     "children": {
       "multiple": false,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "id",
@@ -2919,7 +2914,7 @@
   },
   {
     "type": "behind",
-    "named": false
+    "named": true
   },
   {
     "type": "c",
@@ -2967,10 +2962,6 @@
   },
   {
     "type": "extern",
-    "named": false
-  },
-  {
-    "type": "file",
     "named": false
   },
   {
@@ -3103,10 +3094,6 @@
   },
   {
     "type": "return",
-    "named": false
-  },
-  {
-    "type": "scoped",
     "named": false
   },
   {

@@ -83,8 +83,8 @@ val foo = "bar"
 raw string
 ===========
 
-val foo = r"bar";
-val foo = r#"bar"#;
+val foo = r"bar"
+val foo = r#"bar"#
 val foo = r###"bar"##baz"###
 
 ---
@@ -140,9 +140,8 @@ val foo = r###"bar"##baz"###
 fun
 ====
 
-fun main() {
- return 0
-}
+fun main()
+  return 0
 
 ---
 

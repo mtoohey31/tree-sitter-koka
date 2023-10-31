@@ -444,29 +444,7 @@ module.exports = grammar({
     qidentifier: ($) => prec.right(choice($.qvarid, $.qidop, $.identifier)),
     identifier: ($) => choice($.varid, $.idop),
     qvarid: ($) => $.qid,
-    varid: ($) =>
-      prec.right(
-        choice(
-          $.id,
-          "c",
-          "cs",
-          "js",
-          "file",
-          "inline",
-          "noinline",
-          "open",
-          "extend",
-          "linear",
-          "behind",
-          "value",
-          "reference",
-          "scoped",
-          "initially",
-          "finally",
-          "rec",
-          "co",
-        ),
-      ),
+    varid: ($) => prec.right($.id),
     qconstructor: ($) => choice($.conid, $.qconid),
 
     // Matching
