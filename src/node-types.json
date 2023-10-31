@@ -315,13 +315,9 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "semis",
-          "named": true
-        },
         {
           "type": "statements1",
           "named": true
@@ -447,7 +443,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
         {
@@ -456,10 +452,6 @@
         },
         {
           "type": "sconparams",
-          "named": true
-        },
-        {
-          "type": "semis",
           "named": true
         }
       ]
@@ -505,15 +497,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
           "type": "constructors1",
-          "named": true
-        },
-        {
-          "type": "semis1",
           "named": true
         }
       ]
@@ -533,10 +521,6 @@
         },
         {
           "type": "constructors1",
-          "named": true
-        },
-        {
-          "type": "semis1",
           "named": true
         }
       ]
@@ -643,15 +627,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
         {
           "type": "externstats1",
-          "named": true
-        },
-        {
-          "type": "semis",
           "named": true
         }
       ]
@@ -716,7 +696,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
@@ -725,10 +705,6 @@
         },
         {
           "type": "externimps1",
-          "named": true
-        },
-        {
-          "type": "semis",
           "named": true
         }
       ]
@@ -748,10 +724,6 @@
         },
         {
           "type": "externimps1",
-          "named": true
-        },
-        {
-          "type": "semis1",
           "named": true
         }
       ]
@@ -799,10 +771,6 @@
         },
         {
           "type": "externstats1",
-          "named": true
-        },
-        {
-          "type": "semis1",
           "named": true
         }
       ]
@@ -873,10 +841,6 @@
         },
         {
           "type": "externvals1",
-          "named": true
-        },
-        {
-          "type": "semis1",
           "named": true
         }
       ]
@@ -1310,10 +1274,6 @@
         {
           "type": "matchrules1",
           "named": true
-        },
-        {
-          "type": "semis1",
-          "named": true
         }
       ]
     }
@@ -1335,15 +1295,7 @@
           "named": true
         },
         {
-          "type": "semis1",
-          "named": true
-        },
-        {
           "type": "topdecl",
-          "named": true
-        },
-        {
-          "type": "topdecls1",
           "named": true
         }
       ]
@@ -1352,21 +1304,7 @@
   {
     "type": "moduledecl",
     "named": false,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "semi",
-          "named": true
-        },
-        {
-          "type": "semis",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "modulepath",
@@ -1526,19 +1464,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
         {
           "type": "opclauses1",
-          "named": true
-        },
-        {
-          "type": "semis",
-          "named": true
-        },
-        {
-          "type": "semis1",
           "named": true
         }
       ]
@@ -1558,10 +1488,6 @@
         },
         {
           "type": "opclausex",
-          "named": true
-        },
-        {
-          "type": "semis1",
           "named": true
         }
       ]
@@ -1595,15 +1521,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
         {
           "type": "operations",
-          "named": true
-        },
-        {
-          "type": "semis",
           "named": true
         }
       ]
@@ -1654,10 +1576,6 @@
         },
         {
           "type": "operations",
-          "named": true
-        },
-        {
-          "type": "semis1",
           "named": true
         }
       ]
@@ -2023,15 +1941,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
         {
           "type": "modulepath",
-          "named": true
-        },
-        {
-          "type": "semis",
           "named": true
         }
       ]
@@ -2238,53 +2152,6 @@
         {
           "type": "sconparams",
           "named": true
-        },
-        {
-          "type": "semis1",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "semi",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "semis",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "semi",
-          "named": true
-        },
-        {
-          "type": "semis",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "semis1",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "semi",
-          "named": true
-        },
-        {
-          "type": "semis1",
-          "named": true
         }
       ]
     }
@@ -2343,10 +2210,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "semis1",
-          "named": true
-        },
         {
           "type": "statement",
           "named": true
@@ -2527,29 +2390,6 @@
     }
   },
   {
-    "type": "topdecls1",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "semis1",
-          "named": true
-        },
-        {
-          "type": "topdecl",
-          "named": true
-        },
-        {
-          "type": "topdecls1",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "tparam",
     "named": true,
     "fields": {},
@@ -2653,15 +2493,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": false,
       "types": [
         {
           "type": "constructors",
-          "named": true
-        },
-        {
-          "type": "semis",
           "named": true
         }
       ]

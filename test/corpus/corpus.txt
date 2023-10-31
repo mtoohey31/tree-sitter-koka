@@ -1,0 +1,137 @@
+=======
+module
+=======
+
+module foo
+
+---
+
+(program
+ (modulepath
+  (varid
+   (id))))
+
+================
+long modulepath
+================
+
+module foo/bar/baz
+
+---
+
+(program
+ (modulepath
+  (qvarid
+   (qid
+    (id)
+    (id)
+    (id)))))
+
+===========
+simple var
+===========
+
+val foo = bar;
+
+---
+
+(program
+ (topdecl
+  (puredecl
+   (binder
+    (identifier
+     (varid
+      (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id))))))))))))))
+
+=======
+string
+=======
+
+val foo = "bar";
+
+---
+
+(program
+ (topdecl
+  (puredecl
+   (binder
+    (identifier
+     (varid
+      (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (literal
+            (string))))))))))))
+
+===========
+raw string
+===========
+
+val foo = r"bar";
+val foo = r#"bar"#;
+val foo = r###"bar"##baz"###;
+
+---
+
+(program
+ (topdecl
+  (puredecl
+   (binder
+    (identifier
+     (varid
+      (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (literal
+            (string)))))))))))
+ (topdecl
+  (puredecl
+   (binder
+    (identifier
+     (varid
+      (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (literal
+            (string)))))))))))
+ (topdecl
+  (puredecl
+   (binder
+    (identifier
+     (varid
+      (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (literal
+            (string))))))))))))
