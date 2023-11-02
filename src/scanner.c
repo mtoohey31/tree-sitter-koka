@@ -52,6 +52,92 @@ static inline void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
 
 static inline void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
 
+static inline bool in_range(char c, char min, char max) {
+  return min <= c && c <= max;
+}
+
+static inline bool resolve_maybe_start_cont(TSLexer *lexer) {
+  switch (lexer->lookahead) {
+  case '>': // Excluding ">>", ">|<"
+    advance(lexer);
+    switch (lexer->lookahead) {
+    case '>': // ">>"
+      return false;
+
+    case '|':
+      advance(lexer);
+      return lexer->lookahead != '<'; // ">|<"
+
+    default:
+      return true;
+    }
+
+  case '<': // Also "<-", excluding "<<"
+    advance(lexer);
+    return lexer->lookahead != '<';
+
+  case 't': // For "then"
+  case 'e': // For "else" and "elif"
+    break;
+
+  default:
+    return false;
+  }
+
+  char word[4];
+  for (size_t i = 0; i < 4; i++) {
+    word[i] = lexer->lookahead;
+    advance(lexer);
+  }
+  if (strncmp(word, "then", 4) != 0 && strncmp(word, "else", 4) != 0 &&
+      strncmp(word, "elif", 4) != 0) {
+    // Then the starting characters don't match one of the possible start
+    // continuation characters, so return.
+    return false;
+  }
+  if (in_range(lexer->lookahead, 'a', 'z') ||
+      in_range(lexer->lookahead, 'A', 'Z') ||
+      in_range(lexer->lookahead, '0', '9')) {
+    // Then this is an identifier that starts with one of the keywords but then
+    // continues with more characters, and so isn't a character.
+    return false;
+  }
+  if (lexer->lookahead != '\'') {
+    // Then the text stops there so it is a keyword.
+    return true;
+  }
+  // BUG: In this case it's "keyword'", and the '\'' might be part of the end
+  // of the identifier, or instead it could be the start of a char literal,
+  // in which case we're crying cause we basically have to understand the
+  // whole tree after this point, cause maybe it's something cursed like:
+  // "else'+'-'*'/'...". We'll just do our best...
+  advance(lexer);
+  bool in_char_is_op = false;
+  switch (lexer->lookahead) {
+  case '\\':
+    advance(lexer);
+
+  case '$':
+  case '%':
+  case '&':
+  case '*':
+  case '+':
+  case '~':
+  case '!':
+  case '^':
+  case '#':
+  case '=':
+  case '.':
+  case ':':
+  case '-':
+  case '?':
+    in_char_is_op = true;
+    break;
+  }
+  advance(lexer);
+  return lexer->lookahead != '\'' || !in_char_is_op;
+}
+
 void *tree_sitter_koka_external_scanner_create() {
   struct scanner *scanner = malloc(sizeof(struct scanner));
   scanner_reset(scanner);
@@ -196,6 +282,9 @@ AFTER_WHITESPACE:
   case ']':
   case '{':
   case '}':
+  case ':': // Also ":="
+  case '-': // Also "->"
+  case '|': // Also "||"
     // On this branch, we're sure that the token we encountered is a start
     // continuation token.
     is_start_cont = true;
@@ -203,9 +292,6 @@ AFTER_WHITESPACE:
 
   case '>': // Excluding ">>", ">|<"
   case '<': // Also "<-", excluding "<<"
-  case ':': // Also ":="
-  case '-': // Also "->"
-  case '|': // Also "||"
   case 't': // For "then"
   case 'e': // For "else" and "elif"
     // On this branch, we're not sure, but it might be. Note that the lookahead
@@ -225,28 +311,24 @@ AFTER_WHITESPACE:
     int prev_indent_length = scanner->layout_stack != NULL
                                  ? scanner->layout_stack->indent_length
                                  : 0;
-    if (valid_symbols[OpenBrace] && prev_indent_length < indent_length &&
-        !is_start_cont) {
-      // TODO: Check maybe_start_cont.
+    if (prev_indent_length < indent_length && valid_symbols[OpenBrace] &&
+        !is_start_cont &&
+        (!maybe_start_cont || !resolve_maybe_start_cont(lexer))) {
       scanner_push_indent(scanner, indent_length);
       lexer->result_symbol = OpenBrace;
       return true;
-    }
-
-    if (valid_symbols[Semicolon] && valid_symbols[CloseBrace] &&
-        prev_indent_length > indent_length && lexer->lookahead != '}') {
-      scanner_pop_indent(scanner);
-      lexer->result_symbol = Semicolon;
-      scanner->report_close_brace_after_semi_insert = true;
-      return true;
-    }
-
-    if (valid_symbols[Semicolon] && prev_indent_length == indent_length &&
-        !is_start_cont) {
-      // TODO: Check maybe_start_cont.
+    } else if (prev_indent_length == indent_length &&
+               valid_symbols[Semicolon] && !is_start_cont &&
+               (!maybe_start_cont || !resolve_maybe_start_cont(lexer))) {
       lexer->result_symbol = Semicolon;
       lexer->mark_end(lexer);
       advance(lexer);
+      return true;
+    } else if (prev_indent_length > indent_length && valid_symbols[Semicolon] &&
+               valid_symbols[CloseBrace] && lexer->lookahead != '}') {
+      scanner_pop_indent(scanner);
+      lexer->result_symbol = Semicolon;
+      scanner->report_close_brace_after_semi_insert = true;
       return true;
     }
   }

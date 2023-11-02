@@ -355,6 +355,228 @@ val foo = a
              (varid
               (id)))))))))))))))
 
+===============================
+advanced keyword continuations
+===============================
+
+val a = if b
+  then c
+  elif d
+  then e
+  else f
+val a = if b
+  then'c'
+  elsed
+
+---
+
+(program
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (ifexpr
+        (ntlexpr
+         (ntlopexpr
+          (ntlprefixexpr
+           (ntlappexpr
+            (atom
+             (qidentifier
+              (identifier
+               (varid
+                (id)))))))))
+        (blockexpr
+         (expr
+          (basicexpr
+           (opexpr
+            (prefixexpr
+             (appexpr
+              (atom
+               (qidentifier
+                (identifier
+                 (varid
+                  (id)))))))))))
+        (elifs
+         (ntlexpr
+          (ntlopexpr
+           (ntlprefixexpr
+            (ntlappexpr
+             (atom
+              (qidentifier
+               (identifier
+                (varid
+                 (id)))))))))
+        (blockexpr
+         (expr
+          (basicexpr
+           (opexpr
+            (prefixexpr
+             (appexpr
+              (atom
+               (qidentifier
+                (identifier
+                 (varid
+                  (id)))))))))))
+        (elifs
+         (blockexpr
+          (expr
+           (basicexpr
+            (opexpr
+             (prefixexpr
+              (appexpr
+               (atom
+                (qidentifier
+                 (identifier
+                  (varid
+                   (id)))))))))))))))))))
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (ifexpr
+        (ntlexpr
+         (ntlopexpr
+          (ntlprefixexpr
+           (ntlappexpr
+            (atom
+             (qidentifier
+              (identifier
+               (varid
+                (id)))))))))
+        (blockexpr
+         (expr
+          (basicexpr
+           (opexpr
+            (prefixexpr
+             (appexpr
+              (appexpr
+               (atom
+                (literal
+                 (char))))
+              (block
+               (statements1
+                (statement
+                 (basicexpr
+                  (opexpr
+                   (prefixexpr
+                    (appexpr
+                     (atom
+                      (qidentifier
+                       (identifier
+                        (varid
+                         (id))))))))))))))))))))))))))
+
+================================
+advanced operator continuations
+================================
+
+val a = b
+  < c
+val a = b
+  >| d
+val a = b
+  > d
+
+---
+
+(program
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (qidentifier
+             (identifier
+              (varid
+               (id))))))))
+        (qoperator
+         (op
+          (symbols)))
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))))))))
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (qidentifier
+             (identifier
+              (varid
+               (id))))))))
+        (qoperator
+         (op
+          (symbols)))
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))))))))
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (qidentifier
+             (identifier
+              (varid
+               (id))))))))
+        (qoperator
+         (op
+          (symbols)))
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))))))))))
+
 ==================
 braced modulebody
 ==================
