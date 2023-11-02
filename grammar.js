@@ -19,6 +19,7 @@ module.exports = grammar({
     [$.ntlprefixexpr, $.ntlappexpr],
     [$.ntlexpr, $.ntlopexpr],
   ],
+  word: ($) => $.id,
   rules: {
     // Program
     program: ($) =>
@@ -625,8 +626,11 @@ module.exports = grammar({
       ),
     _sign: (_) => "-",
     conid: ($) =>
-      prec.right(seq($._upper, repeat($._idchar), repeat($._final))),
-    id: ($) => prec.right(seq($._lower, repeat($._idchar), repeat($._final))),
+      alias(
+        prec.right(seq($._upper, repeat($._idchar), repeat($._final))),
+        $.id,
+      ),
+    id: (_) => /[a-z][a-zA-Z0-9]*'*/, // seq($._lower, repeat($._idchar), repeat($._final))
     _idchar: ($) => choice($._letter, $._digit, "_", "-"),
     _hexesc: ($) =>
       choice(

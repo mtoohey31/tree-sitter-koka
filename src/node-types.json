@@ -446,7 +446,17 @@
   {
     "type": "conid",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "id",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "conparams",

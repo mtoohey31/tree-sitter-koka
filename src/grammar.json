@@ -1,5 +1,6 @@
 {
   "name": "koka",
+  "word": "id",
   "rules": {
     "program": {
       "type": "SEQ",
@@ -5559,58 +5560,40 @@
       "value": "-"
     },
     "conid": {
-      "type": "PREC_RIGHT",
-      "value": 0,
+      "type": "ALIAS",
       "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "_upper"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
+        "type": "PREC_RIGHT",
+        "value": 0,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
               "type": "SYMBOL",
-              "name": "_idchar"
+              "name": "_upper"
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_idchar"
+              }
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_final"
+              }
             }
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_final"
-            }
-          }
-        ]
-      }
+          ]
+        }
+      },
+      "named": true,
+      "value": "id"
     },
     "id": {
-      "type": "PREC_RIGHT",
-      "value": 0,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "_lower"
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_idchar"
-            }
-          },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_final"
-            }
-          }
-        ]
-      }
+      "type": "PATTERN",
+      "value": "[a-z][a-zA-Z0-9]*'*"
     },
     "_idchar": {
       "type": "CHOICE",
