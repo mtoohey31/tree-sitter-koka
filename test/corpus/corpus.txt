@@ -289,7 +289,7 @@ var bar := baz
               (id)))))))))))))))
 
 ========================================
-no trailing newline semicolon insertion
+no semis no trailing newline
 ========================================
 
 val foo = bar
@@ -314,3 +314,47 @@ val foo = bar
             (identifier
              (varid
               (id)))))))))))))))
+
+==================
+braced modulebody
+==================
+
+module foo/bar {
+  infixl 1 (>>=)
+
+  pub val a = 0
+}
+
+---
+
+(program
+ (modulepath
+  (qvarid
+   (qid
+    (id)
+    (id))))
+ (modulebody
+  (fixitydecl
+   (fixity
+    (int))
+   (oplist1
+    (identifier
+     (idop
+      (symbols))))))
+ (modulebody
+  (topdecl
+   (pub)
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (literal
+            (int)))))))))))))

@@ -14,12 +14,14 @@ struct scanner {
   struct layout_stack_entry *layout_stack;
   bool report_close_brace_after_semi_insert;
   bool eof_semi_inserted;
+  bool push_layout_stack_after_open_brace;
 };
 
 void scanner_reset(struct scanner *scanner) {
   scanner->layout_stack = NULL;
   scanner->report_close_brace_after_semi_insert = false;
   scanner->eof_semi_inserted = false;
+  scanner->push_layout_stack_after_open_brace = false;
 }
 
 void scanner_push_indent(struct scanner *scanner, int indent_length) {
@@ -75,10 +77,10 @@ void tree_sitter_koka_external_scanner_destroy(void *payload) {
 unsigned tree_sitter_koka_external_scanner_serialize(void *payload,
                                                      char *buffer) {
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-  _Static_assert(sizeof(bool) * 2 <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE,
+  _Static_assert(sizeof(bool) * 3 <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE,
                  "serialization size is too small");
 #else
-  assert(sizeof(bool) * 2 <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE &&
+  assert(sizeof(bool) * 3 <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE &&
          "serialization size is too small");
 #endif
 
@@ -86,12 +88,13 @@ unsigned tree_sitter_koka_external_scanner_serialize(void *payload,
 
   ((bool *)buffer)[0] = scanner->report_close_brace_after_semi_insert;
   ((bool *)buffer)[1] = scanner->eof_semi_inserted;
-  int length = sizeof(bool) * 2;
+  ((bool *)buffer)[2] = scanner->push_layout_stack_after_open_brace;
+  int length = sizeof(bool) * 3;
 
   // BUG: If we run out of space, there's nothing else we can do other than drop
   // indent levels. We shouldn't ever have that much indents in real life
   // though so it's fine.
-  for (int *write = (int *)(&((bool *)buffer)[2]);
+  for (int *write = (int *)(&((bool *)buffer)[3]);
        length < TREE_SITTER_SERIALIZATION_BUFFER_SIZE;
        write++, length += sizeof(int)) {
     *write = scanner_pop_indent(scanner);
@@ -116,10 +119,11 @@ void tree_sitter_koka_external_scanner_deserialize(void *payload,
     return;
   }
 
-  assert(length >= sizeof(bool) * 2 && "invalid length");
+  assert(length >= sizeof(bool) * 3 && "invalid length");
   scanner->report_close_brace_after_semi_insert = ((bool *)buffer)[0];
   scanner->eof_semi_inserted = ((bool *)buffer)[1];
-  for (int *read = (int *)(&((bool *)buffer)[2]);
+  scanner->push_layout_stack_after_open_brace = ((bool *)buffer)[2];
+  for (int *read = (int *)(&((bool *)buffer)[3]);
        ((char *)read) - buffer < length; read++) {
     scanner_push_indent(scanner, *read);
   }
@@ -175,6 +179,11 @@ bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
   }
 
 AFTER_WHITESPACE:
+  if (scanner->push_layout_stack_after_open_brace) {
+    scanner_push_indent(scanner,
+                        found_eol ? indent_length : lexer->get_column(lexer));
+    scanner->push_layout_stack_after_open_brace = false;
+  }
   if (found_eol) {
     int prev_indent_length = scanner->layout_stack != NULL
                                  ? scanner->layout_stack->indent_length
@@ -216,6 +225,10 @@ AFTER_WHITESPACE:
     lexer->result_symbol = OpenBrace;
     advance(lexer);
     lexer->mark_end(lexer);
+    assert(!scanner->push_layout_stack_after_open_brace &&
+           "encountered '{' before layout stack push for previous '{' was "
+           "handled");
+    scanner->push_layout_stack_after_open_brace = true;
     return true;
 
   case '}':
@@ -223,6 +236,7 @@ AFTER_WHITESPACE:
       break;
     }
 
+    scanner_pop_indent(scanner);
     lexer->result_symbol = Semicolon;
     lexer->mark_end(lexer);
     scanner->report_close_brace_after_semi_insert = true;
