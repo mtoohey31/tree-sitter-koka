@@ -113,7 +113,7 @@
                         }
                       ]
                     },
-                    "named": false,
+                    "named": true,
                     "value": "modulebody"
                   },
                   {
@@ -200,7 +200,7 @@
                         }
                       ]
                     },
-                    "named": false,
+                    "named": true,
                     "value": "modulebody"
                   }
                 ]
@@ -6665,7 +6665,7 @@
                         }
                       ]
                     },
-                    "named": false,
+                    "named": true,
                     "value": "esc"
                   },
                   {
@@ -6683,7 +6683,7 @@
                         }
                       ]
                     },
-                    "named": false,
+                    "named": true,
                     "value": "esc"
                   },
                   {
@@ -6738,7 +6738,7 @@
                 "type": "SYMBOL",
                 "name": "_hexesc"
               },
-              "named": false,
+              "named": true,
               "value": "esc"
             },
             {
@@ -6764,7 +6764,7 @@
                 "type": "SYMBOL",
                 "name": "_charesc"
               },
-              "named": false,
+              "named": true,
               "value": "esc"
             },
             {

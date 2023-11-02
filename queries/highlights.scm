@@ -119,7 +119,7 @@
   (char)
 ] @string
 
-; TODO: (esc) @constant.character.escape
+(esc) @constant.character.escape
 
 (float) @constant.numeric.float
 (int) @constant.numeric.integer

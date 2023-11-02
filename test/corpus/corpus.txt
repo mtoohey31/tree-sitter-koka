@@ -36,23 +36,24 @@ val foo = bar
 ---
 
 (program
- (topdecl
-  (puredecl
-   (binder
-    (identifier
-     (varid
-      (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id))))))))))))))
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+     (blockexpr
+      (expr
+       (basicexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (qidentifier
+             (identifier
+              (varid
+               (id)))))))))))))))
 
 =======
 string
@@ -63,21 +64,22 @@ val foo = "bar"
 ---
 
 (program
- (topdecl
-  (puredecl
-   (binder
-    (identifier
-     (varid
-      (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (literal
-            (string))))))))))))
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+     (blockexpr
+      (expr
+       (basicexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (literal
+             (string)))))))))))))
 
 ===========
 raw string
@@ -90,51 +92,52 @@ val foo = r###"bar"##baz"###
 ---
 
 (program
- (topdecl
-  (puredecl
-   (binder
-    (identifier
-     (varid
-      (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (literal
-            (string)))))))))))
- (topdecl
-  (puredecl
-   (binder
-    (identifier
-     (varid
-      (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (literal
-            (string)))))))))))
- (topdecl
-  (puredecl
-   (binder
-    (identifier
-     (varid
-      (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (literal
-            (string))))))))))))
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+     (blockexpr
+      (expr
+       (basicexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (literal
+             (string)))))))))))
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+     (blockexpr
+      (expr
+       (basicexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (literal
+             (string)))))))))))
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+     (blockexpr
+      (expr
+       (basicexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (literal
+             (string)))))))))))))
 
 ====
 fun
@@ -146,28 +149,29 @@ fun main()
 ---
 
 (program
- (topdecl
-  (puredecl
-   (funid
-    (identifier
-     (varid
-      (id))))
-   (funbody
-    (bodyexpr
-     (blockexpr
-      (expr
-       (block
-        (statements1
-         (statement
-          (returnexpr
-           (expr
-            (basicexpr
-             (opexpr
-              (prefixexpr
-               (appexpr
-                (atom
-                 (literal
-                  (int)))))))))))))))))))
+ (modulebody
+  (topdecl
+   (puredecl
+    (funid
+     (identifier
+      (varid
+       (id))))
+    (funbody
+     (bodyexpr
+      (blockexpr
+       (expr
+        (block
+         (statements1
+          (statement
+           (returnexpr
+            (expr
+             (basicexpr
+              (opexpr
+               (prefixexpr
+                (appexpr
+                 (atom
+                  (literal
+                   (int))))))))))))))))))))
 
 ============
 linecomment
@@ -186,22 +190,23 @@ val foo = 0 // another comment
  (linecomment)
  (linecomment)
  (linecomment)
- (topdecl
-  (puredecl
-   (binder
-    (identifier
-     (varid
-      (id))))
-   (blockexpr
-    (expr
-     (basicexpr
-      (opexpr
-       (prefixexpr
-        (appexpr
-         (atom
-          (literal
-           (int)))))))))))
- (linecomment))
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (literal
+            (int)))))))))))
+  (linecomment)))
 
 =============
 blockcomment
@@ -221,22 +226,23 @@ val foo = 0 /* another comment */
 (program
  (blockcomment)
  (blockcomment)
- (topdecl
-  (puredecl
-   (binder
-    (identifier
-     (varid
-      (id))))
-   (blockexpr
-    (expr
-     (basicexpr
-      (opexpr
-       (prefixexpr
-        (appexpr
-         (atom
-          (literal
-           (int)))))))))))
- (blockcomment)
- (blockcomment
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (literal
+            (int)))))))))))
+  (blockcomment)
   (blockcomment
-   (blockcomment))))
+   (blockcomment
+    (blockcomment)))))

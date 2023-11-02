@@ -36,7 +36,7 @@ module.exports = grammar({
                   repeat(seq($.fixitydecl, $._semis1)),
                   optional($._topdecls1),
                 ),
-                "modulebody",
+                $.modulebody,
               ),
               $._close_brace,
               optional($._semis),
@@ -49,7 +49,7 @@ module.exports = grammar({
                   repeat(seq($.fixitydecl, $._semis1)),
                   optional($._topdecls1),
                 ),
-                "modulebody",
+                $.modulebody,
               ),
             ),
           ),
@@ -740,8 +740,8 @@ module.exports = grammar({
           repeat(
             choice(
               $._graphicstr,
-              alias(seq("\\", $._hexesc), "esc"),
-              alias(seq("\\", $._charesc), "esc"),
+              alias(seq("\\", $._hexesc), $.esc),
+              alias(seq("\\", $._charesc), $.esc),
               $._utf8,
             ),
           ),
@@ -751,8 +751,8 @@ module.exports = grammar({
     char: ($) =>
       choice(
         seq("'", $._graphicchar, "'"),
-        seq("'", "\\", alias($._hexesc, "esc"), "'"),
-        seq("'", "\\", alias($._charesc, "esc"), "'"),
+        seq("'", "\\", alias($._hexesc, $.esc), "'"),
+        seq("'", "\\", alias($._charesc, $.esc), "'"),
         seq("'", $._utf8, "'"),
       ),
   },
