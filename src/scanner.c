@@ -48,15 +48,6 @@ int scanner_pop_indent(struct scanner *scanner) {
 // this...
 #define TABWIDTH 8
 
-// We have no knowledge of end continuation tokens because we rely on tree
-// sitter not to invoke the scanner with valid_symbols[Semicolon] == true when a
-// semicolon insertion wouldn't make sense (because of a potential continuation
-// as indicated by an end continuation token).
-const char *start_continuation_tokens[] = {
-    "$", "%", "&",  "*",  "+",    "@",    "!",    "\\", "^",  "~",
-    "-", "?", "||", ")",  ">",    "]",    ",",    "{",  "}",  "|",
-    ":", ".", "=",  ":=", "then", "else", "elif", "->", "<-", NULL};
-
 static inline void advance(TSLexer *lexer) { lexer->advance(lexer, false); }
 
 static inline void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
@@ -184,25 +175,75 @@ AFTER_WHITESPACE:
                         found_eol ? indent_length : lexer->get_column(lexer));
     scanner->push_layout_stack_after_open_brace = false;
   }
+
+  bool is_start_cont = false;
+  bool maybe_start_cont = false;
+  switch (lexer->lookahead) {
+  case '$':
+  case '%':
+  case '&':
+  case '*':
+  case '+':
+  case '@':
+  case '!':
+  case '\\':
+  case '^':
+  case '~':
+  case '?':
+  case '.':
+  case '=':
+  case ')':
+  case ']':
+  case '{':
+  case '}':
+    // On this branch, we're sure that the token we encountered is a start
+    // continuation token.
+    is_start_cont = true;
+    break;
+
+  case '>': // Excluding ">>", ">|<"
+  case '<': // Also "<-", excluding "<<"
+  case ':': // Also ":="
+  case '-': // Also "->"
+  case '|': // Also "||"
+  case 't': // For "then"
+  case 'e': // For "else" and "elif"
+    // On this branch, we're not sure, but it might be. Note that the lookahead
+    // token possibilities here are disjoint with those in the switch at the
+    // end, which is good because it means we can advance the lookahead to
+    // figure out what's going on, then skip the switch at the bottom because we
+    // know it wouldn't have produced anything.
+    maybe_start_cont = true;
+    break;
+
+  default:
+    // On this branch, we know the token can't be a start continuation token.
+    break;
+  };
+
   if (found_eol) {
     int prev_indent_length = scanner->layout_stack != NULL
                                  ? scanner->layout_stack->indent_length
                                  : 0;
-    if (valid_symbols[OpenBrace] && prev_indent_length < indent_length) {
+    if (valid_symbols[OpenBrace] && prev_indent_length < indent_length &&
+        !is_start_cont) {
+      // TODO: Check maybe_start_cont.
       scanner_push_indent(scanner, indent_length);
       lexer->result_symbol = OpenBrace;
       return true;
     }
 
     if (valid_symbols[Semicolon] && valid_symbols[CloseBrace] &&
-        prev_indent_length > indent_length) {
+        prev_indent_length > indent_length && lexer->lookahead != '}') {
       scanner_pop_indent(scanner);
       lexer->result_symbol = Semicolon;
       scanner->report_close_brace_after_semi_insert = true;
       return true;
     }
 
-    if (valid_symbols[Semicolon] && prev_indent_length == indent_length) {
+    if (valid_symbols[Semicolon] && prev_indent_length == indent_length &&
+        !is_start_cont) {
+      // TODO: Check maybe_start_cont.
       lexer->result_symbol = Semicolon;
       lexer->mark_end(lexer);
       advance(lexer);
@@ -216,6 +257,10 @@ AFTER_WHITESPACE:
     return true;
   }
 
+  if (maybe_start_cont) {
+    // See the comment on the branch of the switch that sets this.
+    return false;
+  }
   switch (lexer->lookahead) {
   case '{':
     if (!valid_symbols[OpenBrace]) {

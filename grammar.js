@@ -9,7 +9,7 @@ module.exports = grammar({
     $._semicolon,
     $._raw_string,
   ],
-  extras: ($) => [" ", "\t", "\n", $.linecomment, $.blockcomment],
+  extras: ($) => [" ", "\t", "\r", "\n", $.linecomment, $.blockcomment],
   conflicts: ($) => [
     // Context-free syntax doesn't specify operator precedences.
     [$.prefixexpr, $.appexpr],

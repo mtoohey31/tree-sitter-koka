@@ -6830,6 +6830,10 @@
     },
     {
       "type": "STRING",
+      "value": "\r"
+    },
+    {
+      "type": "STRING",
       "value": "\n"
     },
     {

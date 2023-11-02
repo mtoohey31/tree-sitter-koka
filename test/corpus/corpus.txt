@@ -315,6 +315,46 @@ val foo = bar
              (varid
               (id)))))))))))))))
 
+=================================
+no semis easy start continuation
+=================================
+
+val foo = a
+ + b
+
+---
+
+(program
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (opexpr
+         (prefixexpr
+          (appexpr
+           (atom
+            (qidentifier
+             (identifier
+              (varid
+               (id))))))))
+        (qoperator
+         (op
+          (symbols)))
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))))))))))
+
 ==================
 braced modulebody
 ==================
