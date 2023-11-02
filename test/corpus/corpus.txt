@@ -287,3 +287,30 @@ var bar := baz
             (identifier
              (varid
               (id)))))))))))))))
+
+========================================
+no trailing newline semicolon insertion
+========================================
+
+val foo = bar
+---
+
+(program
+ (modulebody
+  (topdecl
+   (puredecl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))))))))))
