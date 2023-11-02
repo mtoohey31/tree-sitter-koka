@@ -13,6 +13,10 @@ module.exports = grammar({
   conflicts: ($) => [
     // Context-free syntax doesn't specify operator precedences.
     [$.prefixexpr, $.appexpr],
+    // Necessary for allowing statements at the top level, which we want to do
+    // so this can be used to highlight code blocks.
+    [$.binder, $.pattern],
+    [$.puredecl, $.fundecl],
     // TODO: Investigate these.
     [$.float, $.int],
     [$.basicexpr, $.opexpr],
@@ -23,38 +27,41 @@ module.exports = grammar({
   rules: {
     // Program
     program: ($) =>
-      seq(
-        optional(seq(optional($._semis), "module", $.modulepath)),
-        alias(
-          choice(
-            seq(
-              $._open_brace,
-              optional($._semis),
-              alias(
-                seq(
-                  repeat(seq($.importdecl, $._semis1)),
-                  repeat(seq($.fixitydecl, $._semis1)),
-                  optional($._topdecls1),
+      choice(
+        seq(
+          optional(seq(optional($._semis), "module", $.modulepath)),
+          alias(
+            choice(
+              seq(
+                $._open_brace,
+                optional($._semis),
+                alias(
+                  seq(
+                    repeat(seq($.importdecl, $._semis1)),
+                    repeat(seq($.fixitydecl, $._semis1)),
+                    optional($._topdecls1),
+                  ),
+                  $.modulebody,
                 ),
-                $.modulebody,
+                $._close_brace,
+                optional($._semis),
               ),
-              $._close_brace,
-              optional($._semis),
-            ),
-            seq(
-              optional($._semis),
-              alias(
-                seq(
-                  repeat(seq($.importdecl, $._semis1)),
-                  repeat(seq($.fixitydecl, $._semis1)),
-                  optional($._topdecls1),
+              seq(
+                optional($._semis),
+                alias(
+                  seq(
+                    repeat(seq($.importdecl, $._semis1)),
+                    repeat(seq($.fixitydecl, $._semis1)),
+                    optional($._topdecls1),
+                  ),
+                  $.modulebody,
                 ),
-                $.modulebody,
               ),
             ),
+            "moduledecl",
           ),
-          "moduledecl",
         ),
+        seq(optional($._semis), $.statements1),
       ),
     importdecl: ($) =>
       choice(

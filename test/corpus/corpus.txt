@@ -246,3 +246,44 @@ val foo = 0 /* another comment */
   (blockcomment
    (blockcomment
     (blockcomment)))))
+
+====================
+top level statments
+====================
+
+with foo
+var bar := baz
+
+---
+
+(program
+ (statements1
+  (statements1
+   (statement
+    (withstat
+     (basicexpr
+      (opexpr
+       (prefixexpr
+        (appexpr
+         (atom
+          (qidentifier
+           (identifier
+            (varid
+             (id))))))))))))
+  (statement
+   (decl
+    (binder
+     (identifier
+      (varid
+       (id))))
+    (blockexpr
+     (expr
+      (basicexpr
+       (opexpr
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))))))))))

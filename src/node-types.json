@@ -1986,6 +1986,10 @@
         {
           "type": "modulepath",
           "named": true
+        },
+        {
+          "type": "statements1",
+          "named": true
         }
       ]
     }
