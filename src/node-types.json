@@ -321,6 +321,21 @@
     }
   },
   {
+    "type": "blockcomment",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "blockcomment",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "blockexpr",
     "named": true,
     "fields": {},
@@ -1169,6 +1184,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "linecomment",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "literal",
@@ -2765,6 +2785,10 @@
     }
   },
   {
+    "type": "\n",
+    "named": false
+  },
+  {
     "type": "!",
     "named": false
   },
@@ -2801,6 +2825,10 @@
     "named": false
   },
   {
+    "type": "*/",
+    "named": false
+  },
+  {
     "type": "+",
     "named": false
   },
@@ -2822,6 +2850,14 @@
   },
   {
     "type": "/",
+    "named": false
+  },
+  {
+    "type": "/*",
+    "named": false
+  },
+  {
+    "type": "//",
     "named": false
   },
   {

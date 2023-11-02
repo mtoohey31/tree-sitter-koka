@@ -9,6 +9,7 @@ module.exports = grammar({
     $._semicolon,
     $._raw_string,
   ],
+  extras: ($) => [" ", "\t", "\n", $.linecomment, $.blockcomment],
   conflicts: ($) => [
     // Context-free syntax doesn't specify operator precedences.
     [$.prefixexpr, $.appexpr],
@@ -651,6 +652,7 @@ module.exports = grammar({
     _final: (_) => "'",
     _graphicchar: (_) => /[ \x21-\x26\x28-\[\]-\x7E]/,
     _graphicstr: (_) => /[ \x21\x23-\[\]-\x7E]/,
+    _graphicline: (_) => /[\t \x21-\x7E]/,
     _uc: (_) => /[\x80-\xBF]/,
     _u2: ($) => seq(/[\xC2-\xDF]/, $._uc),
     _u3: ($) =>
@@ -667,6 +669,11 @@ module.exports = grammar({
         seq(/[\xF4][\x80-\x8F]/, $._uc, $._uc),
       ),
     _utf8: ($) => choice($._u2, $._u3, $._u4),
+
+    // Comments
+    linecomment: ($) => seq("//", repeat($._graphicline), "\n"),
+    blockcomment: ($) =>
+      seq("/*", repeat(choice(/[^*]|\*[^/]/, $.blockcomment)), "*/"),
 
     // Numbers
     float: ($) =>

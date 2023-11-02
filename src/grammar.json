@@ -5934,6 +5934,10 @@
       "type": "PATTERN",
       "value": "[ \\x21\\x23-\\[\\]-\\x7E]"
     },
+    "_graphicline": {
+      "type": "PATTERN",
+      "value": "[\\t \\x21-\\x7E]"
+    },
     "_uc": {
       "type": "PATTERN",
       "value": "[\\x80-\\xBF]"
@@ -6086,6 +6090,55 @@
         {
           "type": "SYMBOL",
           "name": "_u4"
+        }
+      ]
+    },
+    "linecomment": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "//"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_graphicline"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "\n"
+        }
+      ]
+    },
+    "blockcomment": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "/*"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "[^*]|\\*[^/]"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "blockcomment"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "*/"
         }
       ]
     },
@@ -6759,8 +6812,24 @@
   },
   "extras": [
     {
-      "type": "PATTERN",
-      "value": "\\s"
+      "type": "STRING",
+      "value": " "
+    },
+    {
+      "type": "STRING",
+      "value": "\t"
+    },
+    {
+      "type": "STRING",
+      "value": "\n"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "linecomment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "blockcomment"
     }
   ],
   "conflicts": [

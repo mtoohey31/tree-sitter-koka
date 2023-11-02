@@ -168,3 +168,75 @@ fun main()
                 (atom
                  (literal
                   (int)))))))))))))))))))
+
+============
+linecomment
+============
+
+// a comment
+
+// more
+// comments
+
+val foo = 0 // another comment
+
+---
+
+(program
+ (linecomment)
+ (linecomment)
+ (linecomment)
+ (topdecl
+  (puredecl
+   (binder
+    (identifier
+     (varid
+      (id))))
+   (blockexpr
+    (expr
+     (basicexpr
+      (opexpr
+       (prefixexpr
+        (appexpr
+         (atom
+          (literal
+           (int)))))))))))
+ (linecomment))
+
+=============
+blockcomment
+=============
+
+/* a comment */
+
+/* more
+ comments
+ */
+
+val foo = 0 /* another comment */
+
+/* a /* very /* nested */ comment */ structure */
+---
+
+(program
+ (blockcomment)
+ (blockcomment)
+ (topdecl
+  (puredecl
+   (binder
+    (identifier
+     (varid
+      (id))))
+   (blockexpr
+    (expr
+     (basicexpr
+      (opexpr
+       (prefixexpr
+        (appexpr
+         (atom
+          (literal
+           (int)))))))))))
+ (blockcomment)
+ (blockcomment
+  (blockcomment
+   (blockcomment))))

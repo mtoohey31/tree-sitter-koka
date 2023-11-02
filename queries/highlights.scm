@@ -126,4 +126,7 @@
 
 ; Comment
 
-; TODO: (comment) @comment
+[
+  (linecomment)
+  (blockcomment)
+] @comment
