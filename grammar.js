@@ -560,7 +560,7 @@ module.exports = grammar({
       ),
 
     // Comments
-    linecomment: (_) => /\/\/[\t \x21-\x7E]+\n/,
+    linecomment: (_) => /\/\/[^\n]+/,
     blockcomment: ($) =>
       seq("/*", repeat(choice(/[^*]|\*[^/]/, $.blockcomment)), "*/"),
 

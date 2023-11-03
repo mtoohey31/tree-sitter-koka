@@ -4781,7 +4781,7 @@
     },
     "linecomment": {
       "type": "PATTERN",
-      "value": "\\/\\/[\\t \\x21-\\x7E]+\\n"
+      "value": "\\/\\/[^\\n]+"
     },
     "blockcomment": {
       "type": "SEQ",

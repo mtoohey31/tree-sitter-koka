@@ -13,17 +13,17 @@ struct layout_stack_entry {
 struct scanner {
   struct layout_stack_entry *layout_stack;
   bool report_close_brace_after_semi_insert;
+  bool report_semi_after_close_brace_insert;
   bool eof_semi_inserted;
   bool push_layout_stack_after_open_brace;
-  bool hmm;
 };
 
 void scanner_reset(struct scanner *scanner) {
   scanner->layout_stack = NULL;
   scanner->report_close_brace_after_semi_insert = false;
+  scanner->report_semi_after_close_brace_insert = false;
   scanner->eof_semi_inserted = false;
   scanner->push_layout_stack_after_open_brace = false;
-  scanner->hmm = false;
 }
 
 void scanner_push_indent(struct scanner *scanner, int indent_length) {
@@ -128,9 +128,9 @@ unsigned tree_sitter_koka_external_scanner_serialize(void *payload,
   struct scanner *scanner = payload;
 
   ((bool *)buffer)[0] = scanner->report_close_brace_after_semi_insert;
-  ((bool *)buffer)[1] = scanner->eof_semi_inserted;
-  ((bool *)buffer)[2] = scanner->push_layout_stack_after_open_brace;
-  ((bool *)buffer)[3] = scanner->hmm;
+  ((bool *)buffer)[1] = scanner->report_semi_after_close_brace_insert;
+  ((bool *)buffer)[2] = scanner->eof_semi_inserted;
+  ((bool *)buffer)[3] = scanner->push_layout_stack_after_open_brace;
   int length = sizeof(bool) * 4;
 
   // BUG: If we run out of space, there's nothing else we can do other than drop
@@ -163,9 +163,9 @@ void tree_sitter_koka_external_scanner_deserialize(void *payload,
 
   assert(length >= sizeof(bool) * 4 && "invalid length");
   scanner->report_close_brace_after_semi_insert = ((bool *)buffer)[0];
-  scanner->eof_semi_inserted = ((bool *)buffer)[1];
-  scanner->push_layout_stack_after_open_brace = ((bool *)buffer)[2];
-  scanner->hmm = ((bool *)buffer)[3];
+  scanner->report_semi_after_close_brace_insert = ((bool *)buffer)[1];
+  scanner->eof_semi_inserted = ((bool *)buffer)[2];
+  scanner->push_layout_stack_after_open_brace = ((bool *)buffer)[3];
   for (int *read = (int *)(&((bool *)buffer)[4]);
        ((char *)read) - buffer < length; read++) {
     scanner_push_indent(scanner, *read);
@@ -177,16 +177,14 @@ bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
   struct scanner *scanner = payload;
   if (scanner->report_close_brace_after_semi_insert) {
     scanner->report_close_brace_after_semi_insert = false;
-    scanner->hmm = true;
+    scanner->report_semi_after_close_brace_insert = true;
     lexer->result_symbol = CloseBrace;
     return true;
   }
-  if (scanner->hmm) {
-    scanner->hmm = false;
+  if (scanner->report_semi_after_close_brace_insert) {
+    scanner->report_semi_after_close_brace_insert = false;
     lexer->result_symbol = Semi;
-
     advance(lexer);
-
     return true;
   }
 
@@ -289,7 +287,7 @@ AFTER_WHITESPACE:
       lexer->mark_end(lexer);
       return !maybe_start_cont || !resolve_maybe_start_cont(lexer);
     } else if (prev_indent_length > indent_length && valid_symbols[Semi] &&
-               valid_symbols[CloseBrace] && lexer->lookahead != '}') {
+               lexer->lookahead != '}') {
       scanner_pop_indent(scanner);
       lexer->result_symbol = Semi;
       scanner->report_close_brace_after_semi_insert = true;
