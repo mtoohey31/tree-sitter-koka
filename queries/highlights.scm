@@ -1,5 +1,42 @@
 ; Follows helix precedence; order may need to be reversed for other editors.
 
+; Function calls
+
+(appexpr
+  function: (appexpr
+    (atom
+      (qidentifier)) @function))
+
+(appexpr
+  function: (appexpr
+    field: (atom
+      (qidentifier) @function.method)))
+
+[
+  "initially"
+  "finally"
+] @function.special
+
+; Function definitions
+
+(puredecl
+  (funid
+    (identifier) @function))
+
+(operation
+  (identifier) @function)
+
+; Identifiers
+
+(puredecl
+  (binder
+    (identifier) @constant))
+
+(modulepath
+  [(qvarid) (varid)] @namespace)
+
+(varid) @variable
+
 ; Operators
 
 [
@@ -10,52 +47,25 @@
 
 ; Keywords
 
-; TODO: Split these up more if possible.
 [
-  "pub"
-  "infix"
-  "infixl"
-  "infixr"
-  "rec"
-
-  ; specialid
-  "co"
-  "open"
-  "extend"
+  "as"
   "behind"
-  "linear"
-  "value"
-  "reference"
-  "inline"
-  "noinline"
-  "initially"
-  "finally"
-  "c"
-  "cs"
-  ; "file"
-
-  "as" ; pattern matching
-  "con" ; type constructors
-  "ctl" ; effect controls
-
-  "extern"
-
-  "final" ; controlmod
-
+  (externtarget)
   "forall"
   "handle"
   "handler"
   "in"
+  "infix"
+  "infixl"
+  "infixr"
   "mask"
-  "named"
-  "override"
-  "raw"
-  ; "scoped"
+  "pub"
   "some"
-
 ] @keyword
 
 [
+  "con"
+  "ctl"
   "fn"
   "fun"
 ] @keyword.function
@@ -86,30 +96,42 @@
 
 [
   "abstract"
+  "co"
+  "extend"
+  "extern"
+  "final"
+  "inline"
+  "linear"
+  "named"
+  "noinline"
+  "open"
+  "override"
+  "raw"
+  "rec"
+  "reference"
+  "value"
 ] @keyword.storage.modifier
 
 "return" @keyword.control.return
 
 ; Delimiters
 
-; TODO: Look into how this interacts with operators.
 [
   ","
   "->"
   "."
   ":"
   "::"
-  ; TODO: ;
   "<-"
 ] @punctuation.delimiter
 
 [
+  "<"
+  ">"
   "("
   ")"
   "["
   "]"
-  ; TODO: "{"
-  ; TODO: "}"
 ] @punctuation.bracket
 
 ; Literals

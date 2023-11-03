@@ -329,15 +329,15 @@ module.exports = grammar({
     appexpr: ($) =>
       choice(
         seq(
-          $.appexpr,
+          field("function", $.appexpr),
           choice(
             seq("(", optional($.arguments), ")"),
             seq("[", optional($.arguments), "]"),
-            seq(".", $.atom),
             seq($.block),
             seq($.fnexpr),
           ),
         ),
+        seq($.appexpr, ".", field("field", $.atom)),
         $.atom,
       ),
     ntlexpr: ($) => $.ntlopexpr,
