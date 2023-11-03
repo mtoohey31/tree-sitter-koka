@@ -27,6 +27,341 @@ module foo/bar/baz
     (id)
     (id)))))
 
+========
+imports
+========
+
+import foo
+import foo/bar/baz
+
+import foo = bar
+import foo/bar/baz = quux
+
+---
+
+(program
+ (modulebody
+  (importdecl
+   (modulepath
+    (varid
+     (id))))
+  (importdecl
+   (modulepath
+    (qvarid
+     (qid
+      (id)
+      (id)
+      (id)))))
+  (importdecl
+   (modulepath
+    (varid
+     (id)))
+    (modulepath
+     (varid
+      (id))))
+  (importdecl
+   (modulepath
+    (qvarid
+     (qid
+      (id)
+      (id)
+      (id))))
+    (modulepath
+     (varid
+      (id))))))
+
+=======
+fixity
+=======
+
+pub infixr 80  (^)
+pub infixl 70  (*), (%), (/), cdiv, cmod
+pub infixl 60  (+), (-)
+pub infix  40  (!=), (==), (<=), (>=), (<), (>)
+
+---
+
+(program
+  (modulebody
+    (fixitydecl
+      (fixity
+        (int))
+      (oplist
+        (identifier
+          (idop
+            (symbols)))))
+    (fixitydecl
+      (fixity
+        (int))
+      (oplist
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (varid
+            (id)))
+        (identifier
+          (varid
+            (id)))))
+    (fixitydecl
+      (fixity
+        (int))
+      (oplist
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (idop
+            (symbols)))))
+    (fixitydecl
+      (fixity
+        (int))
+      (oplist
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (idop
+            (symbols)))
+        (identifier
+          (idop
+            (symbols)))))))
+
+========
+externs
+========
+
+extern import
+  cs file "regex-inline.cs"
+  js file "regex-inline.js"
+  c  file "regex-inline.c"
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (externdecl
+        (externimpbody
+          (externimp
+            (externtarget)
+            (varid
+              (id))
+            (string))
+          (externimp
+            (externtarget)
+            (varid
+              (id))
+            (string))
+          (externimp
+            (externtarget)
+            (varid
+              (id))
+            (string)))))))
+
+==========
+typedecls
+==========
+
+pub open type exception-info
+  ExnError      // Generic error
+  ExnAssert
+  ExnTodo
+  ExnRange
+  ExnPattern( location : string, definition : string )
+  ExnSystem( errno : int )
+  ExnInternal( name : string )
+
+pub value struct exception( message :string, info :exception-info )
+
+pub effect exn
+  // Throw an exception
+  ctl throw-exn( exn : exception ) : a
+
+; TODO: Fix this ---
+
+(program
+  (modulebody
+    (topdecl
+      (typedecl
+        (typemod)
+        (typeid
+          (varid
+            (id)))
+        (typebody
+          (constructors
+            (constructors1
+              (constructors1
+                (constructors1
+                  (constructors1
+                    (constructors1
+                      (constructors1
+                        (constructor
+                          (conid
+                            (id)
+                            (id
+                              (linecomment)))))
+                      (constructor
+                        (conid
+                          (id)
+                          (id))))
+                    (constructor
+                      (conid
+                        (id)
+                        (id))))
+                  (constructor
+                    (conid
+                      (id)
+                      (id))
+                    (conparams
+                      (parameters1
+                        (parameters1
+                          (parameter
+                            (paramid
+                              (identifier
+                                (varid
+                                  (id))))
+                            (type
+                              (tarrow
+                                (tatomic
+                                  (tbasic
+                                    (typeapp
+                                      (typecon
+                                        (varid
+                                          (id))))))))))
+                        (parameter
+                          (paramid
+                            (identifier
+                              (varid
+                                (id))))
+                          (type
+                            (tarrow
+                              (tatomic
+                                (tbasic
+                                  (typeapp
+                                    (typecon
+                                      (varid
+                                        (id)))))))))))))
+                (constructor
+                  (conid
+                    (id)
+                    (id))
+                  (conparams
+                    (parameters1
+                      (parameter
+                        (paramid
+                          (identifier
+                            (varid
+                              (id))))
+                        (type
+                          (tarrow
+                            (tatomic
+                              (tbasic
+                                (typeapp
+                                  (typecon
+                                    (varid
+                                      (id)))))))))))))
+              (constructor
+                (conid
+                  (id)
+                  (id))
+                (conparams
+                  (parameters1
+                    (parameter
+                      (paramid
+                        (identifier
+                          (varid
+                            (id))))
+                      (type
+                        (tarrow
+                          (tatomic
+                            (tbasic
+                              (typeapp
+                                (typecon
+                                  (varid
+                                    (id)))))))))))))))))
+    (topdecl
+      (typedecl
+        (structmod)
+        (typeid
+          (varid
+            (id)))
+        (conparams
+          (parameters1
+            (parameters1
+              (parameter
+                (paramid
+                  (identifier
+                    (varid
+                      (id))))
+                (type
+                  (tarrow
+                    (tatomic
+                      (tbasic
+                        (typeapp
+                          (typecon
+                            (varid
+                              (id))))))))))
+            (parameter
+              (paramid
+                (identifier
+                  (varid
+                    (id))))
+              (type
+                (tarrow
+                  (tatomic
+                    (tbasic
+                      (typeapp
+                        (typecon
+                          (varid
+                            (id)))))))))))))
+    (topdecl
+      (typedecl
+        (varid
+          (id))
+        (opdecls
+          (linecomment)
+          (operations
+            (operation
+              (identifier
+                (varid
+                  (id)))
+              (parameters1
+                (parameter
+                  (paramid
+                    (identifier
+                      (varid
+                        (id))))
+                  (type
+                    (tarrow
+                      (tatomic
+                        (tbasic
+                          (typeapp
+                            (typecon
+                              (varid
+                                (id))))))))))
+              (tatomic
+                (tbasic
+                  (typeapp
+                    (typecon
+                      (varid
+                        (id)))))))))))))
+
 ===========
 simple var
 ===========
@@ -161,7 +496,7 @@ fun main()
       (blockexpr
        (expr
         (block
-         (statements1
+         (statements
           (statement
            (returnexpr
             (expr
@@ -257,19 +592,18 @@ var bar := baz
 ---
 
 (program
- (statements1
-  (statements1
-   (statement
-    (withstat
-     (basicexpr
-      (opexpr
-       (prefixexpr
-        (appexpr
-         (atom
-          (qidentifier
-           (identifier
-            (varid
-             (id))))))))))))
+ (statements
+  (statement
+   (withstat
+    (basicexpr
+     (opexpr
+      (prefixexpr
+       (appexpr
+        (atom
+         (qidentifier
+          (identifier
+           (varid
+            (id)))))))))))
   (statement
    (decl
     (binder
@@ -288,9 +622,9 @@ var bar := baz
              (varid
               (id)))))))))))))))
 
-========================================
+=============================
 no semis no trailing newline
-========================================
+=============================
 
 val foo = bar
 ---
@@ -336,14 +670,13 @@ val foo = a
      (expr
       (basicexpr
        (opexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (qidentifier
-             (identifier
-              (varid
-               (id))))))))
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))
         (qoperator
          (op
           (symbols)))
@@ -423,18 +756,17 @@ val a = if b
                 (identifier
                  (varid
                   (id)))))))))))
-        (elifs
-         (blockexpr
-          (expr
-           (basicexpr
-            (opexpr
-             (prefixexpr
-              (appexpr
-               (atom
-                (qidentifier
-                 (identifier
-                  (varid
-                   (id)))))))))))))))))))
+        (blockexpr
+         (expr
+          (basicexpr
+           (opexpr
+            (prefixexpr
+             (appexpr
+              (atom
+               (qidentifier
+                (identifier
+                 (varid
+                  (id))))))))))))))))))
   (topdecl
    (puredecl
     (binder
@@ -465,7 +797,7 @@ val a = if b
                 (literal
                  (char))))
               (block
-               (statements1
+               (statements
                 (statement
                  (basicexpr
                   (opexpr
@@ -502,14 +834,13 @@ val a = b
      (expr
       (basicexpr
        (opexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (qidentifier
-             (identifier
-              (varid
-               (id))))))))
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))
         (qoperator
          (op
           (symbols)))
@@ -530,14 +861,13 @@ val a = b
      (expr
       (basicexpr
        (opexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (qidentifier
-             (identifier
-              (varid
-               (id))))))))
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))
         (qoperator
          (op
           (symbols)))
@@ -558,14 +888,13 @@ val a = b
      (expr
       (basicexpr
        (opexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (qidentifier
-             (identifier
-              (varid
-               (id))))))))
+        (prefixexpr
+         (appexpr
+          (atom
+           (qidentifier
+            (identifier
+             (varid
+              (id)))))))
         (qoperator
          (op
           (symbols)))
@@ -599,13 +928,12 @@ module foo/bar {
   (fixitydecl
    (fixity
     (int))
-   (oplist1
+   (oplist
     (identifier
      (idop
       (symbols))))))
  (modulebody
   (topdecl
-   (pub)
    (puredecl
     (binder
      (identifier

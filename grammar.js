@@ -3,13 +3,8 @@
 
 module.exports = grammar({
   name: "koka",
-  externals: ($) => [
-    $._open_brace,
-    $._close_brace,
-    $._semicolon,
-    $._raw_string,
-  ],
-  extras: ($) => [" ", "\t", "\r", "\n", $.linecomment, $.blockcomment],
+  externals: ($) => [$._open_brace, $._close_brace, $._semi, $._raw_string],
+  extras: ($) => [/[ \t\r\n]/, $.linecomment, $.blockcomment],
   conflicts: ($) => [
     // Context-free syntax doesn't specify operator precedences.
     [$.prefixexpr, $.appexpr],
@@ -19,9 +14,7 @@ module.exports = grammar({
     [$.puredecl, $.fundecl],
     // TODO: Investigate these.
     [$.float, $.int],
-    [$.basicexpr, $.opexpr],
     [$.ntlprefixexpr, $.ntlappexpr],
-    [$.ntlexpr, $.ntlopexpr],
   ],
   word: ($) => $.id,
   rules: {
@@ -37,9 +30,9 @@ module.exports = grammar({
                 optional($._semis),
                 alias(
                   seq(
-                    repeat(seq($.importdecl, $._semis1)),
-                    repeat(seq($.fixitydecl, $._semis1)),
-                    optional($._topdecls1),
+                    repeat(seq($.importdecl, $._semis)),
+                    repeat(seq($.fixitydecl, $._semis)),
+                    optional($._topdecls),
                   ),
                   $.modulebody,
                 ),
@@ -50,9 +43,9 @@ module.exports = grammar({
                 optional($._semis),
                 alias(
                   seq(
-                    repeat(seq($.importdecl, $._semis1)),
-                    repeat(seq($.fixitydecl, $._semis1)),
-                    optional($._topdecls1),
+                    repeat(seq($.importdecl, $._semis)),
+                    repeat(seq($.fixitydecl, $._semis)),
+                    optional($._topdecls),
                   ),
                   $.modulebody,
                 ),
@@ -61,35 +54,29 @@ module.exports = grammar({
             "moduledecl",
           ),
         ),
-        seq(optional($._semis), $.statements1),
+        seq(optional($._semis), $.statements),
       ),
     importdecl: ($) =>
-      choice(
-        seq(optional($.pub), "import", $.modulepath),
-        seq(optional($.pub), "import", $.modulepath, "=", $.modulepath),
+      seq(
+        optional("pub"),
+        "import",
+        $.modulepath,
+        optional(seq("=", $.modulepath)),
       ),
     modulepath: ($) => choice($.varid, $.qvarid),
-    pub: (_) => "pub",
-    _semis1: ($) => choice(seq($._semis1, $._semi), $._semi),
-    _semis: ($) => seq(optional($._semis), $._semi),
-    _semi: ($) => $._semicolon,
+    _semis: ($) => repeat1($._semi),
 
     // Top level declarations
-    fixitydecl: ($) => seq(optional($.pub), $.fixity, $.oplist1),
-    fixity: ($) =>
-      choice(seq("infix", $.int), seq("infixr", $.int), seq("infixl", $.int)),
-    oplist1: ($) => choice(seq($.oplist1, ",", $.identifier), $.identifier),
-    _topdecls1: ($) =>
-      choice(
-        seq($._topdecls1, $.topdecl, $._semis1),
-        seq($.topdecl, $._semis1),
-      ),
+    fixitydecl: ($) => seq(optional("pub"), $.fixity, $.oplist),
+    fixity: ($) => seq(choice("infix", "infixl", "infixr"), $.int),
+    oplist: ($) => commaSep1($.identifier),
+    _topdecls: ($) => repeat1(seq($.topdecl, $._semis)),
     topdecl: ($) =>
       choice(
-        seq(optional($.pub), $.puredecl),
-        seq(optional($.pub), $.aliasdecl),
-        seq(optional($.pub), $.externdecl),
-        seq(optional($.pub), $.typedecl),
+        seq(
+          optional("pub"),
+          choice($.puredecl, $.aliasdecl, $.externdecl, $.typedecl),
+        ),
         seq("abstract", $.typedecl),
       ),
 
@@ -105,48 +92,41 @@ module.exports = grammar({
       choice(
         seq(":", $.typescheme),
         seq(
-          optional($.typeparams1),
+          optional($.typeparams),
           "(",
-          optional($.parameters1),
+          optional($.parameters),
           ")",
           optional($.annotres),
         ),
       ),
     externbody: ($) =>
-      choice(
-        seq($._open_brace, optional($._semis), $.externstats1, $._close_brace),
-        seq($._open_brace, optional($._semis), $._close_brace),
-      ),
-    externstats1: ($) =>
-      choice(
-        seq($.externstats1, $.externstat, $._semis1),
-        seq($.externstat, $._semis1),
+      seq(
+        $._open_brace,
+        optional($._semis),
+        repeat(seq($.externstat, $._semis)),
+        $._close_brace,
       ),
     externstat: ($) =>
-      choice(
-        seq($.externtarget, optional($.externinline), $.string),
-        seq(optional($.externinline), $.string),
-      ),
-    externinline: (_) => "inline",
+      seq(optional($.externtarget), optional("inline"), $.string),
     externimpbody: ($) =>
       choice(
         seq("=", $.externimp),
-        seq($._open_brace, optional($._semis), $.externimps1, $._close_brace),
-      ),
-    externimps1: ($) =>
-      choice(
-        seq($.externimps1, $.externimp, $._semis1),
-        seq($.externimp, $._semis1),
+        seq(
+          $._open_brace,
+          optional($._semis),
+          repeat1(seq($.externimp, $._semis)),
+          $._close_brace,
+        ),
       ),
     externimp: ($) =>
       choice(
         seq($.externtarget, $.varid, $.string),
-        seq($.externtarget, $._open_brace, $.externvals1, $._close_brace),
-      ),
-    externvals1: ($) =>
-      choice(
-        seq($.externvals1, $.externval, $._semis1),
-        seq($.externval, $._semis1),
+        seq(
+          $.externtarget,
+          $._open_brace,
+          repeat1(seq($.externval, $._semis)),
+          $._close_brace,
+        ),
       ),
     externval: ($) => seq($.varid, "=", $.string),
     externtarget: (_) => choice("cs", "js", "c"),
@@ -156,7 +136,7 @@ module.exports = grammar({
       seq(
         "alias",
         $.typeid,
-        optional($.typeparams1),
+        optional($.typeparams),
         optional($.kannot),
         "=",
         $.type,
@@ -167,7 +147,7 @@ module.exports = grammar({
           optional($.typemod),
           "type",
           $.typeid,
-          optional($.typeparams1),
+          optional($.typeparams),
           optional($.kannot),
           optional($.typebody),
         ),
@@ -175,7 +155,7 @@ module.exports = grammar({
           optional($.structmod),
           "struct",
           $.typeid,
-          optional($.typeparams1),
+          optional($.typeparams),
           optional($.kannot),
           optional($.conparams),
         ),
@@ -183,22 +163,15 @@ module.exports = grammar({
           optional($.effectmod),
           "effect",
           $.varid,
-          optional($.typeparams1),
+          optional($.typeparams),
           optional($.kannot),
-          $.opdecls,
-        ),
-        seq(
-          optional($.effectmod),
-          "effect",
-          optional($.typeparams1),
-          optional($.kannot),
-          $.operation,
+          choice($.opdecls, $.operation),
         ),
         seq(
           optional($.effectmod),
           "effect",
           $.varid,
-          optional($.typeparams1),
+          optional($.typeparams),
           optional($.kannot),
           "in",
           $.type,
@@ -223,32 +196,19 @@ module.exports = grammar({
         seq("<", "|", ">"),
         $.varid,
       ),
-    commas: ($) => $.commas1,
-    commas1: ($) => seq(optional($.commas), ","),
-    constructors: ($) => seq($.constructors1, $._semis1),
-    constructors1: ($) =>
-      choice(seq($.constructors1, $._semis1, $.constructor), $.constructor),
+    commas: (_) => repeat1(","),
+    constructors: ($) => repeat1(seq($.constructor, $._semis)),
     constructor: ($) =>
-      choice(
-        seq(
-          optional($.pub),
-          optional($.con),
-          $.conid,
-          optional($.typeparams1),
-          optional($.conparams),
-        ),
-        seq(
-          optional($.pub),
-          optional($.con),
-          $.string,
-          optional($.typeparams1),
-          optional($.conparams),
-        ),
+      seq(
+        optional("pub"),
+        optional("con"),
+        choice($.conid, $.string),
+        optional($.typeparams),
+        optional($.conparams),
       ),
-    con: (_) => "con",
     conparams: ($) =>
       choice(
-        seq("(", $.parameters1, ")"),
+        seq("(", $.parameters, ")"),
         seq(
           $._open_brace,
           optional($._semis),
@@ -256,7 +216,7 @@ module.exports = grammar({
           $._close_brace,
         ),
       ),
-    sconparams: ($) => seq(optional($.sconparams), $.parameter, $._semis1),
+    sconparams: ($) => repeat1(seq($.parameter, $._semis)),
 
     // Effect declarations
     opdecls: ($) =>
@@ -266,35 +226,24 @@ module.exports = grammar({
         optional($.operations),
         $._close_brace,
       ),
-    operations: ($) => seq(optional($.operations), $.operation, $._semis1),
+    operations: ($) => repeat1(seq($.operation, $._semis)),
     operation: ($) =>
       choice(
         seq(
-          optional($.pub),
+          optional("pub"),
           "val",
           $.identifier,
-          optional($.typeparams1),
+          optional($.typeparams),
           ":",
           $.tatomic,
         ),
         seq(
-          optional($.pub),
-          "fun",
+          optional("pub"),
+          choice("fun", "ctl"),
           $.identifier,
-          optional($.typeparams1),
+          optional($.typeparams),
           "(",
-          optional($.parameters1),
-          ")",
-          ":",
-          $.tatomic,
-        ),
-        seq(
-          optional($.pub),
-          "ctl",
-          $.identifier,
-          optional($.typeparams1),
-          "(",
-          optional($.parameters1),
+          optional($.parameters),
           ")",
           ":",
           $.tatomic,
@@ -313,35 +262,19 @@ module.exports = grammar({
     funid: ($) =>
       choice($.identifier, seq("[", optional($.commas), "]"), $.string),
     funbody: ($) =>
-      choice(
-        seq(
-          optional($.typeparams1),
-          "(",
-          optional($.pparameters1),
-          ")",
-          $.bodyexpr,
-        ),
-        seq(
-          optional($.typeparams1),
-          "(",
-          optional($.pparameters1),
-          ")",
-          ":",
-          $.tresult,
-          optional($.qualifier),
-          $.block,
-        ),
+      seq(
+        optional($.typeparams),
+        "(",
+        optional($.pparameters),
+        ")",
+        choice($.bodyexpr, seq(":", $.tresult, optional($.qualifier), $.block)),
       ),
     annotres: ($) => seq(":", $.tresult),
 
     // Statements
     block: ($) =>
-      seq($._open_brace, optional($._semis), $.statements1, $._close_brace),
-    statements1: ($) =>
-      choice(
-        seq($.statements1, $.statement, $._semis1),
-        seq($.statement, $._semis1),
-      ),
+      seq($._open_brace, optional($._semis), $.statements, $._close_brace),
+    statements: ($) => repeat1(seq($.statement, $._semis)),
     statement: ($) =>
       choice(
         $.decl,
@@ -358,7 +291,7 @@ module.exports = grammar({
       ),
 
     // Expressions
-    bodyexpr: ($) => choice($.blockexpr, seq("->", $.blockexpr)),
+    bodyexpr: ($) => seq(optional("->"), $.blockexpr),
     blockexpr: ($) => $.expr,
     expr: ($) =>
       choice($.withexpr, $.block, $.returnexpr, $.valexpr, $.basicexpr),
@@ -369,45 +302,56 @@ module.exports = grammar({
     returnexpr: ($) => seq("return", $.expr),
     ifexpr: ($) =>
       prec.right(
-        choice(
-          seq("if", $.ntlexpr, "then", $.blockexpr, $.elifs),
-          seq("if", $.ntlexpr, "then", $.blockexpr),
-          seq("if", $.ntlexpr, "return", $.expr),
+        seq(
+          "if",
+          $.ntlexpr,
+          choice(
+            seq("then", $.blockexpr, optional($.elifs)),
+            seq("return", $.expr),
+          ),
         ),
       ),
     elifs: ($) =>
-      choice(
-        seq("elif", $.ntlexpr, "then", $.blockexpr, $.elifs),
-        seq("else", $.blockexpr),
+      seq(
+        repeat(seq("elif", $.ntlexpr, "then", $.blockexpr)),
+        "else",
+        $.blockexpr,
       ),
     valexpr: ($) => seq("val", $.apattern, "=", $.blockexpr, "in", $.expr),
     opexpr: ($) =>
-      choice(seq($.opexpr, $.qoperator, $.prefixexpr), $.prefixexpr),
-    prefixexpr: ($) =>
-      choice(seq("!", $.prefixexpr), seq("~", $.prefixexpr), $.appexpr),
+      prec.right(seq($.prefixexpr, repeat(seq($.qoperator, $.prefixexpr)))),
+    prefixexpr: ($) => choice(seq(choice("!", "~"), $.prefixexpr), $.appexpr),
     appexpr: ($) =>
       choice(
-        seq($.appexpr, "(", optional($.arguments1), ")"),
-        seq($.appexpr, "[", optional($.arguments1), "]"),
-        seq($.appexpr, ".", $.atom),
-        seq($.appexpr, $.block),
-        seq($.appexpr, $.fnexpr),
+        seq(
+          $.appexpr,
+          choice(
+            seq("(", optional($.arguments), ")"),
+            seq("[", optional($.arguments), "]"),
+            seq(".", $.atom),
+            seq($.block),
+            seq($.fnexpr),
+          ),
+        ),
         $.atom,
       ),
     ntlexpr: ($) => $.ntlopexpr,
     ntlopexpr: ($) =>
-      choice(seq($.ntlopexpr, $.qoperator, $.ntlprefixexpr), $.ntlprefixexpr),
-    ntlprefixexpr: ($) =>
-      choice(
-        seq("!", $.ntlprefixexpr),
-        seq("~", $.ntlprefixexpr),
-        $.ntlappexpr,
+      prec.right(
+        seq($.ntlprefixexpr, repeat(seq($.qoperator, $.ntlprefixexpr))),
       ),
+    ntlprefixexpr: ($) =>
+      choice(seq(choice("!", "~"), $.ntlprefixexpr), $.ntlappexpr),
     ntlappexpr: ($) =>
       choice(
-        seq($.ntlappexpr, "(", optional($.arguments1), ")"),
-        seq($.ntlappexpr, "[", optional($.arguments1), "]"),
-        seq($.ntlappexpr, ".", $.atom),
+        seq(
+          $.ntlappexpr,
+          choice(
+            seq("(", optional($.arguments), ")"),
+            seq("[", optional($.arguments), "]"),
+            seq(".", $.atom),
+          ),
+        ),
         $.atom,
       ),
     atom: ($) =>
@@ -416,35 +360,35 @@ module.exports = grammar({
         $.qconstructor,
         $.literal,
         $.mask,
-        seq("(", optional($.aexprs1), ")"),
+        seq("(", optional($.aexprs), ")"),
         seq("[", optional($.cexprs), "]"),
       ),
     literal: ($) => choice($.int, $.float, $.char, $.string),
-    mask: ($) => seq("mask", optional($.behind), "<", $.tbasic, ">"),
-    behind: (_) => "behind",
-    arguments1: ($) => choice(seq($.arguments1, ",", $.argument), $.argument),
-    argument: ($) => choice($.expr, seq($.identifier, "=", $.expr)),
-    parameters1: ($) =>
-      choice(seq($.parameters1, ",", $.parameter), $.parameter),
+    mask: ($) => seq("mask", optional("behind"), "<", $.tbasic, ">"),
+    arguments: ($) => commaSep1($.argument),
+    argument: ($) => seq(optional(seq($.identifier, "=")), $.expr),
+    parameters: ($) => commaSep1($.parameter),
     parameter: ($) =>
-      choice(
-        seq(optional($.borrow), $.paramid, ":", $.type),
-        seq(optional($.borrow), $.paramid, ":", $.type, "=", $.expr),
+      seq(
+        optional($.borrow),
+        $.paramid,
+        ":",
+        $.type,
+        optional(seq("=", $.expr)),
       ),
     paramid: ($) => choice($.identifier, $.wildcard),
     borrow: (_) => "^",
-    pparameters1: ($) =>
-      choice(seq($.pparameters1, ",", $.pparameter), $.pparameter),
+    pparameters: ($) =>
+      choice(seq($.pparameters, ",", $.pparameter), $.pparameter),
     pparameter: ($) =>
-      choice(
-        seq(optional($.borrow), $.pattern),
-        seq(optional($.borrow), $.pattern, ":", $.type),
-        seq(optional($.borrow), $.pattern, ":", $.type, "=", $.expr),
-        seq(optional($.borrow), $.pattern, "=", $.expr),
+      seq(
+        optional($.borrow),
+        $.pattern,
+        optional(seq(":", $.type)),
+        optional(seq("=", $.expr)),
       ),
-    aexprs1: ($) => choice(seq($.aexprs1, ",", $.aexpr), $.aexpr),
-    cexprs: ($) => choice($.cexprs0, seq(optional($.cexprs0), $.aexpr)),
-    cexprs0: ($) => seq(optional($.cexprs0), $.aexpr, ","),
+    aexprs: ($) => commaSep1($.aexpr),
+    cexprs: ($) => seq(commaSep1($.aexpr), optional(",")),
     aexpr: ($) => seq($.expr, optional($.annot)),
     annot: ($) => seq(":", $.typescheme),
 
@@ -457,68 +401,63 @@ module.exports = grammar({
     qconstructor: ($) => choice($.conid, $.qconid),
 
     // Matching
-    matchrules: ($) => optional(seq($.matchrules1, $._semis1)),
-    matchrules1: ($) =>
-      choice(seq($.matchrules1, $._semis1, $.matchrule), $.matchrule),
+    matchrules: ($) => seq($.matchrule, repeat(seq($._semis, $.matchrule))),
     matchrule: ($) =>
-      choice(
-        seq($.patterns1, "|", $.expr, "->", $.blockexpr),
-        seq($.patterns1, "->", $.blockexpr),
-      ),
-    patterns1: ($) => choice(seq($.patterns1, ",", $.pattern), $.pattern),
-    apatterns1: ($) => choice(seq($.apatterns1, ",", $.apattern), $.apattern),
+      seq($.patterns, optional(seq("|", $.expr)), "->", $.blockexpr),
+    patterns: ($) => commaSep1($.pattern),
+    apatterns: ($) => commaSep1($.apattern),
     apattern: ($) => seq($.pattern, optional($.annot)),
     pattern: ($) =>
       choice(
-        $.identifier,
-        seq($.identifier, "as", $.pattern),
-        $.conid,
-        seq($.conid, "(", optional($.patargs1), ")"),
-        seq("(", optional($.apatterns1), ")"),
-        seq("[", optional($.apatterns1), "]"),
+        seq($.identifier, optional(seq("as", $.pattern))),
+        seq($.conid, optional(seq("(", optional($.patargs), ")"))),
+        seq("(", optional($.apatterns), ")"),
+        seq("[", optional($.apatterns), "]"),
         $.literal,
         $.wildcard,
       ),
-    patargs1: ($) => choice(seq(optional($.patargs1), ",", $.patarg), $.patarg),
-    patarg: ($) => choice(seq($.identifier, "=", $.apattern), $.apattern),
+    patargs: ($) => commaSep1($.patarg),
+    patarg: ($) => seq(optional(seq($.identifier, "=")), $.apattern),
 
     // Handlers
     handlerexpr: ($) =>
       choice(
-        seq(optional($.override), "handler", optional($.witheff), $.opclauses),
         seq(
-          optional($.override),
+          optional(choice("override", "named")),
+          "handler",
+          optional($.witheff),
+          $.opclauses,
+        ),
+        seq(
+          optional(choice("override", "named")),
           "handle",
           optional($.witheff),
           $.ntlexpr,
           $.opclauses,
         ),
-        seq("named", "handler", optional($.witheff), $.opclauses),
-        seq("named", "handle", optional($.witheff), $.ntlexpr, $.opclauses),
       ),
-    override: (_) => "override",
     witheff: ($) => seq("<", $.anntype, ">"),
     withstat: ($) =>
       choice(
         seq("with", $.basicexpr),
-        seq("with", $.binder, "<-", $.basicexpr),
-        seq("with", optional($.override), optional($.witheff), $.opclause),
-        seq("with", $.binder, "<-", optional($.witheff), $.opclause),
+        seq(
+          "with",
+          $.binder,
+          "<-",
+          choice($.basicexpr, seq(optional($.witheff), $.opclause)),
+        ),
+        seq("with", optional("override"), optional($.witheff), $.opclause),
       ),
     withexpr: ($) => seq($.withstat, "in", $.blockexpr),
     opclauses: ($) =>
-      choice(
-        seq(
-          $._open_brace,
-          optional($._semis),
-          $.opclauses1,
-          $._semis1,
-          $._close_brace,
+      seq(
+        $._open_brace,
+        optional($._semis),
+        optional(
+          seq($.opclausex, repeat(seq($._semis, $.opclausex)), $._semis),
         ),
-        seq($._open_brace, optional($._semis), $._close_brace),
+        $._close_brace,
       ),
-    opclauses1: ($) =>
-      choice(seq($.opclauses1, $._semis1, $.opclausex), $.opclausex),
     opclausex: ($) =>
       choice(
         seq("finally", $.bodyexpr),
@@ -540,59 +479,60 @@ module.exports = grammar({
         seq("return", "(", $.opparam, ")", $.bodyexpr),
       ),
     controlmod: (_) => choice("final", "raw"),
-    opparams: ($) => seq("(", optional($.opparams1), ")"),
-    opparams1: ($) => choice(seq($.opparams1, ",", $.opparam), $.opparam),
-    opparam: ($) => choice($.paramid, seq($.paramid, ":", $.type)),
+    opparams: ($) => seq("(", optional(commaSep1($.opparam)), ")"),
+    opparam: ($) => seq($.paramid, optional(seq(":", $.type))),
 
     // Types
-    tbinders1: ($) => choice(seq($.tbinders1, ",", $.tbinder), $.tbinder),
+    tbinders: ($) => commaSep1($.tbinder),
     tbinder: ($) => seq($.varid, optional($.kannot)),
     typescheme: ($) =>
       seq(optional($.someforalls), $.tarrow, optional($.qualifier)),
     type: ($) =>
-      choice(
-        seq("forall", $.typeparams1, $.tarrow, optional($.qualifier)),
-        seq($.tarrow, optional($.qualifier)),
+      seq(
+        optional(seq("forall", $.typeparams)),
+        $.tarrow,
+        optional($.qualifier),
       ),
     someforalls: ($) =>
       choice(
-        seq("some", $.typeparams1, "forall", $.typeparams1),
-        seq("some", $.typeparams1),
-        seq("forall", $.typeparams1),
+        seq("some", $.typeparams, optional(seq("forall", $.typeparams))),
+        seq("forall", $.typeparams),
       ),
-    typeparams1: ($) => seq("<", optional($.tbinders1), ">"),
-    qualifier: ($) => seq("with", "(", $.predicates1, ")"),
-    predicates1: ($) =>
-      choice(seq($.predicates1, ",", $.predicate), $.predicate),
+    typeparams: ($) => seq("<", optional($.tbinders), ">"),
+    qualifier: ($) => seq("with", "(", $.predicates, ")"),
+    predicates: ($) => commaSep1($.predicate),
     predicate: ($) => $.typeapp,
-    tarrow: ($) => choice(seq($.tatomic, "->", $.tresult), $.tatomic),
-    tresult: ($) => choice(seq($.tatomic, $.tbasic), $.tatomic),
+    tarrow: ($) => seq($.tatomic, optional(seq("->", $.tresult))),
+    tresult: ($) => seq($.tatomic, optional($.tbasic)),
     tatomic: ($) =>
       choice(
         $.tbasic,
-        seq("<", $.targuments1, "|", $.tatomic, ">"),
-        seq("<", optional($.targuments1), ">"),
+        seq(
+          "<",
+          optional(seq($.targuments, optional(seq("|", $.tatomic)))),
+          ">",
+        ),
       ),
     tbasic: ($) =>
       choice(
         $.typeapp,
-        seq("(", optional($.tparams1), ")"),
+        seq("(", optional($.tparams), ")"),
         seq("[", $.anntype, "]"),
       ),
     typeapp: ($) =>
-      choice($.typecon, seq($.typecon, "<", optional($.targuments1), ">")),
+      seq($.typecon, optional(seq("<", optional($.targuments), ">"))),
     typecon: ($) =>
       choice(
         $.varid,
         $.qvarid,
         $.wildcard,
-        seq("(", $.commas1, ")"),
+        seq("(", $.commas, ")"),
         seq("[", "]"),
         seq("(", "->", ")"),
       ),
-    tparams1: ($) => choice(seq($.tparams1, ",", $.tparam), $.tparam),
-    tparam: ($) => choice(seq($.identifier, ":", $.anntype), $.anntype),
-    targuments1: ($) => choice(seq($.targuments1, ",", $.anntype), $.anntype),
+    tparams: ($) => commaSep1($.tparam),
+    tparam: ($) => seq(optional(seq($.identifier, ":")), $.anntype),
+    targuments: ($) => commaSep1($.anntype),
     anntype: ($) => seq($.type, optional($.kannot)),
 
     // Kinds
@@ -600,89 +540,29 @@ module.exports = grammar({
     kind: ($) =>
       choice(
         seq("(", $.kinds1, ")", "->", $.katom),
-        seq($.katom, "->", $.kind),
-        $.katom,
+        seq($.katom, optional(seq("->", $.kind))),
       ),
-    kinds1: ($) => choice(seq($.kinds1, ",", $.kind), $.kind),
+    kinds1: ($) => commaSep1($.kind),
     katom: ($) => $.conid,
 
+    // TODO: Clean things up from here onwards.
+
     // Character classes
-    symbols: ($) => prec.right(choice(repeat1($._symbol), "/")),
-    _symbol: (_) =>
-      prec.right(
-        choice(
-          "$",
-          "%",
-          "&",
-          "*",
-          "+",
-          "@",
-          "!",
-          "\\",
-          "^",
-          "~",
-          "=",
-          ".",
-          "-",
-          ":",
-          "?",
-          "|",
-          "<",
-          ">",
-        ),
-      ),
-    _sign: (_) => "-",
+    symbols: (_) => /[$%&*+@!\\^~=.\-:?|<>]+|\//,
     conid: ($) =>
-      alias(
-        prec.right(seq($._upper, repeat($._idchar), repeat($._final))),
-        $.id,
-      ),
-    id: (_) => /[a-z][a-zA-Z0-9]*'*/, // seq($._lower, repeat($._idchar), repeat($._final))
-    _idchar: ($) => choice($._letter, $._digit, "_", "-"),
-    _hexesc: ($) =>
-      choice(
-        seq("x", $._hex, $._hex),
-        seq("u", $._hex, $._hex, $._hex, $._hex),
-        seq("U", $._hex, $._hex, $._hex, $._hex, $._hex, $._hex),
-      ),
+      alias(prec.right(seq(/[A-Z]/, repeat($._idchar), repeat("'"))), $.id),
+    id: (_) => /[a-z][a-zA-Z0-9_-]*'*/,
+    _idchar: (_) => /[a-zA-Z0-9_-]/,
     _charesc: (_) => choice("n", "r", "t", "\\", '"', "'"),
-    _decimal: ($) =>
-      choice("0", seq(/[1-9]/, optional(seq(optional("_"), $._digits)))),
-    _hexadecimal: ($) => seq("0", choice("x", "X"), $._hexdigits),
-    _digits: ($) => seq(repeat1($._digit), repeat($._digitsep)),
-    _hexdigits: ($) => seq(repeat1($._hex), repeat($._hexsep)),
-    _digitsep: ($) => seq("_", repeat1($._digit)),
-    _hexsep: ($) => seq("_", repeat1($._hex)),
-    _letter: ($) => choice($._lower, $._upper),
-    _upper: (_) => /[A-Z]/,
-    _lower: (_) => /[a-z]/,
-    _digit: (_) => /[0-9]/,
-    _hex: (_) => /[0-9a-fA-F]/,
-    _space: (_) => /[ \t]/,
-    _newline: (_) => /\r?\n/,
-    _final: (_) => "'",
-    _graphicchar: (_) => /[ \x21-\x26\x28-\[\]-\x7E]/,
-    _graphicstr: (_) => /[ \x21\x23-\[\]-\x7E]/,
-    _graphicline: (_) => /[\t \x21-\x7E]/,
-    _uc: (_) => /[\x80-\xBF]/,
-    _u2: ($) => seq(/[\xC2-\xDF]/, $._uc),
-    _u3: ($) =>
-      choice(
-        seq(/[\xE0][\xA0-\xBF]/, $._uc),
-        seq(/[\xE1-\xEC]/, $._uc, $._uc),
-        seq(/[\xED][\x80-\x9F]/, $._uc),
-        seq(/[\xEE-\xEF]/, $._uc, $._uc),
-      ),
-    _u4: ($) =>
-      choice(
-        seq(/[\xF0][\x90-\xBF]/, $._uc),
-        seq(/[\xF1-\xF3]/, $._uc, $._uc, $._uc),
-        seq(/[\xF4][\x80-\x8F]/, $._uc, $._uc),
-      ),
-    _utf8: ($) => choice($._u2, $._u3, $._u4),
+    _decimal: (_) => choice("0", /[1-9](_?[0-9]+(_[0-9]+)*)?/),
+    _hexadecimal: (_) =>
+      seq("0", choice("x", "X"), /[0-9a-fA-F]+(_[0-9a-fA-F]+)*/),
+    _digits: (_) => /[0-9]+(_[0-9]+)*/,
+    _utf8: (_) =>
+      /[\xC2-\xDF][\x80-\xBF]|[\xE0][\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC][\x80-\xBF]{2}|[\xED][\x80-\x9F][\x80-\xBF]|[\xEE-\xEF][\x80-\xBF]{2}|[\xF0][\x90-\xBF][\x80-\xBF]|[\xF1-\xF3][\x80-\xBF]{3}|[\xF4][\x80-\x8F][\x80-\xBF]{2}/,
 
     // Comments
-    linecomment: ($) => seq("//", repeat($._graphicline), "\n"),
+    linecomment: (_) => /\/\/[\t \x21-\x7E]+\n/,
     blockcomment: ($) =>
       seq("/*", repeat(choice(/[^*]|\*[^/]/, $.blockcomment)), "*/"),
 
@@ -690,44 +570,44 @@ module.exports = grammar({
     float: ($) =>
       choice(
         seq(
-          optional($._sign),
+          optional("-"),
           $._decimal,
           ".",
           $._digits,
           choice("e", "E"),
           optional(choice("-", "+")),
-          repeat1($._digit),
+          repeat1(/[0-9]/),
         ),
         seq(
-          optional($._sign),
+          optional("-"),
           $._decimal,
           choice("e", "E"),
           optional(choice("-", "+")),
-          repeat1($._digit),
+          repeat1(/[0-9]/),
         ),
-        seq(optional($._sign), $._decimal, ".", $._digits),
+        seq(optional("-"), $._decimal, ".", $._digits),
         seq(
-          optional($._sign),
+          optional("-"),
           $._hexadecimal,
           ".",
-          $._hexdigits,
+          /[0-9a-fA-F]+(_[0-9a-fA-F]+)*/,
           choice("p", "P"),
           optional(choice("-", "+")),
-          repeat1($._digit),
+          repeat1(/[0-9]/),
         ),
         seq(
-          optional($._sign),
+          optional("-"),
           $._hexadecimal,
           choice("p", "P"),
           optional(choice("-", "+")),
-          repeat1($._digit),
+          repeat1(/[0-9]/),
         ),
-        seq(optional($._sign), $._hexadecimal, ".", $._hexdigits),
+        seq(optional("-"), $._hexadecimal, ".", /[0-9a-fA-F]+(_[0-9a-fA-F]+)*/),
       ),
     int: ($) =>
       choice(
-        seq(optional($._sign), $._hexadecimal),
-        seq(optional($._sign), $._decimal),
+        seq(optional("-"), $._hexadecimal),
+        seq(optional("-"), $._decimal),
       ),
 
     // Identifiers and operators
@@ -736,7 +616,7 @@ module.exports = grammar({
     qidop: ($) => seq(repeat1(seq($.id, "/")), "(", $.symbols, ")"),
     idop: ($) => seq("(", $.symbols, ")"),
     op: ($) => $.symbols,
-    wildcard: ($) => prec.right(seq("_", repeat($._idchar))),
+    wildcard: (_) => prec.right(seq("_", repeat(/[a-zA-Z0-9_-]/))),
 
     // String
     string: ($) =>
@@ -746,8 +626,11 @@ module.exports = grammar({
           '"',
           repeat(
             choice(
-              $._graphicstr,
-              alias(seq("\\", $._hexesc), $.esc),
+              /[ \x21\x23-\[\]-\x7E]/,
+              alias(
+                seq("\\", /x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{6}/),
+                $.esc,
+              ),
               alias(seq("\\", $._charesc), $.esc),
               $._utf8,
             ),
@@ -757,10 +640,27 @@ module.exports = grammar({
       ),
     char: ($) =>
       choice(
-        seq("'", $._graphicchar, "'"),
-        seq("'", "\\", alias($._hexesc, $.esc), "'"),
+        seq("'", /[ \x21-\x26\x28-\[\]-\x7E]/, "'"),
+        seq(
+          "'",
+          "\\",
+          alias(/x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{6}/, $.esc),
+          "'",
+        ),
         seq("'", "\\", alias($._charesc, $.esc), "'"),
         seq("'", $._utf8, "'"),
       ),
   },
 });
+
+/**
+ * Creates a rule to match one or more of the rules separated by a comma
+ *
+ * @param {Rule} rule
+ *
+ * @return {SeqRule}
+ *
+ */
+function commaSep1(rule) {
+  return seq(rule, repeat(seq(",", rule)));
+}

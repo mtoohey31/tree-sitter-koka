@@ -12,7 +12,7 @@
 
 ; TODO: Split these up more if possible.
 [
-  (pub)
+  "pub"
   "infix"
   "infixl"
   "infixr"
@@ -22,7 +22,7 @@
   "co"
   "open"
   "extend"
-  (behind)
+  "behind"
   "linear"
   "value"
   "reference"
@@ -35,7 +35,7 @@
   ; "file"
 
   "as" ; pattern matching
-  (con) ; type constructors
+  "con" ; type constructors
   "ctl" ; effect controls
 
   "extern"
@@ -48,7 +48,7 @@
   "in"
   "mask"
   "named"
-  (override)
+  "override"
   "raw"
   ; "scoped"
   "some"
