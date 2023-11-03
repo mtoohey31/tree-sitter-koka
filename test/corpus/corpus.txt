@@ -88,21 +88,17 @@ pub infix  40  (!=), (==), (<=), (>=), (<), (>)
         (int))
       (oplist
         (identifier
-          (idop
-            (symbols)))))
+          (idop))))
     (fixitydecl
       (fixity
         (int))
       (oplist
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
           (varid
             (id)))
@@ -114,33 +110,25 @@ pub infix  40  (!=), (==), (<=), (>=), (<), (>)
         (int))
       (oplist
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
-          (idop
-            (symbols)))))
+          (idop))))
     (fixitydecl
       (fixity
         (int))
       (oplist
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
-          (idop
-            (symbols)))
+          (idop))
         (identifier
-          (idop
-            (symbols)))))))
+          (idop))))))
 
 ========
 externs
@@ -173,6 +161,272 @@ extern import
             (varid
               (id))
             (string)))))))
+
+========
+numbers
+========
+
+val a = 80123456789
+val b = -89612
+val c = 0
+val d = -0
+val e = 0x0123456789abcdef
+val f = -0XABCDEF
+val g = 0x0
+val h = -0x0
+val i = 13512.45_315_315e+30531
+val j = -13512E-30531
+val k = 13512.45_315e315
+val l = 0.45_315_315e+30531
+val m = -0x135EA12.45_31CD5_315p+30531
+val n = 0X135f12P-30531
+val o = -0x1fAcED3512.45_3e15_315
+val p = -0x0.45_31CD5_315p+30531
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (float)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (float)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (float)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (float)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (float)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (float)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (float)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (float)))))))))))))
 
 ==========
 typedecls
@@ -678,8 +932,7 @@ val foo = a
              (varid
               (id)))))))
         (qoperator
-         (op
-          (symbols)))
+         (op))
         (prefixexpr
          (appexpr
           (atom
@@ -698,8 +951,9 @@ val a = if b
   then e
   else f
 val a = if b
-  then'c'
-  elsed
+  then 'c'
+  elif'
+  else'
 
 ---
 
@@ -807,6 +1061,16 @@ val a = if b
                       (qidentifier
                        (identifier
                         (varid
+                         (id))))))))))
+                (statement
+                 (basicexpr
+                  (opexpr
+                   (prefixexpr
+                    (appexpr
+                     (atom
+                      (qidentifier
+                       (identifier
+                        (varid
                          (id))))))))))))))))))))))))))
 
 ================================
@@ -842,8 +1106,7 @@ val a = b
              (varid
               (id)))))))
         (qoperator
-         (op
-          (symbols)))
+         (op))
         (prefixexpr
          (appexpr
           (atom
@@ -869,8 +1132,7 @@ val a = b
              (varid
               (id)))))))
         (qoperator
-         (op
-          (symbols)))
+         (op))
         (prefixexpr
          (appexpr
           (atom
@@ -896,8 +1158,7 @@ val a = b
              (varid
               (id)))))))
         (qoperator
-         (op
-          (symbols)))
+         (op))
         (prefixexpr
          (appexpr
           (atom
@@ -930,8 +1191,7 @@ module foo/bar {
     (int))
    (oplist
     (identifier
-     (idop
-      (symbols))))))
+     (idop)))))
  (modulebody
   (topdecl
    (puredecl

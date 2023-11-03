@@ -12,9 +12,6 @@ module.exports = grammar({
     // so this can be used to highlight code blocks.
     [$.binder, $.pattern],
     [$.puredecl, $.fundecl],
-    // TODO: Investigate these.
-    [$.float, $.int],
-    [$.ntlprefixexpr, $.ntlappexpr],
   ],
   word: ($) => $.id,
   rules: {
@@ -297,7 +294,15 @@ module.exports = grammar({
       choice($.withexpr, $.block, $.returnexpr, $.valexpr, $.basicexpr),
     basicexpr: ($) =>
       choice($.ifexpr, $.matchexpr, $.handlerexpr, $.fnexpr, $.opexpr),
-    matchexpr: ($) => seq("match", $.ntlexpr),
+    matchexpr: ($) =>
+      seq(
+        "match",
+        $.ntlexpr,
+        $._open_brace,
+        optional($._semis),
+        $.matchrules,
+        $._close_brace,
+      ),
     fnexpr: ($) => seq("fn", $.funbody),
     returnexpr: ($) => seq("return", $.expr),
     ifexpr: ($) =>
@@ -539,27 +544,20 @@ module.exports = grammar({
     kannot: ($) => seq("::", $.kind),
     kind: ($) =>
       choice(
-        seq("(", $.kinds1, ")", "->", $.katom),
+        seq("(", $.kinds, ")", "->", $.katom),
         seq($.katom, optional(seq("->", $.kind))),
       ),
-    kinds1: ($) => commaSep1($.kind),
+    kinds: ($) => commaSep1($.kind),
     katom: ($) => $.conid,
 
-    // TODO: Clean things up from here onwards.
-
     // Character classes
-    symbols: (_) => /[$%&*+@!\\^~=.\-:?|<>]+|\//,
-    conid: ($) =>
-      alias(prec.right(seq(/[A-Z]/, repeat($._idchar), repeat("'"))), $.id),
+    _symbols: (_) => /[$%&*+@!\\^~=.\-:?|<>]+|\//,
+    conid: ($) => alias(/[A-Z][a-zA-Z0-9_-]*'*/, $.id),
     id: (_) => /[a-z][a-zA-Z0-9_-]*'*/,
-    _idchar: (_) => /[a-zA-Z0-9_-]/,
-    _charesc: (_) => choice("n", "r", "t", "\\", '"', "'"),
-    _decimal: (_) => choice("0", /[1-9](_?[0-9]+(_[0-9]+)*)?/),
-    _hexadecimal: (_) =>
-      seq("0", choice("x", "X"), /[0-9a-fA-F]+(_[0-9a-fA-F]+)*/),
-    _digits: (_) => /[0-9]+(_[0-9]+)*/,
-    _utf8: (_) =>
-      /[\xC2-\xDF][\x80-\xBF]|[\xE0][\xA0-\xBF][\x80-\xBF]|[\xE1-\xEC][\x80-\xBF]{2}|[\xED][\x80-\x9F][\x80-\xBF]|[\xEE-\xEF][\x80-\xBF]{2}|[\xF0][\x90-\xBF][\x80-\xBF]|[\xF1-\xF3][\x80-\xBF]{3}|[\xF4][\x80-\x8F][\x80-\xBF]{2}/,
+    escape: (_) =>
+      token.immediate(
+        /\\([nrt\\"']|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{6})/,
+      ),
 
     // Comments
     linecomment: (_) => /\/\/[\t \x21-\x7E]+\n/,
@@ -567,55 +565,23 @@ module.exports = grammar({
       seq("/*", repeat(choice(/[^*]|\*[^/]/, $.blockcomment)), "*/"),
 
     // Numbers
-    float: ($) =>
+    float: (_) =>
       choice(
-        seq(
-          optional("-"),
-          $._decimal,
-          ".",
-          $._digits,
-          choice("e", "E"),
-          optional(choice("-", "+")),
-          repeat1(/[0-9]/),
-        ),
-        seq(
-          optional("-"),
-          $._decimal,
-          choice("e", "E"),
-          optional(choice("-", "+")),
-          repeat1(/[0-9]/),
-        ),
-        seq(optional("-"), $._decimal, ".", $._digits),
-        seq(
-          optional("-"),
-          $._hexadecimal,
-          ".",
-          /[0-9a-fA-F]+(_[0-9a-fA-F]+)*/,
-          choice("p", "P"),
-          optional(choice("-", "+")),
-          repeat1(/[0-9]/),
-        ),
-        seq(
-          optional("-"),
-          $._hexadecimal,
-          choice("p", "P"),
-          optional(choice("-", "+")),
-          repeat1(/[0-9]/),
-        ),
-        seq(optional("-"), $._hexadecimal, ".", /[0-9a-fA-F]+(_[0-9a-fA-F]+)*/),
+        /-?(0|[1-9](_?[0-9]+(_[0-9]+)*)?)((\.[0-9]+(_[0-9]+)*)?[eE][-+]?[0-9]+|\.[0-9]+(_[0-9]+)*)/,
+        /-?0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)*((\.[0-9a-fA-F]+(_[0-9a-fA-F]+)*)?[pP][-+]?[0-9]+|\.[0-9a-fA-F]+(_[0-9a-fA-F]+)*)/,
       ),
-    int: ($) =>
+    int: (_) =>
       choice(
-        seq(optional("-"), $._hexadecimal),
-        seq(optional("-"), $._decimal),
+        /-?(0|[1-9](_?[0-9]+(_[0-9]+)*)?)/,
+        /-?0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)*/,
       ),
 
     // Identifiers and operators
     qconid: ($) => seq(repeat1(seq($.id, "/")), $.conid),
     qid: ($) => prec.right(seq(repeat1(seq($.id, "/")), $.id)),
-    qidop: ($) => seq(repeat1(seq($.id, "/")), "(", $.symbols, ")"),
-    idop: ($) => seq("(", $.symbols, ")"),
-    op: ($) => $.symbols,
+    qidop: ($) => seq(repeat1(seq($.id, "/")), "(", $._symbols, ")"),
+    idop: ($) => seq("(", $._symbols, ")"),
+    op: ($) => $._symbols,
     wildcard: (_) => prec.right(seq("_", repeat(/[a-zA-Z0-9_-]/))),
 
     // String
@@ -624,31 +590,15 @@ module.exports = grammar({
         $._raw_string,
         seq(
           '"',
-          repeat(
-            choice(
-              /[ \x21\x23-\[\]-\x7E]/,
-              alias(
-                seq("\\", /x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{6}/),
-                $.esc,
-              ),
-              alias(seq("\\", $._charesc), $.esc),
-              $._utf8,
-            ),
-          ),
-          '"',
+          repeat(choice(token.immediate(/[^\\"]/), $.escape)),
+          token.immediate('"'),
         ),
       ),
     char: ($) =>
-      choice(
-        seq("'", /[ \x21-\x26\x28-\[\]-\x7E]/, "'"),
-        seq(
-          "'",
-          "\\",
-          alias(/x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{6}/, $.esc),
-          "'",
-        ),
-        seq("'", "\\", alias($._charesc, $.esc), "'"),
-        seq("'", $._utf8, "'"),
+      seq(
+        "'",
+        choice(token.immediate(/[^\\']/), $.escape),
+        token.immediate("'"),
       ),
   },
 });

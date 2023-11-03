@@ -97,47 +97,9 @@ static inline bool resolve_maybe_start_cont(TSLexer *lexer) {
     // continuation characters, so return.
     return false;
   }
-  if (in_range(lexer->lookahead, 'a', 'z') ||
-      in_range(lexer->lookahead, 'A', 'Z') ||
-      in_range(lexer->lookahead, '0', '9')) {
-    // Then this is an identifier that starts with one of the keywords but then
-    // continues with more characters, and so isn't a character.
-    return false;
-  }
-  if (lexer->lookahead != '\'') {
-    // Then the text stops there so it is a keyword.
-    return true;
-  }
-  // BUG: In this case it's "keyword'", and the '\'' might be part of the end
-  // of the identifier, or instead it could be the start of a char literal,
-  // in which case we're crying cause we basically have to understand the
-  // whole tree after this point, cause maybe it's something cursed like:
-  // "else'+'-'*'/'...". We'll just do our best...
-  advance(lexer);
-  bool in_char_is_op = false;
-  switch (lexer->lookahead) {
-  case '\\':
-    advance(lexer);
-
-  case '$':
-  case '%':
-  case '&':
-  case '*':
-  case '+':
-  case '~':
-  case '!':
-  case '^':
-  case '#':
-  case '=':
-  case '.':
-  case ':':
-  case '-':
-  case '?':
-    in_char_is_op = true;
-    break;
-  }
-  advance(lexer);
-  return lexer->lookahead != '\'' || !in_char_is_op;
+  return !(in_range(lexer->lookahead, 'a', 'z') ||
+           in_range(lexer->lookahead, 'A', 'Z') ||
+           in_range(lexer->lookahead, '0', '9') || lexer->lookahead == '\'');
 }
 
 void *tree_sitter_koka_external_scanner_create() {

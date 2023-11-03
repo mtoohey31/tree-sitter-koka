@@ -119,7 +119,7 @@
   (char)
 ] @string
 
-(esc) @constant.character.escape
+(escape) @constant.character.escape
 
 (float) @constant.numeric.float
 (int) @constant.numeric.integer

@@ -377,7 +377,7 @@
       "required": false,
       "types": [
         {
-          "type": "esc",
+          "type": "escape",
           "named": true
         }
       ]
@@ -393,7 +393,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
@@ -519,11 +519,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "esc",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "expr",
@@ -865,11 +860,6 @@
     }
   },
   {
-    "type": "id",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "identifier",
     "named": true,
     "fields": {},
@@ -891,17 +881,7 @@
   {
     "type": "idop",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "symbols",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "ifexpr",
@@ -1002,14 +982,14 @@
           "named": true
         },
         {
-          "type": "kinds1",
+          "type": "kinds",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "kinds1",
+    "type": "kinds",
     "named": true,
     "fields": {},
     "children": {
@@ -1070,9 +1050,13 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "matchrules",
+          "named": true
+        },
         {
           "type": "ntlexpr",
           "named": true
@@ -1098,6 +1082,21 @@
         },
         {
           "type": "patterns",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "matchrules",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "matchrule",
           "named": true
         }
       ]
@@ -1229,17 +1228,7 @@
   {
     "type": "op",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "symbols",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "opclause",
@@ -1828,10 +1817,6 @@
         {
           "type": "id",
           "named": true
-        },
-        {
-          "type": "symbols",
-          "named": true
         }
       ]
     }
@@ -1981,7 +1966,7 @@
       "required": false,
       "types": [
         {
-          "type": "esc",
+          "type": "escape",
           "named": true
         }
       ]
@@ -2530,15 +2515,7 @@
     "named": false
   },
   {
-    "type": "+",
-    "named": false
-  },
-  {
     "type": ",",
-    "named": false
-  },
-  {
-    "type": "-",
     "named": false
   },
   {
@@ -2555,10 +2532,6 @@
   },
   {
     "type": "/*",
-    "named": false
-  },
-  {
-    "type": "0",
     "named": false
   },
   {
@@ -2590,23 +2563,7 @@
     "named": false
   },
   {
-    "type": "E",
-    "named": false
-  },
-  {
-    "type": "P",
-    "named": false
-  },
-  {
-    "type": "X",
-    "named": false
-  },
-  {
     "type": "[",
-    "named": false
-  },
-  {
-    "type": "\\",
     "named": false
   },
   {
@@ -2658,10 +2615,6 @@
     "named": false
   },
   {
-    "type": "e",
-    "named": false
-  },
-  {
     "type": "effect",
     "named": false
   },
@@ -2672,6 +2625,10 @@
   {
     "type": "else",
     "named": false
+  },
+  {
+    "type": "escape",
+    "named": true
   },
   {
     "type": "extend",
@@ -2708,6 +2665,10 @@
   {
     "type": "handler",
     "named": false
+  },
+  {
+    "type": "id",
+    "named": true
   },
   {
     "type": "if",
@@ -2770,10 +2731,6 @@
     "named": false
   },
   {
-    "type": "n",
-    "named": false
-  },
-  {
     "type": "named",
     "named": false
   },
@@ -2790,15 +2747,7 @@
     "named": false
   },
   {
-    "type": "p",
-    "named": false
-  },
-  {
     "type": "pub",
-    "named": false
-  },
-  {
-    "type": "r",
     "named": false
   },
   {
@@ -2826,14 +2775,6 @@
     "named": false
   },
   {
-    "type": "symbols",
-    "named": true
-  },
-  {
-    "type": "t",
-    "named": false
-  },
-  {
     "type": "then",
     "named": false
   },
@@ -2855,10 +2796,6 @@
   },
   {
     "type": "with",
-    "named": false
-  },
-  {
-    "type": "x",
     "named": false
   },
   {
