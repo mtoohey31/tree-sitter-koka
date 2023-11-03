@@ -54,7 +54,7 @@ module.exports = grammar({
             "moduledecl",
           ),
         ),
-        seq(optional($._semis), $.statements),
+        prec(-1, seq(optional($._semis), $.statements)),
       ),
     importdecl: ($) =>
       seq(
