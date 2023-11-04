@@ -29,7 +29,7 @@ module.exports = grammar({
           alias(
             choice(
               seq(
-                $._open_brace,
+                $._open_brace_,
                 optional($._semis),
                 alias(
                   seq(
@@ -39,7 +39,7 @@ module.exports = grammar({
                   ),
                   $.modulebody,
                 ),
-                $._close_brace,
+                $._close_brace_,
                 optional($._semis),
               ),
               seq(
@@ -59,6 +59,10 @@ module.exports = grammar({
         ),
         prec(-1, seq(optional($._semis), $.statements)),
       ),
+    // So syntax highlighting of literal '{' will work without having to make
+    // the externals named nodes in the tree.
+    _open_brace_: ($) => alias($._open_brace, "{"),
+    _close_brace_: ($) => alias($._close_brace, "}"),
     importdecl: ($) =>
       seq(
         optional("pub"),
@@ -67,7 +71,7 @@ module.exports = grammar({
         optional(seq("=", $.modulepath)),
       ),
     modulepath: ($) => choice($.varid, $.qvarid),
-    _semis: ($) => repeat1($._semi),
+    _semis: ($) => repeat1(alias($._semi, ";")),
 
     // Top level declarations
     fixitydecl: ($) => seq(optional("pub"), $.fixity, $.oplist),
@@ -106,10 +110,10 @@ module.exports = grammar({
       ),
     externbody: ($) =>
       seq(
-        $._open_brace,
+        $._open_brace_,
         optional($._semis),
         repeat(seq($.externstat, $._semis)),
-        $._close_brace,
+        $._close_brace_,
       ),
     externstat: ($) =>
       seq(optional($.externtarget), optional("inline"), $.string),
@@ -117,10 +121,10 @@ module.exports = grammar({
       choice(
         seq("=", $.externimp),
         seq(
-          $._open_brace,
+          $._open_brace_,
           optional($._semis),
           repeat1(seq($.externimp, $._semis)),
-          $._close_brace,
+          $._close_brace_,
         ),
       ),
     externimp: ($) =>
@@ -128,9 +132,9 @@ module.exports = grammar({
         seq($.externtarget, $.varid, $.string),
         seq(
           $.externtarget,
-          $._open_brace,
+          $._open_brace_,
           repeat1(seq($.externval, $._semis)),
-          $._close_brace,
+          $._close_brace_,
         ),
       ),
     externval: ($) => seq($.varid, "=", $.string),
@@ -198,10 +202,10 @@ module.exports = grammar({
     effectmod: (_) => choice("rec", "linear", seq("linear", "rec")),
     typebody: ($) =>
       seq(
-        $._open_brace,
+        $._open_brace_,
         optional($._semis),
         optional($.constructors),
-        $._close_brace,
+        $._close_brace_,
       ),
     _open_square_brace: ($) =>
       prec.right(seq("[", optional($._end_continuation_signal))),
@@ -230,10 +234,10 @@ module.exports = grammar({
       choice(
         seq($._open_round_brace, $.parameters, ")"),
         seq(
-          $._open_brace,
+          $._open_brace_,
           optional($._semis),
           optional($.sconparams),
-          $._close_brace,
+          $._close_brace_,
         ),
       ),
     // TODO: The spec parser doesn't allow pub before the parameter entries
@@ -243,10 +247,10 @@ module.exports = grammar({
     // Effect declarations
     opdecls: ($) =>
       seq(
-        $._open_brace,
+        $._open_brace_,
         optional($._semis),
         optional($.operations),
-        $._close_brace,
+        $._close_brace_,
       ),
     operations: ($) => repeat1(seq($.operation, $._semis)),
     operation: ($) =>
@@ -299,7 +303,7 @@ module.exports = grammar({
 
     // Statements
     block: ($) =>
-      seq($._open_brace, optional($._semis), $.statements, $._close_brace),
+      seq($._open_brace_, optional($._semis), $.statements, $._close_brace_),
     statements: ($) => repeat1(seq($.statement, $._semis)),
     statement: ($) =>
       choice(
@@ -327,10 +331,10 @@ module.exports = grammar({
       seq(
         "match",
         $.ntlexpr,
-        $._open_brace,
+        $._open_brace_,
         optional($._semis),
         optional($.matchrules),
-        $._close_brace,
+        $._close_brace_,
       ),
     fnexpr: ($) => seq("fn", $.funbody),
     returnexpr: ($) => seq("return", $.expr),
@@ -490,12 +494,12 @@ module.exports = grammar({
     withexpr: ($) => seq($.withstat, "in", $.blockexpr),
     opclauses: ($) =>
       seq(
-        $._open_brace,
+        $._open_brace_,
         optional($._semis),
         optional(
           seq($.opclausex, repeat(seq($._semis, $.opclausex)), $._semis),
         ),
-        $._close_brace,
+        $._close_brace_,
       ),
     opclausex: ($) =>
       choice(

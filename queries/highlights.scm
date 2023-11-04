@@ -118,9 +118,6 @@
 
 ; Delimiters
 
-; TODO: figure out how to get highlighting for ';', '{', and '}' without
-; sticking named nodes in the tree
-
 [
   ","
   "->"
@@ -128,6 +125,7 @@
   ":"
   "::"
   "<-"
+  ";"
 ] @punctuation.delimiter
 
 [
@@ -137,6 +135,8 @@
   ")"
   "["
   "]"
+  "{"
+  "}"
 ] @punctuation.bracket
 
 ; Literals

@@ -2505,6 +2505,10 @@
     "named": false
   },
   {
+    "type": ";",
+    "named": false
+  },
+  {
     "type": "<",
     "named": false
   },
@@ -2685,10 +2689,6 @@
     "named": false
   },
   {
-    "type": "moduledecl",
-    "named": false
-  },
-  {
     "type": "named",
     "named": false
   },
@@ -2773,7 +2773,15 @@
     "named": false
   },
   {
+    "type": "{",
+    "named": false
+  },
+  {
     "type": "|",
+    "named": false
+  },
+  {
+    "type": "}",
     "named": false
   },
   {
