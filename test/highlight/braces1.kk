@@ -23,6 +23,15 @@ fun main() {
   //   ^ punctuation.bracket
   //    ^ string
   //       ^ punctuation.bracket
+
+  fun helper()
+  // <- keyword.function
+  //  ^ function
+  //        ^ punctuation.bracket
+  //         ^ punctuation.bracket
+    return 1
+    // <- keyword.control.return
+    //     ^ constant.numeric.integer
 }
 // <- punctuation.bracket
 

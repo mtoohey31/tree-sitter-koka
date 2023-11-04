@@ -36,6 +36,11 @@
     (identifier
       [(varid) (idop)] @function)))
 
+(fundecl
+  (funid
+    (identifier
+      [(varid) (idop)] @function)))
+
 (operation
   (identifier
     [(varid) (idop)] @function))
