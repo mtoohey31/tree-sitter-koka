@@ -1,3 +1,7 @@
+module foo
+// <- keyword.control.import
+//     ^ namespace
+
 fun main() {
   // <- keyword.function
   // ^ function

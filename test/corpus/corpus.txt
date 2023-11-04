@@ -22,7 +22,8 @@ module foo/bar/baz
 (program
   (modulepath
     (qvarid
-      (qid))))
+      (qid
+        (id)))))
 
 ========
 imports
@@ -45,7 +46,8 @@ import foo/bar/baz = quux
     (importdecl
       (modulepath
         (qvarid
-          (qid))))
+          (qid
+            (id)))))
     (importdecl
       (modulepath
         (varid
@@ -56,7 +58,8 @@ import foo/bar/baz = quux
     (importdecl
       (modulepath
         (qvarid
-          (qid)))
+          (qid
+            (id))))
         (modulepath
           (varid
             (id))))))
@@ -488,21 +491,16 @@ pub effect fun utc() : timescale
         (typebody
           (constructors
             (constructor
-              (conid
-                (id)))
+              (conid))
             (linecomment)
             (constructor
-              (conid
-                (id)))
+              (conid))
             (constructor
-              (conid
-                (id)))
+              (conid))
             (constructor
-              (conid
-                (id)))
+              (conid))
             (constructor
-              (conid
-                (id))
+              (conid)
               (conparams
                 (parameters
                   (parameter
@@ -532,8 +530,7 @@ pub effect fun utc() : timescale
                                 (varid
                                   (id))))))))))))
             (constructor
-              (conid
-                (id))
+              (conid)
               (conparams
                 (parameters
                   (parameter
@@ -550,8 +547,7 @@ pub effect fun utc() : timescale
                                 (varid
                                   (id))))))))))))
             (constructor
-              (conid
-                (id))
+              (conid)
               (conparams
                 (parameters
                   (parameter
@@ -1466,7 +1462,8 @@ module foo/bar {
 (program
   (modulepath
     (qvarid
-      (qid)))
+      (qid
+        (id))))
   (modulebody
     (fixitydecl
       (fixity
@@ -1535,8 +1532,7 @@ fun a()
                             (matchrule
                               (patterns
                                 (pattern
-                                  (conid
-                                    (id))))
+                                  (conid)))
                               (blockexpr
                                 (expr
                                   (block
@@ -1552,8 +1548,7 @@ fun a()
                             (matchrule
                               (patterns
                                 (pattern
-                                  (conid
-                                    (id))))
+                                  (conid)))
                               (blockexpr
                                 (expr
                                   (block
@@ -1696,8 +1691,7 @@ pub fun readline() : <asyncx,console> string {
                                                 (appexpr
                                                   (atom
                                                     (qconstructor
-                                                      (conid
-                                                        (id)))))
+                                                      (conid))))
                                                 (arguments
                                                   (argument
                                                     (expr
@@ -1972,8 +1966,7 @@ noinline fun prints( s : string ) : console ()
                                                       (matchrule
                                                         (patterns
                                                           (pattern
-                                                            (conid
-                                                              (id))))
+                                                            (conid)))
                                                         (blockexpr
                                                           (expr
                                                             (basicexpr
@@ -2001,8 +1994,7 @@ noinline fun prints( s : string ) : console ()
                                                       (matchrule
                                                         (patterns
                                                           (pattern
-                                                            (conid
-                                                              (id))
+                                                            (conid)
                                                             (patargs
                                                               (patarg
                                                                 (apattern

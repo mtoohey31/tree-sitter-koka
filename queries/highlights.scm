@@ -47,9 +47,6 @@
     (identifier
       [(varid) (idop)] @constant)))
 
-(modulepath
-  [(qvarid) (varid)] @namespace)
-
 (appexpr
   field: (atom
     (qidentifier
@@ -66,7 +63,22 @@
 (tbinder
   (varid) @type)
 
+(modulepath
+  [
+    (qvarid
+      (qid
+        (id) @namespace))
+    (varid) @namespace
+  ])
+
+(qvarid
+  (qid
+    (id) @variable)) @namespace
+
 (varid) @variable
+
+(qconid
+  (conid) @constructor) @namespace
 
 (conid) @constructor
 

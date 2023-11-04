@@ -4950,13 +4950,8 @@
       "value": "[$%&*+@!\\\\^~=.\\-:?|<>]+|\\/"
     },
     "conid": {
-      "type": "ALIAS",
-      "content": {
-        "type": "PATTERN",
-        "value": "[A-Z][a-zA-Z0-9_-]*'*"
-      },
-      "named": true,
-      "value": "id"
+      "type": "PATTERN",
+      "value": "[A-Z][a-zA-Z0-9_-]*'*"
     },
     "id": {
       "type": "PATTERN",
@@ -5041,16 +5036,50 @@
       ]
     },
     "qconid": {
-      "type": "PATTERN",
-      "value": "([a-z][a-zA-Z0-9_-]*'*\\/)+[A-Z][a-zA-Z0-9_-]*'*"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "([a-z][a-zA-Z0-9_-]*'*\\/)+"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "conid"
+        }
+      ]
     },
     "qid": {
-      "type": "PATTERN",
-      "value": "([a-z][a-zA-Z0-9_-]*'*\\/)+[a-z][a-zA-Z0-9_-]*'*"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "([a-z][a-zA-Z0-9_-]*'*\\/)+"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "id"
+        }
+      ]
     },
     "qidop": {
-      "type": "PATTERN",
-      "value": "([a-z][a-zA-Z0-9_-]*'*\\/)+\\(([$%&*+@!\\\\^~=.\\-:?|<>]+|\\/)\\)"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "([a-z][a-zA-Z0-9_-]*'*\\/)+\\("
+        },
+        {
+          "type": "SYMBOL",
+          "name": "idop"
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": ")"
+          }
+        }
+      ]
     },
     "idop": {
       "type": "PATTERN",

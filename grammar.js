@@ -619,9 +619,11 @@ module.exports = grammar({
       ),
 
     // Identifiers and operators
-    qconid: (_) => /([a-z][a-zA-Z0-9_-]*'*\/)+[A-Z][a-zA-Z0-9_-]*'*/,
-    qid: (_) => /([a-z][a-zA-Z0-9_-]*'*\/)+[a-z][a-zA-Z0-9_-]*'*/,
-    qidop: (_) => /([a-z][a-zA-Z0-9_-]*'*\/)+\(([$%&*+@!\\^~=.\-:?|<>]+|\/)\)/,
+    qconid: ($) => seq(/([a-z][a-zA-Z0-9_-]*'*\/)+/, $.conid),
+    qid: ($) => seq(/([a-z][a-zA-Z0-9_-]*'*\/)+/, $.id),
+    qidop: ($) => seq(/([a-z][a-zA-Z0-9_-]*'*\/)+\(/, $.idop, token.immediate(")")),
+    conid: ($) => /[A-Z][a-zA-Z0-9_-]*'*/,
+    id: (_) => /[a-z][a-zA-Z0-9_-]*'*/,
     idop: (_) => /\(([$%&*+@!\\^~=.\-:?|<>]+|\/)\)/,
     op: ($) =>
       prec.right(seq($._symbols, optional($._end_continuation_signal))),
