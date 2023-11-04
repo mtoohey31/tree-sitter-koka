@@ -3,8 +3,16 @@
 #include <string.h>
 #include <tree_sitter/parser.h>
 
-enum TokenType { OpenBrace, CloseBrace, Semi, RawString };
+enum TokenType {
+  OpenBrace,
+  CloseBrace,
+  Semi,
+  RawString,
+  EndContinuationSignal
+};
 
+// PERF: Refactor this into a vector instead of a linked list for faster
+// serialization/deserialization.
 struct layout_stack_entry {
   int indent_length;
   struct layout_stack_entry *below;
@@ -12,16 +20,18 @@ struct layout_stack_entry {
 
 struct scanner {
   struct layout_stack_entry *layout_stack;
-  bool report_close_brace_after_semi_insert;
-  bool report_semi_after_close_brace_insert;
+  int close_braces_to_insert;
+  int semis_to_insert;
+  bool no_final_semi_insert;
   bool eof_semi_inserted;
   bool push_layout_stack_after_open_brace;
 };
 
 void scanner_reset(struct scanner *scanner) {
   scanner->layout_stack = NULL;
-  scanner->report_close_brace_after_semi_insert = false;
-  scanner->report_semi_after_close_brace_insert = false;
+  scanner->close_braces_to_insert = 0;
+  scanner->semis_to_insert = 0;
+  scanner->no_final_semi_insert = false;
   scanner->eof_semi_inserted = false;
   scanner->push_layout_stack_after_open_brace = false;
 }
@@ -118,35 +128,36 @@ void tree_sitter_koka_external_scanner_destroy(void *payload) {
 unsigned tree_sitter_koka_external_scanner_serialize(void *payload,
                                                      char *buffer) {
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-  _Static_assert(sizeof(bool) * 4 <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE,
+  _Static_assert(sizeof(int) * 2 + sizeof(bool) * 3 <=
+                     TREE_SITTER_SERIALIZATION_BUFFER_SIZE,
                  "serialization size is too small");
 #else
-  assert(sizeof(bool) * 4 <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE &&
+  assert(sizeof(int) * 2 + sizeof(bool) * 3 <=
+             TREE_SITTER_SERIALIZATION_BUFFER_SIZE &&
          "serialization size is too small");
 #endif
 
   struct scanner *scanner = payload;
 
-  ((bool *)buffer)[0] = scanner->report_close_brace_after_semi_insert;
-  ((bool *)buffer)[1] = scanner->report_semi_after_close_brace_insert;
-  ((bool *)buffer)[2] = scanner->eof_semi_inserted;
-  ((bool *)buffer)[3] = scanner->push_layout_stack_after_open_brace;
-  int length = sizeof(bool) * 4;
+  ((int *)buffer)[0] = scanner->close_braces_to_insert;
+  ((int *)buffer)[1] = scanner->semis_to_insert;
+  int length = sizeof(int) * 2;
+  ((bool *)(buffer + length))[0] = scanner->no_final_semi_insert;
+  ((bool *)(buffer + length))[1] = scanner->eof_semi_inserted;
+  ((bool *)(buffer + length))[2] = scanner->push_layout_stack_after_open_brace;
+  length += sizeof(bool) * 3;
 
   // BUG: If we run out of space, there's nothing else we can do other than drop
   // indent levels. We shouldn't ever have that much indents in real life
   // though so it's fine.
-  for (int *write = (int *)(&((bool *)buffer)[4]);
-       length < TREE_SITTER_SERIALIZATION_BUFFER_SIZE;
-       write++, length += sizeof(int)) {
+  for (int *write = (int *)(buffer + length);
+       length < TREE_SITTER_SERIALIZATION_BUFFER_SIZE; write++) {
     *write = scanner_pop_indent(scanner);
     if (*write < 0) {
       break;
     }
+    length += sizeof(int);
   };
-  if (length > TREE_SITTER_SERIALIZATION_BUFFER_SIZE) {
-    length -= sizeof(int);
-  }
 
   return length;
 }
@@ -161,13 +172,15 @@ void tree_sitter_koka_external_scanner_deserialize(void *payload,
     return;
   }
 
-  assert(length >= sizeof(bool) * 4 && "invalid length");
-  scanner->report_close_brace_after_semi_insert = ((bool *)buffer)[0];
-  scanner->report_semi_after_close_brace_insert = ((bool *)buffer)[1];
-  scanner->eof_semi_inserted = ((bool *)buffer)[2];
-  scanner->push_layout_stack_after_open_brace = ((bool *)buffer)[3];
-  for (int *read = (int *)(&((bool *)buffer)[4]);
-       ((char *)read) - buffer < length; read++) {
+  assert(length >= sizeof(int) * 2 + sizeof(bool) * 3 && "invalid length");
+  scanner->close_braces_to_insert = ((int *)buffer)[0];
+  scanner->semis_to_insert = ((int *)buffer)[1];
+  scanner->no_final_semi_insert = ((bool *)buffer + sizeof(int) * 2)[0];
+  scanner->eof_semi_inserted = ((bool *)buffer + sizeof(int) * 2)[1];
+  scanner->push_layout_stack_after_open_brace =
+      ((bool *)buffer + sizeof(int) * 2)[2];
+  for (int *read = (int *)(buffer + length) - 1;
+       ((char *)read) - buffer >= sizeof(int) * 2 + sizeof(bool) * 3; read--) {
     scanner_push_indent(scanner, *read);
   }
 }
@@ -175,16 +188,29 @@ void tree_sitter_koka_external_scanner_deserialize(void *payload,
 bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
                                             const bool *valid_symbols) {
   struct scanner *scanner = payload;
-  if (scanner->report_close_brace_after_semi_insert) {
-    scanner->report_close_brace_after_semi_insert = false;
-    scanner->report_semi_after_close_brace_insert = true;
+  if (scanner->close_braces_to_insert >= scanner->semis_to_insert &&
+      scanner->close_braces_to_insert > 0) {
+    scanner->close_braces_to_insert--;
+    lexer->mark_end(lexer);
+    advance(lexer);
+    if (scanner->semis_to_insert == 1 && scanner->no_final_semi_insert) {
+      scanner->semis_to_insert = 0;
+      scanner->no_final_semi_insert = false;
+    }
+    if (scanner->semis_to_insert == 0 && !lexer->eof(lexer)) {
+      lexer->mark_end(lexer);
+    }
     lexer->result_symbol = CloseBrace;
     return true;
   }
-  if (scanner->report_semi_after_close_brace_insert) {
-    scanner->report_semi_after_close_brace_insert = false;
-    lexer->result_symbol = Semi;
+  if (scanner->semis_to_insert > 0) {
+    scanner->semis_to_insert--;
+    lexer->mark_end(lexer);
     advance(lexer);
+    if (scanner->semis_to_insert == 0 && !lexer->eof(lexer)) {
+      lexer->mark_end(lexer);
+    }
+    lexer->result_symbol = Semi;
     return true;
   }
 
@@ -235,10 +261,8 @@ AFTER_WHITESPACE:
   case '*':
   case '+':
   case '@':
-  case '!':
   case '\\':
   case '^':
-  case '~':
   case '?':
   case '.':
   case '=':
@@ -276,21 +300,30 @@ AFTER_WHITESPACE:
                                  ? scanner->layout_stack->indent_length
                                  : 0;
     if (prev_indent_length < indent_length && valid_symbols[OpenBrace] &&
-        !is_start_cont &&
+        !valid_symbols[EndContinuationSignal] && !is_start_cont &&
         (!maybe_start_cont || !resolve_maybe_start_cont(lexer))) {
+      assert(indent_length > prev_indent_length);
       scanner_push_indent(scanner, indent_length);
       lexer->result_symbol = OpenBrace;
       return true;
     } else if (prev_indent_length == indent_length && valid_symbols[Semi] &&
-               !is_start_cont) {
+               !valid_symbols[EndContinuationSignal] && !is_start_cont) {
       lexer->result_symbol = Semi;
       lexer->mark_end(lexer);
       return !maybe_start_cont || !resolve_maybe_start_cont(lexer);
     } else if (prev_indent_length > indent_length && valid_symbols[Semi] &&
                lexer->lookahead != '}') {
-      scanner_pop_indent(scanner);
+      while (scanner->layout_stack != NULL &&
+             scanner->layout_stack->indent_length > indent_length) {
+        scanner->close_braces_to_insert++;
+        scanner->semis_to_insert++;
+        scanner_pop_indent(scanner);
+      }
+      if (is_start_cont ||
+          (maybe_start_cont && resolve_maybe_start_cont(lexer))) {
+        scanner->no_final_semi_insert = true;
+      }
       lexer->result_symbol = Semi;
-      scanner->report_close_brace_after_semi_insert = true;
       return true;
     }
   }
@@ -328,7 +361,7 @@ AFTER_WHITESPACE:
     scanner_pop_indent(scanner);
     lexer->result_symbol = Semi;
     lexer->mark_end(lexer);
-    scanner->report_close_brace_after_semi_insert = true;
+    scanner->close_braces_to_insert = 1;
     return true;
 
   case ';':

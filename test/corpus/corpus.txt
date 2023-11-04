@@ -22,10 +22,7 @@ module foo/bar/baz
 (program
  (modulepath
   (qvarid
-   (qid
-    (id)
-    (id)
-    (id)))))
+   (qid))))
 
 ========
 imports
@@ -48,10 +45,7 @@ import foo/bar/baz = quux
   (importdecl
    (modulepath
     (qvarid
-     (qid
-      (id)
-      (id)
-      (id)))))
+     (qid))))
   (importdecl
    (modulepath
     (varid
@@ -62,10 +56,7 @@ import foo/bar/baz = quux
   (importdecl
    (modulepath
     (qvarid
-     (qid
-      (id)
-      (id)
-      (id))))
+     (qid)))
     (modulepath
      (varid
       (id))))))
@@ -428,6 +419,41 @@ val p = -0x0.45_31CD5_315p+30531
                       (literal
                         (float)))))))))))))
 
+========
+opexprs
+========
+
+val a = n / 2
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))
+                (qoperator
+                  (op))
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))))
+
 ==========
 typedecls
 ==========
@@ -446,6 +472,8 @@ pub value struct exception( message :string, info :exception-info )
 pub effect exn
   // Throw an exception
   ctl throw-exn( exn : exception ) : a
+
+pub effect fun utc() : timescale
 
 ---
 
@@ -603,7 +631,19 @@ pub effect exn
                   (typeapp
                     (typecon
                       (varid
-                        (id)))))))))))))
+                        (id)))))))))))
+    (topdecl
+      (typedecl
+        (operation
+          (identifier
+            (varid
+              (id)))
+          (tatomic
+            (tbasic
+              (typeapp
+                (typecon
+                  (varid
+                    (id)))))))))))
 
 ===========
 simple var
@@ -638,26 +678,58 @@ string
 =======
 
 val foo = "bar"
+val baz = "https://www.ietf.org/timezones/data/leap-seconds.list"
+val quux = "a /* foo */ b"
 
 ---
 
 (program
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-     (blockexpr
-      (expr
-       (basicexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (literal
-             (string)))))))))))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (string)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (string)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (string)))))))))))))
 
 ===========
 raw string
@@ -716,6 +788,80 @@ val foo = r###"bar"##baz"###
            (atom
             (literal
              (string)))))))))))))
+
+=====
+list
+=====
+
+val ns : list<int> = [
+  1,
+  2,
+  3
+]
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id)))
+          (type
+            (tarrow
+              (tatomic
+                (tbasic
+                  (typeapp
+                    (typecon
+                      (varid
+                        (id)))
+                    (targuments
+                      (anntype
+                        (type
+                          (tarrow
+                            (tatomic
+                              (tbasic
+                                (typeapp
+                                  (typecon
+                                    (varid
+                                      (id))))))))))))))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (cexprs
+                        (aexpr
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (atom
+                                      (literal
+                                        (int)))))))))
+                        (aexpr
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (atom
+                                      (literal
+                                        (int)))))))))
+                        (aexpr
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (atom
+                                      (literal
+                                        (int)))))))))))))))))))))
 
 ====
 fun
@@ -1062,6 +1208,126 @@ val a = if b
                         (varid
                          (id))))))))))))))))))))))))))
 
+=======================================
+advanced keyword continuation, no semi
+=======================================
+
+fun a()
+  if a then
+    w + x
+  elif b then
+    x + y
+  else
+    y + z
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (bodyexpr
+            (blockexpr
+              (expr
+                (block
+                  (statements
+                    (statement
+                      (basicexpr
+                        (ifexpr
+                          (ntlexpr
+                            (ntlopexpr
+                              (ntlprefixexpr
+                                (ntlappexpr
+                                  (atom
+                                    (qidentifier
+                                      (identifier
+                                        (varid
+                                          (id)))))))))
+                          (blockexpr
+                            (expr
+                              (block
+                                (statements
+                                  (statement
+                                    (basicexpr
+                                      (opexpr
+                                        (prefixexpr
+                                          (appexpr
+                                            (atom
+                                              (qidentifier
+                                                (identifier
+                                                  (varid
+                                                    (id)))))))
+                                        (qoperator
+                                          (op))
+                                        (prefixexpr
+                                          (appexpr
+                                            (atom
+                                              (qidentifier
+                                                (identifier
+                                                  (varid
+                                                    (id))))))))))))))
+                          (elifs
+                            (ntlexpr
+                              (ntlopexpr
+                                (ntlprefixexpr
+                                  (ntlappexpr
+                                    (atom
+                                      (qidentifier
+                                        (identifier
+                                          (varid
+                                            (id)))))))))
+                            (blockexpr
+                              (expr
+                                (block
+                                  (statements
+                                    (statement
+                                      (basicexpr
+                                        (opexpr
+                                          (prefixexpr
+                                            (appexpr
+                                              (atom
+                                                (qidentifier
+                                                  (identifier
+                                                    (varid
+                                                      (id)))))))
+                                          (qoperator
+                                            (op))
+                                          (prefixexpr
+                                            (appexpr
+                                              (atom
+                                                (qidentifier
+                                                  (identifier
+                                                    (varid
+                                                      (id))))))))))))))
+                            (blockexpr
+                              (expr
+                                (block
+                                  (statements
+                                    (statement
+                                      (basicexpr
+                                        (opexpr
+                                          (prefixexpr
+                                            (appexpr
+                                              (atom
+                                                (qidentifier
+                                                  (identifier
+                                                    (varid
+                                                      (id)))))))
+                                          (qoperator
+                                            (op))
+                                          (prefixexpr
+                                            (appexpr
+                                              (atom
+                                                (qidentifier
+                                                  (identifier
+                                                    (varid
+                                                      (id))))))))))))))))))))))))))))
+
 ================================
 advanced operator continuations
 ================================
@@ -1072,89 +1338,118 @@ val a = b
   >| d
 val a = b
   > d
+fun a() : a
+  !b
 
 ---
 
 (program
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))
-        (qoperator
-         (op))
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))))))))
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))
-        (qoperator
-         (op))
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))))))))
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))
-        (qoperator
-         (op))
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))))))))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))
+                (qoperator
+                  (op))
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))
+                (qoperator
+                  (op))
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))
+                (qoperator
+                  (op))
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))))))))
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (tresult
+            (tatomic
+              (tbasic
+                (typeapp
+                  (typecon
+                    (varid
+                      (id)))))))
+          (block
+            (statements
+              (statement
+                (basicexpr
+                  (opexpr
+                    (prefixexpr
+                      (prefixexpr
+                        (appexpr
+                          (atom
+                            (qidentifier
+                              (identifier
+                                (varid
+                                  (id))))))))))))))))))
 
 ==================
 braced modulebody
@@ -1171,9 +1466,7 @@ module foo/bar {
 (program
  (modulepath
   (qvarid
-   (qid
-    (id)
-    (id))))
+   (qid)))
  (modulebody
   (fixitydecl
    (fixity
@@ -1197,3 +1490,547 @@ module foo/bar {
           (atom
            (literal
             (int)))))))))))))
+
+======
+match
+======
+
+fun a()
+  match a
+    A ->
+      5
+    B ->
+      3
+  val i = 1
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (bodyexpr
+            (blockexpr
+              (expr
+                (block
+                  (statements
+                    (statement
+                      (basicexpr
+                        (matchexpr
+                          (ntlexpr
+                            (ntlopexpr
+                              (ntlprefixexpr
+                                (ntlappexpr
+                                  (atom
+                                    (qidentifier
+                                      (identifier
+                                        (varid
+                                          (id)))))))))
+                          (matchrules
+                            (matchrule
+                              (patterns
+                                (pattern
+                                  (conid
+                                    (id))))
+                              (blockexpr
+                                (expr
+                                  (block
+                                    (statements
+                                      (statement
+                                        (basicexpr
+                                          (opexpr
+                                            (prefixexpr
+                                              (appexpr
+                                                (atom
+                                                  (literal
+                                                    (int)))))))))))))
+                            (matchrule
+                              (patterns
+                                (pattern
+                                  (conid
+                                    (id))))
+                              (blockexpr
+                                (expr
+                                  (block
+                                    (statements
+                                      (statement
+                                        (basicexpr
+                                          (opexpr
+                                            (prefixexpr
+                                              (appexpr
+                                                (atom
+                                                  (literal
+                                                    (int)))))))))))))))))
+                    (statement
+                      (decl
+                        (apattern
+                          (pattern
+                            (identifier
+                              (varid
+                                (id)))))
+                        (blockexpr
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (atom
+                                      (literal
+                                        (int)))))))))))))))))))))
+
+=========
+readline
+=========
+
+pub fun readline() : <asyncx,console> string {
+  await-exn1 fn(cb) {
+    val id = prim-readline(cb)
+    Just( { prim-cancel-readline(id) })
+  }
+}
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (tresult
+            (tatomic
+              (targuments
+                (anntype
+                  (type
+                    (tarrow
+                      (tatomic
+                        (tbasic
+                          (typeapp
+                            (typecon
+                              (varid
+                                (id)))))))))
+                (anntype
+                  (type
+                    (tarrow
+                      (tatomic
+                        (tbasic
+                          (typeapp
+                            (typecon
+                              (varid
+                                (id)))))))))))
+            (tbasic
+              (typeapp
+                (typecon
+                  (varid
+                    (id))))))
+          (block
+            (statements
+              (statement
+                (basicexpr
+                  (opexpr
+                    (prefixexpr
+                      (appexpr
+                        (appexpr
+                          (atom
+                            (qidentifier
+                              (identifier
+                                (varid
+                                  (id))))))
+                        (fnexpr
+                          (funbody
+                            (pparameters
+                              (pparameter
+                                (pattern
+                                  (identifier
+                                    (varid
+                                      (id))))))
+                            (bodyexpr
+                              (blockexpr
+                                (expr
+                                  (block
+                                    (statements
+                                      (statement
+                                        (decl
+                                          (apattern
+                                            (pattern
+                                              (identifier
+                                                (varid
+                                                  (id)))))
+                                          (blockexpr
+                                            (expr
+                                              (basicexpr
+                                                (opexpr
+                                                  (prefixexpr
+                                                    (appexpr
+                                                      (appexpr
+                                                        (atom
+                                                          (qidentifier
+                                                            (identifier
+                                                              (varid
+                                                                (id))))))
+                                                      (arguments
+                                                        (argument
+                                                          (expr
+                                                            (basicexpr
+                                                              (opexpr
+                                                                (prefixexpr
+                                                                  (appexpr
+                                                                    (atom
+                                                                      (qidentifier
+                                                                        (identifier
+                                                                          (varid
+                                                                            (id))))))))))))))))))))
+                                      (statement
+                                        (basicexpr
+                                          (opexpr
+                                            (prefixexpr
+                                              (appexpr
+                                                (appexpr
+                                                  (atom
+                                                    (qconstructor
+                                                      (conid
+                                                        (id)))))
+                                                (arguments
+                                                  (argument
+                                                    (expr
+                                                      (block
+                                                        (statements
+                                                          (statement
+                                                            (basicexpr
+                                                              (opexpr
+                                                                (prefixexpr
+                                                                  (appexpr
+                                                                    (appexpr
+                                                                      (atom
+                                                                        (qidentifier
+                                                                          (identifier
+                                                                            (varid
+                                                                              (id))))))
+                                                                    (arguments
+                                                                      (argument
+                                                                        (expr
+                                                                          (basicexpr
+                                                                            (opexpr
+                                                                              (prefixexpr
+                                                                                (appexpr
+                                                                                  (atom
+                                                                                    (qidentifier
+                                                                                      (identifier
+                                                                                        (varid
+                                                                                          (id))))))))))))))))))))))))))))))))))))))))))))))
+
+===============================
+statement block in else branch
+===============================
+
+fun a()
+  if b then c else
+    val d = e
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (bodyexpr
+            (blockexpr
+              (expr
+                (block
+                  (statements
+                    (statement
+                      (basicexpr
+                        (ifexpr
+                          (ntlexpr
+                            (ntlopexpr
+                              (ntlprefixexpr
+                                (ntlappexpr
+                                  (atom
+                                    (qidentifier
+                                      (identifier
+                                        (varid
+                                          (id)))))))))
+                          (blockexpr
+                            (expr
+                              (basicexpr
+                                (opexpr
+                                  (prefixexpr
+                                    (appexpr
+                                      (atom
+                                        (qidentifier
+                                          (identifier
+                                            (varid
+                                              (id)))))))))))
+                          (elifs
+                            (blockexpr
+                              (expr
+                                (block
+                                  (statements
+                                    (statement
+                                      (decl
+                                        (apattern
+                                          (pattern
+                                            (identifier
+                                              (varid
+                                                (id)))))
+                                        (blockexpr
+                                          (expr
+                                            (basicexpr
+                                              (opexpr
+                                                (prefixexpr
+                                                  (appexpr
+                                                    (atom
+                                                      (qidentifier
+                                                        (identifier
+                                                          (varid
+                                                            (id)))))))))))))))))))))))))))))))
+
+================
+abstract struct
+================
+
+abstract struct calendar
+  name        : string
+  long-name   : string
+  month-prefix: string
+  show-era    : (date) -> string
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (typedecl
+        (typeid
+          (varid
+            (id)))
+        (conparams
+          (sconparams
+            (parameter
+              (paramid
+                (identifier
+                  (varid
+                    (id))))
+              (type
+                (tarrow
+                  (tatomic
+                    (tbasic
+                      (typeapp
+                        (typecon
+                          (varid
+                            (id)))))))))
+            (parameter
+              (paramid
+                (identifier
+                  (varid
+                    (id))))
+              (type
+                (tarrow
+                  (tatomic
+                    (tbasic
+                      (typeapp
+                        (typecon
+                          (varid
+                            (id)))))))))
+            (parameter
+              (paramid
+                (identifier
+                  (varid
+                    (id))))
+              (type
+                (tarrow
+                  (tatomic
+                    (tbasic
+                      (typeapp
+                        (typecon
+                          (varid
+                            (id)))))))))
+            (parameter
+              (paramid
+                (identifier
+                  (varid
+                    (id))))
+              (type
+                (tarrow
+                  (tatomic
+                    (tbasic
+                      (tparams
+                        (tparam
+                          (anntype
+                            (type
+                              (tarrow
+                                (tatomic
+                                  (tbasic
+                                    (typeapp
+                                      (typecon
+                                        (varid
+                                          (id)))))))))))))
+                  (tresult
+                    (tatomic
+                      (tbasic
+                        (typeapp
+                          (typecon
+                            (varid
+                              (id))))))))))))))))
+
+=======
+prints
+=======
+
+noinline fun prints( s : string ) : console ()
+  (unsafe-nostate
+    match !redirect
+      Nothing -> xprints(s)
+      Just(f) -> f(s)
+  )()
+
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (inlinemod)
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (pparameters
+            (pparameter
+              (pattern
+                (identifier
+                  (varid
+                    (id))))
+              (type
+                (tarrow
+                  (tatomic
+                    (tbasic
+                      (typeapp
+                        (typecon
+                          (varid
+                            (id))))))))))
+          (tresult
+            (tatomic
+              (tbasic
+                (typeapp
+                  (typecon
+                    (varid
+                      (id))))))
+            (tbasic))
+          (block
+            (statements
+              (statement
+                (basicexpr
+                  (opexpr
+                    (prefixexpr
+                      (appexpr
+                        (appexpr
+                          (atom
+                            (aexprs
+                              (aexpr
+                                (expr
+                                  (basicexpr
+                                    (opexpr
+                                      (prefixexpr
+                                        (appexpr
+                                          (appexpr
+                                            (atom
+                                              (qidentifier
+                                                (identifier
+                                                  (varid
+                                                    (id))))))
+                                          (block
+                                            (statements
+                                              (statement
+                                                (basicexpr
+                                                  (matchexpr
+                                                    (ntlexpr
+                                                      (ntlopexpr
+                                                        (ntlprefixexpr
+                                                          (ntlprefixexpr
+                                                            (ntlappexpr
+                                                              (atom
+                                                                (qidentifier
+                                                                  (identifier
+                                                                    (varid
+                                                                      (id))))))))))
+                                                    (matchrules
+                                                      (matchrule
+                                                        (patterns
+                                                          (pattern
+                                                            (conid
+                                                              (id))))
+                                                        (blockexpr
+                                                          (expr
+                                                            (basicexpr
+                                                              (opexpr
+                                                                (prefixexpr
+                                                                  (appexpr
+                                                                    (appexpr
+                                                                      (atom
+                                                                        (qidentifier
+                                                                          (identifier
+                                                                            (varid
+                                                                              (id))))))
+                                                                    (arguments
+                                                                      (argument
+                                                                        (expr
+                                                                          (basicexpr
+                                                                            (opexpr
+                                                                              (prefixexpr
+                                                                                (appexpr
+                                                                                  (atom
+                                                                                    (qidentifier
+                                                                                      (identifier
+                                                                                        (varid
+                                                                                          (id)))))))))))))))))))
+                                                      (matchrule
+                                                        (patterns
+                                                          (pattern
+                                                            (conid
+                                                              (id))
+                                                            (patargs
+                                                              (patarg
+                                                                (apattern
+                                                                  (pattern
+                                                                    (identifier
+                                                                      (varid
+                                                                        (id)))))))))
+                                                        (blockexpr
+                                                          (expr
+                                                            (basicexpr
+                                                              (opexpr
+                                                                (prefixexpr
+                                                                  (appexpr
+                                                                    (appexpr
+                                                                      (atom
+                                                                        (qidentifier
+                                                                          (identifier
+                                                                            (varid
+                                                                              (id))))))
+                                                                    (arguments
+                                                                      (argument
+                                                                        (expr
+                                                                          (basicexpr
+                                                                            (opexpr
+                                                                              (prefixexpr
+                                                                                (appexpr
+                                                                                  (atom
+                                                                                    (qidentifier
+                                                                                      (identifier
+                                                                                        (varid
+                                                                                          (id))))))))))))))))))))))))))))))))))))))))))))))

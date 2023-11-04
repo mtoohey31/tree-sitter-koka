@@ -900,11 +900,6 @@
     }
   },
   {
-    "type": "idop",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "ifexpr",
     "named": true,
     "fields": {},
@@ -1752,25 +1747,6 @@
     }
   },
   {
-    "type": "qconid",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "conid",
-          "named": true
-        },
-        {
-          "type": "id",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "qconstructor",
     "named": true,
     "fields": {},
@@ -1784,21 +1760,6 @@
         },
         {
           "type": "qconid",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "qid",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "id",
           "named": true
         }
       ]
@@ -1822,21 +1783,6 @@
         },
         {
           "type": "qvarid",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "qidop",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "id",
           "named": true
         }
       ]
@@ -2446,11 +2392,6 @@
     }
   },
   {
-    "type": "wildcard",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "witheff",
     "named": true,
     "fields": {},
@@ -2548,10 +2489,6 @@
     "named": false
   },
   {
-    "type": "/",
-    "named": false
-  },
-  {
     "type": "/*",
     "named": false
   },
@@ -2589,10 +2526,6 @@
   },
   {
     "type": "]",
-    "named": false
-  },
-  {
-    "type": "_",
     "named": false
   },
   {
@@ -2692,6 +2625,10 @@
     "named": true
   },
   {
+    "type": "idop",
+    "named": true
+  },
+  {
     "type": "if",
     "named": false
   },
@@ -2772,6 +2709,18 @@
     "named": false
   },
   {
+    "type": "qconid",
+    "named": true
+  },
+  {
+    "type": "qid",
+    "named": true
+  },
+  {
+    "type": "qidop",
+    "named": true
+  },
+  {
     "type": "raw",
     "named": false
   },
@@ -2814,6 +2763,10 @@
   {
     "type": "var",
     "named": false
+  },
+  {
+    "type": "wildcard",
+    "named": true
   },
   {
     "type": "with",
