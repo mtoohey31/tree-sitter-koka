@@ -5,12 +5,24 @@
 (appexpr
   function: (appexpr
     (atom
-      (qidentifier)) @function))
+      (qidentifier
+        [
+          (qvarid)
+          (qidop)
+          (identifier
+            [(varid) (idop)] @function)
+        ] @function))))
 
 (appexpr
   function: (appexpr
     field: (atom
-      (qidentifier) @function.method)))
+      (qidentifier
+        [
+          (qvarid)
+          (qidop)
+          (identifier
+            [(varid) (idop)] @function.method)
+        ] @function.method))))
 
 [
   "initially"
@@ -21,10 +33,12 @@
 
 (puredecl
   (funid
-    (identifier) @function))
+    (identifier
+      [(varid) (idop)] @function)))
 
 (operation
-  (identifier) @function)
+  (identifier
+    [(varid) (idop)] @function))
 
 ; Identifiers
 
@@ -42,6 +56,7 @@
 ; Operators
 
 [
+  "="
   (idop)
   (op)
   (qidop)
