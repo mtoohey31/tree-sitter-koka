@@ -11,48 +11,51 @@ enum TokenType {
   EndContinuationSignal
 };
 
-// PERF: Refactor this into a vector instead of a linked list for faster
-// serialization/deserialization.
-struct layout_stack_entry {
-  int indent_length;
-  struct layout_stack_entry *below;
-};
-
 struct scanner {
-  struct layout_stack_entry *layout_stack;
   int close_braces_to_insert;
   int semis_to_insert;
   bool no_final_semi_insert;
   bool eof_semi_inserted;
   bool push_layout_stack_after_open_brace;
+  size_t stack_len;
+  size_t stack_cap;
+  int *stack;
 };
 
 void scanner_reset(struct scanner *scanner) {
-  scanner->layout_stack = NULL;
   scanner->close_braces_to_insert = 0;
   scanner->semis_to_insert = 0;
   scanner->no_final_semi_insert = false;
   scanner->eof_semi_inserted = false;
   scanner->push_layout_stack_after_open_brace = false;
+  scanner->stack_len = 0;
+  scanner->stack_cap = 0;
+  scanner->stack = NULL;
 }
 
 void scanner_push_indent(struct scanner *scanner, int indent_length) {
-  struct layout_stack_entry *above = malloc(sizeof(struct layout_stack_entry));
-  above->below = scanner->layout_stack;
-  above->indent_length = indent_length;
-  scanner->layout_stack = above;
+  if (scanner->stack_len == scanner->stack_cap) {
+    // Full, so grow.
+    size_t new_stack_cap = scanner->stack_cap == 0 ? 8 : scanner->stack_cap * 2;
+
+    int *new_stack = malloc(sizeof(int) * new_stack_cap);
+    memcpy(new_stack, scanner->stack, scanner->stack_len);
+
+    free(scanner->stack);
+
+    scanner->stack_cap = new_stack_cap;
+    scanner->stack = new_stack;
+  }
+
+  scanner->stack[scanner->stack_len++] = indent_length;
 }
 
 int scanner_pop_indent(struct scanner *scanner) {
-  if (scanner->layout_stack == NULL) {
+  if (scanner->stack_len == 0) {
     return -1;
   }
 
-  int res = scanner->layout_stack->indent_length;
-  struct layout_stack_entry *below = scanner->layout_stack->below;
-  free(scanner->layout_stack);
-  scanner->layout_stack = below;
-  return res;
+  return scanner->stack[--scanner->stack_len];
 }
 
 // Mixing tabs and spaces appears to be legal, and tabs seem to take up a visual
@@ -120,69 +123,48 @@ void *tree_sitter_koka_external_scanner_create() {
 
 void tree_sitter_koka_external_scanner_destroy(void *payload) {
   struct scanner *scanner = payload;
-  while (scanner_pop_indent(scanner) >= 0)
-    ;
+  free(scanner->stack);
   free(scanner);
 }
 
 unsigned tree_sitter_koka_external_scanner_serialize(void *payload,
                                                      char *buffer) {
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-  _Static_assert(sizeof(int) * 2 + sizeof(bool) * 3 <=
+  _Static_assert(sizeof(struct scanner) <=
                      TREE_SITTER_SERIALIZATION_BUFFER_SIZE,
                  "serialization size is too small");
 #else
-  assert(sizeof(int) * 2 + sizeof(bool) * 3 <=
-             TREE_SITTER_SERIALIZATION_BUFFER_SIZE &&
+  assert(sizeof(struct scanner) <= TREE_SITTER_SERIALIZATION_BUFFER_SIZE &&
          "serialization size is too small");
 #endif
 
+  // This serializes the stack pointer too, but that's fine as long as we don't
+  // use it when deserializing, and desirable so we don't have to think about
+  // struct layout rules.
   struct scanner *scanner = payload;
-
-  ((int *)buffer)[0] = scanner->close_braces_to_insert;
-  ((int *)buffer)[1] = scanner->semis_to_insert;
-  int length = sizeof(int) * 2;
-  ((bool *)(buffer + length))[0] = scanner->no_final_semi_insert;
-  ((bool *)(buffer + length))[1] = scanner->eof_semi_inserted;
-  ((bool *)(buffer + length))[2] = scanner->push_layout_stack_after_open_brace;
-  length += sizeof(bool) * 3;
-
-  // BUG: If we run out of space, there's nothing else we can do other than drop
-  // indent levels. We shouldn't ever have that much indents in real life
-  // though so it's fine.
-  for (int *write = (int *)(buffer + length);
-       length < TREE_SITTER_SERIALIZATION_BUFFER_SIZE; write++) {
-    *write = scanner_pop_indent(scanner);
-    if (*write < 0) {
-      break;
-    }
-    length += sizeof(int);
-  };
-
-  return length;
+  memcpy(buffer, scanner, sizeof(struct scanner));
+  memcpy(buffer + sizeof(struct scanner), scanner->stack,
+         sizeof(int) * scanner->stack_len);
+  return sizeof(struct scanner) + sizeof(int) * scanner->stack_len;
 }
 
 void tree_sitter_koka_external_scanner_deserialize(void *payload,
                                                    const char *buffer,
                                                    unsigned length) {
   struct scanner *scanner = payload;
+  free(scanner->stack);
   scanner_reset(scanner);
 
   if (length == 0) {
     return;
   }
 
-  assert(length >= sizeof(int) * 2 + sizeof(bool) * 3 && "invalid length");
-  scanner->close_braces_to_insert = ((int *)buffer)[0];
-  scanner->semis_to_insert = ((int *)buffer)[1];
-  scanner->no_final_semi_insert = ((bool *)buffer + sizeof(int) * 2)[0];
-  scanner->eof_semi_inserted = ((bool *)buffer + sizeof(int) * 2)[1];
-  scanner->push_layout_stack_after_open_brace =
-      ((bool *)buffer + sizeof(int) * 2)[2];
-  for (int *read = (int *)(buffer + length) - 1;
-       ((char *)read) - buffer >= sizeof(int) * 2 + sizeof(bool) * 3; read--) {
-    scanner_push_indent(scanner, *read);
-  }
+  assert(length >= sizeof(struct scanner) && "invalid length");
+
+  memcpy(scanner, buffer, sizeof(struct scanner));
+  int stack_len = length - sizeof(struct scanner);
+  scanner->stack = malloc(stack_len);
+  memcpy(scanner->stack, buffer + sizeof(struct scanner), stack_len);
 }
 
 bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
@@ -296,9 +278,8 @@ AFTER_WHITESPACE:
   };
 
   if (found_eol) {
-    int prev_indent_length = scanner->layout_stack != NULL
-                                 ? scanner->layout_stack->indent_length
-                                 : 0;
+    int prev_indent_length =
+        scanner->stack_len != 0 ? scanner->stack[scanner->stack_len - 1] : 0;
     if (prev_indent_length < indent_length && valid_symbols[OpenBrace] &&
         !valid_symbols[EndContinuationSignal] && !is_start_cont &&
         (!maybe_start_cont || !resolve_maybe_start_cont(lexer))) {
@@ -313,8 +294,8 @@ AFTER_WHITESPACE:
       return !maybe_start_cont || !resolve_maybe_start_cont(lexer);
     } else if (prev_indent_length > indent_length && valid_symbols[Semi] &&
                lexer->lookahead != '}') {
-      while (scanner->layout_stack != NULL &&
-             scanner->layout_stack->indent_length > indent_length) {
+      while (scanner->stack_len != 0 &&
+             scanner->stack[scanner->stack_len - 1] > indent_length) {
         scanner->close_braces_to_insert++;
         scanner->semis_to_insert++;
         scanner_pop_indent(scanner);
