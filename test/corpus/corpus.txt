@@ -2034,3 +2034,162 @@ noinline fun prints( s : string ) : console ()
                                                                                       (identifier
                                                                                         (varid
                                                                                           (id))))))))))))))))))))))))))))))))))))))))))))))
+
+==========
+trailing1
+==========
+
+fun main() {
+  val xs = [1,2,3,]
+  xs.length
+}
+---
+
+(program
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (bodyexpr
+            (blockexpr
+              (expr
+                (block
+                  (statements
+                    (statement
+                      (decl
+                        (apattern
+                          (pattern
+                            (identifier
+                              (varid
+                                (id)))))
+                        (blockexpr
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (atom
+                                      (cexprs
+                                        (aexpr
+                                          (expr
+                                            (basicexpr
+                                              (opexpr
+                                                (prefixexpr
+                                                  (appexpr
+                                                    (atom
+                                                      (literal
+                                                        (int)))))))))
+                                        (aexpr
+                                          (expr
+                                            (basicexpr
+                                              (opexpr
+                                                (prefixexpr
+                                                  (appexpr
+                                                    (atom
+                                                      (literal
+                                                        (int)))))))))
+                                        (aexpr
+                                          (expr
+                                            (basicexpr
+                                              (opexpr
+                                                (prefixexpr
+                                                  (appexpr
+                                                    (atom
+                                                      (literal
+                                                        (int)))))))))))))))))))
+                    (statement
+                      (basicexpr
+                        (opexpr
+                          (prefixexpr
+                            (appexpr
+                              (appexpr
+                                (atom
+                                  (qidentifier
+                                    (identifier
+                                      (varid
+                                        (id))))))
+                              (atom
+                                (qidentifier
+                                  (identifier
+                                    (varid
+                                      (id))))))))))))))))))))
+
+==========
+trailing2
+==========
+
+fun main() {
+  val x = (1,2,)
+  x.fst
+}
+---
+
+(program
+  (statements
+    (statement
+      (decl
+        (fundecl
+          (funid
+            (identifier
+              (varid
+                (id))))
+          (funbody
+            (bodyexpr
+              (blockexpr
+                (expr
+                  (block
+                    (statements
+                      (statement
+                        (decl
+                          (apattern
+                            (pattern
+                              (identifier
+                                (varid
+                                  (id)))))
+                          (blockexpr
+                            (expr
+                              (basicexpr
+                                (opexpr
+                                  (prefixexpr
+                                    (appexpr
+                                      (atom
+                                        (aexprs
+                                          (aexpr
+                                            (expr
+                                              (basicexpr
+                                                (opexpr
+                                                  (prefixexpr
+                                                    (appexpr
+                                                      (atom
+                                                        (literal
+                                                          (int)))))))))
+                                          (aexpr
+                                            (expr
+                                              (basicexpr
+                                                (opexpr
+                                                  (prefixexpr
+                                                    (appexpr
+                                                      (atom
+                                                        (literal
+                                                          (int))))))))))
+                                        (ERROR))))))))))
+                      (statement
+                        (basicexpr
+                          (opexpr
+                            (prefixexpr
+                              (appexpr
+                                (appexpr
+                                  (atom
+                                    (qidentifier
+                                      (identifier
+                                        (varid
+                                          (id))))))
+                                (atom
+                                  (qidentifier
+                                    (identifier
+                                      (varid
+                                        (id)))))))))))))))))))))

@@ -197,7 +197,7 @@ bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
       scanner->semis_to_insert = 0;
       scanner->no_final_semi_insert = false;
     }
-    if (scanner->semis_to_insert == 0 && !lexer->eof(lexer)) {
+    if (scanner->semis_to_insert == 0) {
       lexer->mark_end(lexer);
     }
     lexer->result_symbol = CloseBrace;
@@ -207,7 +207,7 @@ bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
     scanner->semis_to_insert--;
     lexer->mark_end(lexer);
     advance(lexer);
-    if (scanner->semis_to_insert == 0 && !lexer->eof(lexer)) {
+    if (scanner->semis_to_insert == 0) {
       lexer->mark_end(lexer);
     }
     lexer->result_symbol = Semi;
