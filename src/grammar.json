@@ -5065,8 +5065,15 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "PATTERN",
-          "value": "([a-z][a-zA-Z0-9_-]*'*\\/)+\\("
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "([a-z][a-zA-Z0-9_-]*'*\\/)+"
+          }
         },
         {
           "type": "SYMBOL",
@@ -5082,8 +5089,27 @@
       ]
     },
     "idop": {
-      "type": "PATTERN",
-      "value": "\\(([$%&*+@!\\\\^~=.\\-:?|<>]+|\\/)\\)"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "PATTERN",
+            "value": "([$%&*+@!\\\\^~=.\\-:?|<>]+|\\/)"
+          }
+        },
+        {
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "STRING",
+            "value": ")"
+          }
+        }
+      ]
     },
     "op": {
       "type": "PREC_RIGHT",

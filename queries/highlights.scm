@@ -91,6 +91,12 @@
   (qidop)
 ] @operator
 
+; (idop
+;   () @punctuation.delimiter)
+
+(qidop
+  ["(" ")"] @punctuation.delimiter)
+
 ; Keywords
 
 [

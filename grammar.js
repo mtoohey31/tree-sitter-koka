@@ -594,7 +594,7 @@ module.exports = grammar({
 
     // Character classes
     _symbols: (_) => /[$%&*+@!\\^~=.\-:?|<>]+|\//,
-    conid: ($) => alias(/[A-Z][a-zA-Z0-9_-]*'*/, $.id),
+    conid: (_) => /[A-Z][a-zA-Z0-9_-]*'*/,
     id: (_) => /[a-z][a-zA-Z0-9_-]*'*/,
     escape: (_) =>
       token.immediate(
@@ -621,10 +621,19 @@ module.exports = grammar({
     // Identifiers and operators
     qconid: ($) => seq(/([a-z][a-zA-Z0-9_-]*'*\/)+/, $.conid),
     qid: ($) => seq(/([a-z][a-zA-Z0-9_-]*'*\/)+/, $.id),
-    qidop: ($) => seq(/([a-z][a-zA-Z0-9_-]*'*\/)+\(/, $.idop, token.immediate(")")),
-    conid: ($) => /[A-Z][a-zA-Z0-9_-]*'*/,
-    id: (_) => /[a-z][a-zA-Z0-9_-]*'*/,
-    idop: (_) => /\(([$%&*+@!\\^~=.\-:?|<>]+|\/)\)/,
+    qidop: ($) =>
+      seq(
+        "(",
+        token.immediate(/([a-z][a-zA-Z0-9_-]*'*\/)+/),
+        $.idop,
+        token.immediate(")"),
+      ),
+    idop: (_) =>
+      seq(
+        "(",
+        token.immediate(/([$%&*+@!\\^~=.\-:?|<>]+|\/)/),
+        token.immediate(")"),
+      ),
     op: ($) =>
       prec.right(seq($._symbols, optional($._end_continuation_signal))),
     wildcard: (_) => /_[a-zA-Z0-9_-]*/,

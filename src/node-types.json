@@ -885,6 +885,11 @@
     }
   },
   {
+    "type": "idop",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "ifexpr",
     "named": true,
     "fields": {},
@@ -2660,10 +2665,6 @@
   },
   {
     "type": "id",
-    "named": true
-  },
-  {
-    "type": "idop",
     "named": true
   },
   {
