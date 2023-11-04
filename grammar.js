@@ -345,7 +345,6 @@ module.exports = grammar({
           $.ntlexpr,
           choice(
             seq("then", $.blockexpr, optional($.elifs)),
-            // TODO: Th
             seq("return", $.expr),
           ),
         ),
