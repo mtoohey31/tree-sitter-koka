@@ -44,10 +44,27 @@
 
 (puredecl
   (binder
-    (identifier) @constant))
+    (identifier
+      [(varid) (idop)] @constant)))
 
 (modulepath
   [(qvarid) (varid)] @namespace)
+
+(appexpr
+  field: (atom
+    (qidentifier
+      [
+        (qvarid)
+        (qidop)
+        (identifier
+          [(varid) (idop)] @variable.other.member)
+      ] @variable.other.member)))
+
+(typeid
+  (varid) @type)
+
+(tbinder
+  (varid) @type)
 
 (varid) @variable
 
