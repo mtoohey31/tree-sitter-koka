@@ -14,4 +14,4 @@ scope = "source.text"
 injection-regex = "text"
 file-types = ["txt"]
 roots = []
-indent = { tab-width = 1, unit = " " }
+indent = { tab-width = 2, unit = "  " }

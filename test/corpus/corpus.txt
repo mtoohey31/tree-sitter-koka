@@ -7,9 +7,9 @@ module foo
 ---
 
 (program
- (modulepath
-  (varid
-   (id))))
+  (modulepath
+    (varid
+      (id))))
 
 ================
 long modulepath
@@ -20,9 +20,9 @@ module foo/bar/baz
 ---
 
 (program
- (modulepath
-  (qvarid
-   (qid))))
+  (modulepath
+    (qvarid
+      (qid))))
 
 ========
 imports
@@ -37,29 +37,29 @@ import foo/bar/baz = quux
 ---
 
 (program
- (modulebody
-  (importdecl
-   (modulepath
-    (varid
-     (id))))
-  (importdecl
-   (modulepath
-    (qvarid
-     (qid))))
-  (importdecl
-   (modulepath
-    (varid
-     (id)))
-    (modulepath
-     (varid
-      (id))))
-  (importdecl
-   (modulepath
-    (qvarid
-     (qid)))
-    (modulepath
-     (varid
-      (id))))))
+  (modulebody
+    (importdecl
+      (modulepath
+        (varid
+          (id))))
+    (importdecl
+      (modulepath
+        (qvarid
+          (qid))))
+    (importdecl
+      (modulepath
+        (varid
+          (id)))
+        (modulepath
+          (varid
+            (id))))
+    (importdecl
+      (modulepath
+        (qvarid
+          (qid)))
+        (modulepath
+          (varid
+            (id))))))
 
 =======
 fixity
@@ -654,24 +654,24 @@ val foo = bar
 ---
 
 (program
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-     (blockexpr
-      (expr
-       (basicexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (qidentifier
-             (identifier
-              (varid
-               (id)))))))))))))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+          (blockexpr
+            (expr
+              (basicexpr
+                (opexpr
+                  (prefixexpr
+                    (appexpr
+                      (atom
+                        (qidentifier
+                          (identifier
+                            (varid
+                              (id)))))))))))))))
 
 =======
 string
@@ -742,52 +742,52 @@ val foo = r###"bar"##baz"###
 ---
 
 (program
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-     (blockexpr
-      (expr
-       (basicexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (literal
-             (string)))))))))))
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-     (blockexpr
-      (expr
-       (basicexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (literal
-             (string)))))))))))
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-     (blockexpr
-      (expr
-       (basicexpr
-        (opexpr
-         (prefixexpr
-          (appexpr
-           (atom
-            (literal
-             (string)))))))))))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+          (blockexpr
+            (expr
+              (basicexpr
+                (opexpr
+                  (prefixexpr
+                    (appexpr
+                      (atom
+                        (literal
+                          (string)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+          (blockexpr
+            (expr
+              (basicexpr
+                (opexpr
+                  (prefixexpr
+                    (appexpr
+                      (atom
+                        (literal
+                          (string)))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+          (blockexpr
+            (expr
+              (basicexpr
+                (opexpr
+                  (prefixexpr
+                    (appexpr
+                      (atom
+                        (literal
+                          (string)))))))))))))
 
 =====
 list
@@ -873,29 +873,29 @@ fun main()
 ---
 
 (program
- (modulebody
-  (topdecl
-   (puredecl
-    (funid
-     (identifier
-      (varid
-       (id))))
-    (funbody
-     (bodyexpr
-      (blockexpr
-       (expr
-        (block
-         (statements
-          (statement
-           (returnexpr
-            (expr
-             (basicexpr
-              (opexpr
-               (prefixexpr
-                (appexpr
-                 (atom
-                  (literal
-                   (int))))))))))))))))))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (bodyexpr
+            (blockexpr
+              (expr
+                (block
+                  (statements
+                    (statement
+                      (returnexpr
+                        (expr
+                          (basicexpr
+                            (opexpr
+                              (prefixexpr
+                                (appexpr
+                                  (atom
+                                    (literal
+                                      (int))))))))))))))))))))
 
 ============
 linecomment
@@ -911,26 +911,26 @@ val foo = 0 // another comment
 ---
 
 (program
- (linecomment)
- (linecomment)
- (linecomment)
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (literal
-            (int)))))))))))
-  (linecomment)))
+  (linecomment)
+  (linecomment)
+  (linecomment)
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (linecomment)))
 
 =============
 blockcomment
@@ -948,28 +948,28 @@ val foo = 0 /* another comment */
 ---
 
 (program
- (blockcomment)
- (blockcomment)
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (literal
-            (int)))))))))))
   (blockcomment)
-  (blockcomment
-   (blockcomment
-    (blockcomment)))))
+  (blockcomment)
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))
+    (blockcomment)
+    (blockcomment
+      (blockcomment
+        (blockcomment)))))
 
 ====================
 top level statments
@@ -981,35 +981,35 @@ var bar := baz
 ---
 
 (program
- (statements
-  (statement
-   (withstat
-    (basicexpr
-     (opexpr
-      (prefixexpr
-       (appexpr
-        (atom
-         (qidentifier
+  (statements
+    (statement
+      (withstat
+        (basicexpr
+          (opexpr
+            (prefixexpr
+              (appexpr
+                (atom
+                  (qidentifier
+                    (identifier
+                      (varid
+                        (id)))))))))))
+    (statement
+      (decl
+        (binder
           (identifier
-           (varid
-            (id)))))))))))
-  (statement
-   (decl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))))))))))
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))))))))))
 
 =============================
 no semis no trailing newline
@@ -1019,24 +1019,24 @@ val foo = bar
 ---
 
 (program
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))))))))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))))))))))
 
 =================================
 no semis easy start continuation
@@ -1048,33 +1048,33 @@ val foo = a
 ---
 
 (program
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))
-        (qoperator
-         (op))
-        (prefixexpr
-         (appexpr
-          (atom
-           (qidentifier
-            (identifier
-             (varid
-              (id)))))))))))))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))
+                (qoperator
+                  (op))
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (qidentifier
+                        (identifier
+                          (varid
+                            (id)))))))))))))))
 
 ===============================
 advanced keyword continuations
@@ -1093,120 +1093,120 @@ val a = if b
 ---
 
 (program
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (ifexpr
-        (ntlexpr
-         (ntlopexpr
-          (ntlprefixexpr
-           (ntlappexpr
-            (atom
-             (qidentifier
-              (identifier
-               (varid
-                (id)))))))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
         (blockexpr
-         (expr
-          (basicexpr
-           (opexpr
-            (prefixexpr
-             (appexpr
-              (atom
-               (qidentifier
-                (identifier
-                 (varid
-                  (id)))))))))))
-        (elifs
-         (ntlexpr
-          (ntlopexpr
-           (ntlprefixexpr
-            (ntlappexpr
-             (atom
-              (qidentifier
-               (identifier
-                (varid
-                 (id)))))))))
+          (expr
+            (basicexpr
+              (ifexpr
+                (ntlexpr
+                  (ntlopexpr
+                    (ntlprefixexpr
+                      (ntlappexpr
+                        (atom
+                          (qidentifier
+                            (identifier
+                              (varid
+                                (id)))))))))
+                (blockexpr
+                  (expr
+                    (basicexpr
+                      (opexpr
+                        (prefixexpr
+                          (appexpr
+                            (atom
+                              (qidentifier
+                                (identifier
+                                  (varid
+                                    (id)))))))))))
+                (elifs
+                  (ntlexpr
+                    (ntlopexpr
+                      (ntlprefixexpr
+                        (ntlappexpr
+                          (atom
+                            (qidentifier
+                              (identifier
+                                (varid
+                                  (id)))))))))
+                (blockexpr
+                  (expr
+                    (basicexpr
+                      (opexpr
+                        (prefixexpr
+                          (appexpr
+                            (atom
+                              (qidentifier
+                                (identifier
+                                  (varid
+                                    (id)))))))))))
+                (blockexpr
+                  (expr
+                    (basicexpr
+                      (opexpr
+                        (prefixexpr
+                          (appexpr
+                            (atom
+                              (qidentifier
+                                (identifier
+                                  (varid
+                                    (id))))))))))))))))))
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
         (blockexpr
-         (expr
-          (basicexpr
-           (opexpr
-            (prefixexpr
-             (appexpr
-              (atom
-               (qidentifier
-                (identifier
-                 (varid
-                  (id)))))))))))
-        (blockexpr
-         (expr
-          (basicexpr
-           (opexpr
-            (prefixexpr
-             (appexpr
-              (atom
-               (qidentifier
-                (identifier
-                 (varid
-                  (id))))))))))))))))))
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (ifexpr
-        (ntlexpr
-         (ntlopexpr
-          (ntlprefixexpr
-           (ntlappexpr
-            (atom
-             (qidentifier
-              (identifier
-               (varid
-                (id)))))))))
-        (blockexpr
-         (expr
-          (basicexpr
-           (opexpr
-            (prefixexpr
-             (appexpr
-              (appexpr
-               (atom
-                (literal
-                 (char))))
-              (block
-               (statements
-                (statement
-                 (basicexpr
-                  (opexpr
-                   (prefixexpr
-                    (appexpr
-                     (atom
-                      (qidentifier
-                       (identifier
-                        (varid
-                         (id))))))))))
-                (statement
-                 (basicexpr
-                  (opexpr
-                   (prefixexpr
-                    (appexpr
-                     (atom
-                      (qidentifier
-                       (identifier
-                        (varid
-                         (id))))))))))))))))))))))))))
+          (expr
+            (basicexpr
+              (ifexpr
+                (ntlexpr
+                  (ntlopexpr
+                    (ntlprefixexpr
+                      (ntlappexpr
+                        (atom
+                          (qidentifier
+                            (identifier
+                              (varid
+                                (id)))))))))
+                (blockexpr
+                  (expr
+                    (basicexpr
+                      (opexpr
+                        (prefixexpr
+                          (appexpr
+                            (appexpr
+                              (atom
+                                (literal
+                                  (char))))
+                            (block
+                              (statements
+                                (statement
+                                  (basicexpr
+                                    (opexpr
+                                      (prefixexpr
+                                        (appexpr
+                                          (atom
+                                            (qidentifier
+                                              (identifier
+                                                (varid
+                                                  (id))))))))))
+                                (statement
+                                  (basicexpr
+                                    (opexpr
+                                      (prefixexpr
+                                        (appexpr
+                                          (atom
+                                            (qidentifier
+                                              (identifier
+                                                (varid
+                                                  (id))))))))))))))))))))))))))
 
 =======================================
 advanced keyword continuation, no semi
@@ -1464,32 +1464,32 @@ module foo/bar {
 ---
 
 (program
- (modulepath
-  (qvarid
-   (qid)))
- (modulebody
-  (fixitydecl
-   (fixity
-    (int))
-   (oplist
-    (identifier
-     (idop)))))
- (modulebody
-  (topdecl
-   (puredecl
-    (binder
-     (identifier
-      (varid
-       (id))))
-    (blockexpr
-     (expr
-      (basicexpr
-       (opexpr
-        (prefixexpr
-         (appexpr
-          (atom
-           (literal
-            (int)))))))))))))
+  (modulepath
+    (qvarid
+      (qid)))
+  (modulebody
+    (fixitydecl
+      (fixity
+        (int))
+      (oplist
+        (identifier
+          (idop)))))
+  (modulebody
+    (topdecl
+      (puredecl
+        (binder
+          (identifier
+            (varid
+              (id))))
+        (blockexpr
+          (expr
+            (basicexpr
+              (opexpr
+                (prefixexpr
+                  (appexpr
+                    (atom
+                      (literal
+                        (int)))))))))))))
 
 ======
 match
