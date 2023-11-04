@@ -15,7 +15,7 @@ alias id<a> = a
 //       ^ type
 //        ^ punctuation.bracket
 //          ^ operator
-//            ^ variable
+//            ^ type
 
 val x = baz/other/foo
 // <- keyword.storage.type

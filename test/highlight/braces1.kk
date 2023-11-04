@@ -29,9 +29,11 @@ fun main() {
   //  ^ function
   //        ^ punctuation.bracket
   //         ^ punctuation.bracket
-    return 1
+    return ~!1
     // <- keyword.control.return
-    //     ^ constant.numeric.integer
+    //     ^ operator
+    //      ^ operator
+    //       ^ constant.numeric.integer
 }
 // <- punctuation.bracket
 

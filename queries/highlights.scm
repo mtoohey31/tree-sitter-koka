@@ -68,6 +68,9 @@
 (tbinder
   (varid) @type)
 
+(typecon
+  (varid) @type)
+
 (modulepath
   [
     (qvarid
@@ -90,6 +93,8 @@
 ; Operators
 
 [
+  "!"
+  "~"
   "="
   (idop)
   (op)
