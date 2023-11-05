@@ -415,8 +415,7 @@ module.exports = grammar({
       ),
     paramid: ($) => choice($.identifier, $.wildcard),
     borrow: (_) => "^",
-    pparameters: ($) =>
-      choice(seq($.pparameters, $._comma, $.pparameter), $.pparameter),
+    pparameters: ($) => sep1($.pparameter, $._comma),
     pparameter: ($) =>
       seq(
         optional($.borrow),

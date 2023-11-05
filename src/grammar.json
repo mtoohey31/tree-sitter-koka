@@ -3098,28 +3098,27 @@
       "value": "^"
     },
     "pparameters": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "pparameters"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "_comma"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "pparameter"
-            }
-          ]
-        },
         {
           "type": "SYMBOL",
           "name": "pparameter"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_comma"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "pparameter"
+              }
+            ]
+          }
         }
       ]
     },

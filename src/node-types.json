@@ -1625,10 +1625,6 @@
         {
           "type": "pparameter",
           "named": true
-        },
-        {
-          "type": "pparameters",
-          "named": true
         }
       ]
     }
