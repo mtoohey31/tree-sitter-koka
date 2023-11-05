@@ -23,14 +23,23 @@ val x = baz/other/foo
 //      ^ namespace
 //          ^ namespace
 //               ^ namespace
-//                ^ variable
+//                ^ namespace
 
 val y = baz/Q(z)
 // <- keyword.storage.type
 //  ^ constant
 //      ^ namespace
 //         ^ namespace
-//          ^ constructor
+//          ^ namespace
 //           ^ punctuation.bracket
 //            ^ variable
 //             ^ punctuation.bracket
+
+val y = baz/(++)
+// <- keyword.storage.type
+//  ^ constant
+//      ^ namespace
+//         ^ namespace
+//          ^ namespace
+//           ^ namespace
+//             ^ namespace

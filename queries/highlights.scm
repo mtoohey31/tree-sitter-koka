@@ -80,22 +80,16 @@
 (typecon
   (varid) @type)
 
-(modulepath
-  [
-    (qvarid
-      (qid
-        (id) @namespace))
-    (varid) @namespace
-  ])
-
 (qvarid
-  (qid
-    (id) @variable)) @namespace
+  (qid) @namespace)
+
+(modulepath (varid) @namespace)
+
+(qconid) @namespace
+
+(qidop) @namespace
 
 (varid) @variable
-
-(qconid
-  (conid) @constructor) @namespace
 
 (conid) @constructor
 

@@ -23,8 +23,7 @@ module foo/bar/baz
 (program
   (modulepath
     (qvarid
-      (qid
-        (id))))
+      (qid)))
   (moduledecl))
 
 ========
@@ -49,8 +48,7 @@ import foo/bar/baz = quux
     (importdecl
       (modulepath
         (qvarid
-          (qid
-            (id)))))
+          (qid))))
     (importdecl
       (modulepath
         (varid
@@ -61,8 +59,7 @@ import foo/bar/baz = quux
     (importdecl
       (modulepath
         (qvarid
-          (qid
-            (id))))
+          (qid)))
         (modulepath
           (varid
             (id))))))
@@ -1482,8 +1479,7 @@ module foo/bar {
 (program
   (modulepath
     (qvarid
-      (qid
-        (id))))
+      (qid)))
   (moduledecl)
   (moduledecl)
   (modulebody
