@@ -9,7 +9,8 @@ module foo
 (program
   (modulepath
     (varid
-      (id))))
+      (id)))
+  (moduledecl))
 
 ================
 long modulepath
@@ -23,7 +24,8 @@ module foo/bar/baz
   (modulepath
     (qvarid
       (qid
-        (id)))))
+        (id))))
+  (moduledecl))
 
 ========
 imports
@@ -38,6 +40,7 @@ import foo/bar/baz = quux
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (importdecl
       (modulepath
@@ -76,6 +79,7 @@ pub infix  40  (!=), (==), (<=), (>=), (<), (>)
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (fixitydecl
       (fixity
@@ -136,6 +140,7 @@ extern import
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (externdecl
@@ -180,6 +185,7 @@ val p = -0x0.45_31CD5_315p+30531
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -431,6 +437,7 @@ val a = n / 2
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -481,6 +488,7 @@ pub effect fun utc() : timescale
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (typedecl
@@ -650,6 +658,7 @@ val foo = bar
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -680,6 +689,7 @@ val quux = "a /* foo */ b"
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -738,6 +748,7 @@ val foo = r###"bar"##baz"###
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -798,6 +809,7 @@ val ns : list<int> = [
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -869,6 +881,7 @@ fun main()
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -907,9 +920,10 @@ val foo = 0 // another comment
 ---
 
 (program
-  (linecomment)
-  (linecomment)
-  (linecomment)
+  (moduledecl
+    (linecomment)
+    (linecomment)
+    (linecomment))
   (modulebody
     (topdecl
       (puredecl
@@ -944,8 +958,9 @@ val foo = 0 /* another comment */
 ---
 
 (program
-  (blockcomment)
-  (blockcomment)
+  (moduledecl
+    (blockcomment)
+    (blockcomment))
   (modulebody
     (topdecl
       (puredecl
@@ -1015,6 +1030,7 @@ val foo = bar
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -1044,6 +1060,7 @@ val foo = a
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -1089,6 +1106,7 @@ val a = if b
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -1219,6 +1237,7 @@ fun a()
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -1340,6 +1359,7 @@ fun a() : a
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -1464,6 +1484,8 @@ module foo/bar {
     (qvarid
       (qid
         (id))))
+  (moduledecl)
+  (moduledecl)
   (modulebody
     (fixitydecl
       (fixity
@@ -1486,7 +1508,9 @@ module foo/bar {
                   (appexpr
                     (atom
                       (literal
-                        (int)))))))))))))
+                        (int))))))))))))
+  (moduledecl)
+  (moduledecl))
 
 ======
 match
@@ -1503,6 +1527,7 @@ fun a()
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -1592,6 +1617,7 @@ pub fun readline() : <asyncx,console> string {
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -1732,6 +1758,7 @@ fun a()
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -1805,6 +1832,7 @@ abstract struct calendar
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (typedecl
@@ -1894,6 +1922,7 @@ noinline fun prints( s : string ) : console ()
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -2038,6 +2067,7 @@ fun main() {
 ---
 
 (program
+  (moduledecl)
   (modulebody
     (topdecl
       (puredecl
@@ -2118,7 +2148,7 @@ fun main() {
   val x = (1,2,)
   x.fst
 }
----
+; TODO: fix this error ---
 
 (program
   (statements

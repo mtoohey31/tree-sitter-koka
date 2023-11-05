@@ -1133,7 +1133,7 @@
   },
   {
     "type": "moduledecl",
-    "named": false,
+    "named": true,
     "fields": {}
   },
   {
@@ -1692,6 +1692,10 @@
       "types": [
         {
           "type": "modulebody",
+          "named": true
+        },
+        {
+          "type": "moduledecl",
           "named": true
         },
         {

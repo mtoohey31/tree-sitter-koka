@@ -173,25 +173,15 @@ bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
   if (scanner->close_braces_to_insert >= scanner->semis_to_insert &&
       scanner->close_braces_to_insert > 0) {
     scanner->close_braces_to_insert--;
-    lexer->mark_end(lexer);
-    advance(lexer);
     if (scanner->semis_to_insert == 1 && scanner->no_final_semi_insert) {
       scanner->semis_to_insert = 0;
       scanner->no_final_semi_insert = false;
-    }
-    if (scanner->semis_to_insert == 0) {
-      lexer->mark_end(lexer);
     }
     lexer->result_symbol = CloseBrace;
     return true;
   }
   if (scanner->semis_to_insert > 0) {
     scanner->semis_to_insert--;
-    lexer->mark_end(lexer);
-    advance(lexer);
-    if (scanner->semis_to_insert == 0) {
-      lexer->mark_end(lexer);
-    }
     lexer->result_symbol = Semi;
     return true;
   }
@@ -294,6 +284,7 @@ AFTER_WHITESPACE:
       return !maybe_start_cont || !resolve_maybe_start_cont(lexer);
     } else if (prev_indent_length > indent_length && valid_symbols[Semi] &&
                lexer->lookahead != '}') {
+      lexer->mark_end(lexer);
       while (scanner->stack_len != 0 &&
              scanner->stack[scanner->stack_len - 1] > indent_length) {
         scanner->close_braces_to_insert++;
@@ -339,8 +330,11 @@ AFTER_WHITESPACE:
       break;
     }
 
+    // TODO: Pop multiple when it makes sense to assist error recovery.
+
     scanner_pop_indent(scanner);
     lexer->result_symbol = Semi;
+    advance(lexer);
     lexer->mark_end(lexer);
     scanner->close_braces_to_insert = 1;
     return true;

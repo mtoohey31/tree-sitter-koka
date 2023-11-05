@@ -35,7 +35,6 @@ fun main() {
     //      ^ operator
     //       ^ constant.numeric.integer
 }
-// <- punctuation.bracket
 
 
 fun map(f,xs) {
@@ -90,8 +89,5 @@ fun map(f,xs) {
     //                                                      ^ punctuation.delimiter
     //                                                       ^ variable
     //                                                         ^ punctuation.bracket
-    //                                                           ^ punctuation.bracket
   }
-  // <- punctuation.bracket
 }
-// <- punctuation.bracket

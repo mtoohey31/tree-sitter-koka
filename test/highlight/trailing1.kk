@@ -21,4 +21,3 @@ fun main() {
   //^ punctuation.delimiter
   // ^ variable.other.member
 }
-// <- punctuation.bracket
