@@ -39,7 +39,8 @@ void scanner_push_indent(struct scanner *scanner, int indent_length) {
     size_t new_stack_cap = scanner->stack_cap == 0 ? 8 : scanner->stack_cap * 2;
 
     int *new_stack = malloc(sizeof(int) * new_stack_cap);
-    memcpy(new_stack, scanner->stack, scanner->stack_len);
+    assert(new_stack);
+    memcpy(new_stack, scanner->stack, scanner->stack_len * sizeof(int));
 
     free(scanner->stack);
 
@@ -117,6 +118,7 @@ static inline bool resolve_maybe_start_cont(TSLexer *lexer) {
 
 void *tree_sitter_koka_external_scanner_create() {
   struct scanner *scanner = malloc(sizeof(struct scanner));
+  assert(scanner);
   scanner_reset(scanner);
   return scanner;
 }
@@ -162,9 +164,18 @@ void tree_sitter_koka_external_scanner_deserialize(void *payload,
   assert(length >= sizeof(struct scanner) && "invalid length");
 
   memcpy(scanner, buffer, sizeof(struct scanner));
-  int stack_len = length - sizeof(struct scanner);
-  scanner->stack = malloc(stack_len);
-  memcpy(scanner->stack, buffer + sizeof(struct scanner), stack_len);
+  assert(scanner->stack_len ==
+             (length - sizeof(struct scanner)) / sizeof(int) &&
+         "invalid length");
+  scanner->stack_cap = scanner->stack_len;
+  if (scanner->stack_len == 0) {
+    scanner->stack = NULL;
+    return;
+  }
+  scanner->stack = malloc(scanner->stack_len * sizeof(int));
+  assert(scanner->stack);
+  memcpy(scanner->stack, buffer + sizeof(struct scanner),
+         scanner->stack_len * sizeof(int));
 }
 
 bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
