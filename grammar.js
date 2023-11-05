@@ -246,8 +246,6 @@ module.exports = grammar({
           $._close_brace_,
         ),
       ),
-    // TODO: The spec parser doesn't allow pub before the parameter entries
-    // here, but std/time/calendar.kk uses them.
     sconparams: ($) => repeat1(seq($.parameter, $._semis)),
 
     // Effect declarations
@@ -431,6 +429,7 @@ module.exports = grammar({
     parameters: ($) => sep1($.parameter, $._comma),
     parameter: ($) =>
       seq(
+        optional("pub"),
         optional($.borrow),
         $.paramid,
         ":",
@@ -471,9 +470,7 @@ module.exports = grammar({
       choice(
         seq($.identifier, optional(seq("as", $.pattern))),
         seq(
-          // TODO: The spec parser says this should be conid, but
-          // std/os/flags.kk uses a qconid.
-          $.conid,
+          $.qconstructor,
           optional(seq($._open_round_brace, optional($.patargs), ")")),
         ),
         seq($._open_round_brace, optional($.apatterns), ")"),

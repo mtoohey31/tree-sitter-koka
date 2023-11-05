@@ -1575,10 +1575,6 @@
           "named": true
         },
         {
-          "type": "conid",
-          "named": true
-        },
-        {
           "type": "identifier",
           "named": true
         },
@@ -1592,6 +1588,10 @@
         },
         {
           "type": "pattern",
+          "named": true
+        },
+        {
+          "type": "qconstructor",
           "named": true
         },
         {

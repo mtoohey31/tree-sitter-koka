@@ -1514,7 +1514,7 @@ match
 
 fun a()
   match a
-    A ->
+    foo/A ->
       5
     B ->
       3
@@ -1553,7 +1553,8 @@ fun a()
                             (matchrule
                               (patterns
                                 (pattern
-                                  (conid)))
+                                  (qconstructor
+                                    (qconid))))
                               (blockexpr
                                 (expr
                                   (block
@@ -1569,7 +1570,8 @@ fun a()
                             (matchrule
                               (patterns
                                 (pattern
-                                  (conid)))
+                                  (qconstructor
+                                    (conid))))
                               (blockexpr
                                 (expr
                                   (block
@@ -1990,7 +1992,8 @@ noinline fun prints( s : string ) : console ()
                                                       (matchrule
                                                         (patterns
                                                           (pattern
-                                                            (conid)))
+                                                            (qconstructor
+                                                              (conid))))
                                                         (blockexpr
                                                           (expr
                                                             (basicexpr
@@ -2018,7 +2021,8 @@ noinline fun prints( s : string ) : console ()
                                                       (matchrule
                                                         (patterns
                                                           (pattern
-                                                            (conid)
+                                                            (qconstructor
+                                                              (conid))
                                                             (patargs
                                                               (patarg
                                                                 (apattern
@@ -2507,7 +2511,8 @@ fbip(1) fun ins( t : tree, k : int, v : bool ): tree
                       (matchrule
                         (patterns
                           (pattern
-                            (conid)))
+                            (qconstructor
+                              (conid))))
                         (blockexpr
                           (expr
                             (basicexpr
@@ -2571,12 +2576,14 @@ fbip(1) fun ins( t : tree, k : int, v : bool ): tree
                       (matchrule
                         (patterns
                           (pattern
-                            (conid)
+                            (qconstructor
+                              (conid))
                             (patargs
                               (patarg
                                 (apattern
                                   (pattern
-                                    (conid))))
+                                    (qconstructor
+                                      (conid)))))
                               (patarg
                                 (apattern
                                   (pattern
@@ -2725,12 +2732,14 @@ fbip(1) fun ins( t : tree, k : int, v : bool ): tree
                       (matchrule
                         (patterns
                           (pattern
-                            (conid)
+                            (qconstructor
+                              (conid))
                             (patargs
                               (patarg
                                 (apattern
                                   (pattern
-                                    (conid))))
+                                    (qconstructor
+                                      (conid)))))
                               (patarg
                                 (apattern
                                   (pattern

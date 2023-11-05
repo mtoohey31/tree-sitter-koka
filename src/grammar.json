@@ -3139,6 +3139,18 @@
           "type": "CHOICE",
           "members": [
             {
+              "type": "STRING",
+              "value": "pub"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
               "type": "SYMBOL",
               "name": "borrow"
             },
@@ -3606,7 +3618,7 @@
           "members": [
             {
               "type": "SYMBOL",
-              "name": "conid"
+              "name": "qconstructor"
             },
             {
               "type": "CHOICE",
