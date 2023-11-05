@@ -593,6 +593,10 @@
           "named": true
         },
         {
+          "type": "fipmod",
+          "named": true
+        },
+        {
           "type": "funid",
           "named": true
         }
@@ -706,6 +710,36 @@
         },
         {
           "type": "varid",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "fipalloc",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "int",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "fipmod",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "fipalloc",
           "named": true
         }
       ]
@@ -930,11 +964,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "inlinemod",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "int",
@@ -1722,15 +1751,15 @@
           "named": true
         },
         {
+          "type": "fipmod",
+          "named": true
+        },
+        {
           "type": "funbody",
           "named": true
         },
         {
           "type": "funid",
-          "named": true
-        },
-        {
-          "type": "inlinemod",
           "named": true
         }
       ]
@@ -2591,11 +2620,19 @@
     "named": false
   },
   {
+    "type": "fbip",
+    "named": false
+  },
+  {
     "type": "final",
     "named": false
   },
   {
     "type": "finally",
+    "named": false
+  },
+  {
+    "type": "fip",
     "named": false
   },
   {
@@ -2679,6 +2716,10 @@
     "named": false
   },
   {
+    "type": "n",
+    "named": false
+  },
+  {
     "type": "named",
     "named": false
   },
@@ -2732,6 +2773,10 @@
   },
   {
     "type": "struct",
+    "named": false
+  },
+  {
+    "type": "tail",
     "named": false
   },
   {

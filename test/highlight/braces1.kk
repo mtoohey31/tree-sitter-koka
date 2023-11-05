@@ -37,15 +37,16 @@ fun main() {
 }
 
 
-fun map(f,xs) {
-  // <- keyword.function
-  // ^ function
-  //   ^ punctuation.bracket
-  //    ^ variable.parameter
-  //     ^ punctuation.delimiter
-  //      ^ variable.parameter
-  //        ^ punctuation.bracket
-  //          ^ punctuation.bracket
+fip fun map(f,xs) {
+  // <- keyword.storage.modifier
+  // ^ keyword.function
+  //    ^ function
+  //       ^ punctuation.bracket
+  //        ^ variable.parameter
+  //         ^ punctuation.delimiter
+  //          ^ variable.parameter
+  //            ^ punctuation.bracket
+  //              ^ punctuation.bracket
   match(xs) {
     // <- keyword.control.conditional
     // ^ punctuation.bracket

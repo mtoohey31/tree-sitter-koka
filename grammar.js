@@ -90,9 +90,15 @@ module.exports = grammar({
     // External declarations
     externdecl: ($) =>
       choice(
-        seq("inline", "extern", $.funid, $.externtype, $.externbody),
-        seq("noinline", "extern", $.funid, $.externtype, $.externbody),
-        seq("extern", $.funid, $.externtype, $.externbody),
+        seq(
+          choice("inline", "noinline"),
+          optional($.fipmod),
+          "extern",
+          $.funid,
+          $.externtype,
+          $.externbody,
+        ),
+        seq(optional($.fipmod), "extern", $.funid, $.externtype, $.externbody),
         seq("extern", "import", $.externimpbody),
       ),
     _open_round_brace: ($) =>
@@ -279,10 +285,28 @@ module.exports = grammar({
     // Pure (top-level) Declarations
     puredecl: ($) =>
       choice(
-        seq(optional($.inlinemod), "val", $.binder, "=", $.blockexpr),
-        seq(optional($.inlinemod), "fun", $.funid, $.funbody),
+        seq(
+          optional(choice("inline", "noinline")),
+          "val",
+          $.binder,
+          "=",
+          $.blockexpr,
+        ),
+        seq(
+          optional(choice("inline", "noinline")),
+          optional($.fipmod),
+          "fun",
+          $.funid,
+          $.funbody,
+        ),
       ),
-    inlinemod: (_) => choice("inline", "noinline"),
+    fipalloc: ($) => seq($._open_round_brace, choice($.int, "n"), ")"),
+    fipmod: ($) =>
+      choice(
+        seq("fbip", optional($.fipalloc)),
+        seq("fip", optional($.fipalloc)),
+        "tail",
+      ),
     fundecl: ($) => seq($.funid, $.funbody),
     binder: ($) => choice($.identifier, seq($.identifier, ":", $.type)),
     funid: ($) =>
