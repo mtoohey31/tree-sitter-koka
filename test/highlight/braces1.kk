@@ -52,10 +52,12 @@ fun map(f,xs) {
     //  ^ variable
     //    ^ punctuation.bracket
     //      ^ punctuation.bracket
-    Nil -> Nil
+    Nil | n -> Nil
     // <- constructor
     //  ^ punctuation.delimiter
-    //     ^ constructor
+    //    ^ variable
+    //      ^ punctuation.delimiter
+    //         ^ constructor
     Cons(x,xx) -> { val y = f(x); val yy = map(f,xx); Cons(y,yy) }
     // <- constructor
     //  ^ punctuation.bracket

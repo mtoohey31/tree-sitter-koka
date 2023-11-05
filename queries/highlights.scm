@@ -101,12 +101,6 @@
   (qidop)
 ] @operator
 
-; (idop
-;   () @punctuation.delimiter)
-
-(qidop
-  ["(" ")"] @punctuation.delimiter)
-
 ; Keywords
 
 [
@@ -177,6 +171,8 @@
 "return" @keyword.control.return
 
 ; Delimiters
+
+(matchrule "|" @punctuation.delimiter)
 
 [
   ","
