@@ -41,15 +41,15 @@ fun map(f,xs) {
   // <- keyword.function
   // ^ function
   //   ^ punctuation.bracket
-  //    ^ variable
+  //    ^ variable.parameter
   //     ^ punctuation.delimiter
-  //      ^ variable
+  //      ^ variable.parameter
   //        ^ punctuation.bracket
   //          ^ punctuation.bracket
   match(xs) {
     // <- keyword.control.conditional
     // ^ punctuation.bracket
-    //  ^ variable
+    //  ^ variable.parameter
     //    ^ punctuation.bracket
     //      ^ punctuation.bracket
     Nil | n -> Nil
@@ -58,7 +58,7 @@ fun map(f,xs) {
     //    ^ variable
     //      ^ punctuation.delimiter
     //         ^ constructor
-    Cons(x,xx) -> { val y = f(x); val yy = map(f,xx); Cons(y,yy) }
+    Cons(x,xx) -> { var y := f(x); val yy = map(f,xx); Cons(y,yy) }
     // <- constructor
     //  ^ punctuation.bracket
     //   ^ variable
@@ -70,26 +70,25 @@ fun map(f,xs) {
     //              ^ keyword.storage.type
     //                  ^ variable
     //                    ^ operator
-    //                      ^ function
-    //                       ^ punctuation.bracket
-    //                        ^ variable
-    //                         ^ punctuation.bracket
-    //                          ^ punctuation.delimiter
-    //                            ^ keyword.storage.type
-    //                                ^ variable
-    //                                   ^ operator
-    //                                     ^ function
-    //                                        ^ punctuation.bracket
-    //                                         ^ variable
-    //                                          ^ punctuation.delimiter
-    //                                           ^ variable
-    //                                             ^ punctuation.bracket
-    //                                              ^ punctuation.delimiter
-    //                                                ^ constructor
-    //                                                    ^ punctuation.bracket
-    //                                                     ^ variable
-    //                                                      ^ punctuation.delimiter
-    //                                                       ^ variable
-    //                                                         ^ punctuation.bracket
+    //                       ^ function
+    //                        ^ punctuation.bracket
+    //                          ^ punctuation.bracket
+    //                           ^ punctuation.delimiter
+    //                             ^ keyword.storage.type
+    //                                 ^ variable
+    //                                    ^ operator
+    //                                      ^ function
+    //                                         ^ punctuation.bracket
+    //                                          ^ variable.parameter
+    //                                           ^ punctuation.delimiter
+    //                                            ^ variable
+    //                                              ^ punctuation.bracket
+    //                                               ^ punctuation.delimiter
+    //                                                 ^ constructor
+    //                                                     ^ punctuation.bracket
+    //                                                      ^ variable
+    //                                                       ^ punctuation.delimiter
+    //                                                        ^ variable
+    //                                                          ^ punctuation.bracket
   }
 }

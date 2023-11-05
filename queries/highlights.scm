@@ -52,6 +52,15 @@
     (identifier
       [(varid) (idop)] @constant)))
 
+(pparameter
+  (pattern
+    (identifier
+      (varid) @variable.parameter)))
+
+(paramid
+  (identifier
+    (varid) @variable.parameter))
+
 (appexpr
   field: (atom
     (qidentifier
@@ -96,6 +105,7 @@
   "!"
   "~"
   "="
+  ":="
   (idop)
   (op)
   (qidop)
