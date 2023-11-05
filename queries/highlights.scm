@@ -171,6 +171,7 @@
   "raw"
   "rec"
   "reference"
+  "tail"
   "value"
 ] @keyword.storage.modifier
 
