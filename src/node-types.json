@@ -2768,6 +2768,10 @@
     "named": false
   },
   {
+    "type": "scoped",
+    "named": false
+  },
+  {
     "type": "some",
     "named": false
   },

@@ -176,6 +176,7 @@ module.exports = grammar({
         ),
         seq(
           optional("named"),
+          optional("scoped"),
           optional($.effectmod),
           "effect",
           $.varid,
@@ -185,6 +186,7 @@ module.exports = grammar({
         ),
         seq(
           optional("named"),
+          optional("scoped"),
           optional($.effectmod),
           "effect",
           optional($.typeparams),

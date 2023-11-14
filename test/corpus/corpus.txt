@@ -476,7 +476,7 @@ pub open type exception-info
 
 pub value struct exception( message :string, info :exception-info )
 
-pub effect exn
+pub named scoped effect exn
   // Throw an exception
   ctl throw-exn( exn : exception ) : a
 
