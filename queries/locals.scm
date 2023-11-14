@@ -1,3 +1,5 @@
+(modulebody) @local.scope
+
 (block) @local.scope
 
 (pattern
@@ -9,6 +11,16 @@
     (pattern
       (identifier
         (varid) @local.definition))))
+
+(puredecl
+  (funid
+    (identifier
+      (varid) @local.definition)))
+
+(puredecl
+  (binder
+    (identifier
+      (varid) @local.definition)))
 
 (decl
   (binder
