@@ -74,6 +74,9 @@
     (identifier
       [(varid) (idop)] @constant)))
 
+; TODO: Highlight vars differently once helix has an appropriate highlight query
+; for that purpose.
+
 (pparameter
   (pattern
     (identifier
