@@ -47,12 +47,13 @@ fip fun map(f,xs) {
   //          ^ variable.parameter
   //            ^ punctuation.bracket
   //              ^ punctuation.bracket
-  match(xs) {
+  match foo(xs) {
     // <- keyword.control.conditional
-    // ^ punctuation.bracket
-    //  ^ variable.parameter
-    //    ^ punctuation.bracket
-    //      ^ punctuation.bracket
+    //  ^ function
+    //     ^ punctuation.bracket
+    //      ^ variable.parameter
+    //        ^ punctuation.bracket
+    //          ^ punctuation.bracket
     Nil | n -> Nil
     // <- constructor
     //  ^ punctuation.delimiter

@@ -405,13 +405,13 @@ module.exports = grammar({
     ntlappexpr: ($) =>
       choice(
         seq(
-          $.ntlappexpr,
+          field("function", $.ntlappexpr),
           choice(
             seq($._open_round_brace, optional($.arguments), ")"),
             seq($._open_square_brace, optional($.arguments), "]"),
-            seq(".", $.atom),
           ),
         ),
+        seq($.ntlappexpr, ".", field("field", $.atom)),
         $.atom,
       ),
     atom: ($) =>

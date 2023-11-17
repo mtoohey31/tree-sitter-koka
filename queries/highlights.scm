@@ -13,8 +13,30 @@
             [(varid) (idop)] @function)
         ] @function))))
 
+(ntlappexpr
+  function: (ntlappexpr
+    (atom
+      (qidentifier
+        [
+          (qvarid)
+          (qidop)
+          (identifier
+            [(varid) (idop)] @function)
+        ] @function))))
+
 (appexpr
   function: (appexpr
+    field: (atom
+      (qidentifier
+        [
+          (qvarid)
+          (qidop)
+          (identifier
+            [(varid) (idop)] @function.method)
+        ] @function.method))))
+
+(ntlappexpr
+  function: (ntlappexpr
     field: (atom
       (qidentifier
         [
@@ -62,6 +84,16 @@
     (varid) @variable.parameter))
 
 (appexpr
+  field: (atom
+    (qidentifier
+      [
+        (qvarid)
+        (qidop)
+        (identifier
+          [(varid) (idop)] @variable.other.member)
+      ] @variable.other.member)))
+
+(ntlappexpr
   field: (atom
     (qidentifier
       [
