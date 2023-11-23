@@ -19,5 +19,5 @@ fun main() {
   xs.length
   // <- variable
   //^ punctuation.delimiter
-  // ^ variable.other.member
+  // ^ function
 }

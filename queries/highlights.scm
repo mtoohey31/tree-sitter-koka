@@ -25,26 +25,24 @@
         ] @function))))
 
 (appexpr
-  function: (appexpr
-    field: (atom
-      (qidentifier
-        [
-          (qvarid)
-          (qidop)
-          (identifier
-            [(varid) (idop)] @function.method)
-        ] @function.method))))
+  field: (atom
+    (qidentifier
+      [
+        (qvarid)
+        (qidop)
+        (identifier
+          [(varid) (idop)] @function)
+      ] @function)))
 
 (ntlappexpr
-  function: (ntlappexpr
-    field: (atom
-      (qidentifier
-        [
-          (qvarid)
-          (qidop)
-          (identifier
-            [(varid) (idop)] @function.method)
-        ] @function.method))))
+  field: (atom
+    (qidentifier
+      [
+        (qvarid)
+        (qidop)
+        (identifier
+          [(varid) (idop)] @function)
+      ] @function)))
 
 [
   "initially"
@@ -85,26 +83,6 @@
 (paramid
   (identifier
     (varid) @variable.parameter))
-
-(appexpr
-  field: (atom
-    (qidentifier
-      [
-        (qvarid)
-        (qidop)
-        (identifier
-          [(varid) (idop)] @variable.other.member)
-      ] @variable.other.member)))
-
-(ntlappexpr
-  field: (atom
-    (qidentifier
-      [
-        (qvarid)
-        (qidop)
-        (identifier
-          [(varid) (idop)] @variable.other.member)
-      ] @variable.other.member)))
 
 (typeid
   (varid) @type)

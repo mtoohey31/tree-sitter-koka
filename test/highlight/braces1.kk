@@ -18,6 +18,13 @@ fun main() {
   //                 ^ punctuation.bracket
   //                  ^ string
   //                         ^ punctuation.bracket
+  something.print("!")
+  // <- variable
+  //       ^ punctuation.delimiter
+  //        ^ function
+  //             ^ punctuation.bracket
+  //              ^ string
+  //                 ^ punctuation.bracket
   print("!")
   // ^ function
   //   ^ punctuation.bracket
