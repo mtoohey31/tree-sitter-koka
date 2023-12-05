@@ -3,10 +3,10 @@
   (ntlappexpr ["[" "("])
   (atom ["[" "("]) ; Lists and tuples.
   (program (moduledecl "{")) ; Braced module declarations.
+  (funbody)
 ] @indent
 
 [
-  (funbody)
   (typedecl
     [(typeid) (opdecls)]) ; Avoid matching single-operation effects.
   (externdecl)
@@ -24,6 +24,7 @@
 (matchrule "->" @indent @extend)
 
 ; Handling for error recovery.
+(ERROR "fun") @indent @extend
 (ERROR "match") @indent @extend
 (ERROR "->" @indent.always @extend)
 
