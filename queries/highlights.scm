@@ -132,6 +132,7 @@
   "infixl"
   "infixr"
   "mask"
+  "other"
   "pub"
   "some"
 ] @keyword
@@ -155,6 +156,7 @@
 
 [
   "import"
+  "include"
   "module"
 ] @keyword.control.import
 
@@ -183,6 +185,7 @@
   "override"
   "raw"
   "rec"
+  "ref"
   "reference"
   "scoped"
   "tail"

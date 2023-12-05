@@ -2693,6 +2693,10 @@
     "named": false
   },
   {
+    "type": "include",
+    "named": false
+  },
+  {
     "type": "infix",
     "named": false
   },
@@ -2753,6 +2757,10 @@
     "named": false
   },
   {
+    "type": "other",
+    "named": false
+  },
+  {
     "type": "override",
     "named": false
   },
@@ -2778,6 +2786,10 @@
   },
   {
     "type": "rec",
+    "named": false
+  },
+  {
+    "type": "ref",
     "named": false
   },
   {

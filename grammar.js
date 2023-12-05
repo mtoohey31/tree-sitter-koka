@@ -99,7 +99,14 @@ module.exports = grammar({
           $.externbody,
         ),
         seq(optional($.fipmod), "extern", $.funid, $.externtype, $.externbody),
-        seq("extern", "import", $.externimpbody),
+        seq(
+          "extern",
+          choice(
+            "import",
+            "include", // Deprecated, but still supported.
+          ),
+          $.externimpbody,
+        ),
       ),
     _open_round_brace: ($) =>
       prec.right(seq("(", optional($._end_continuation_signal))),
@@ -206,7 +213,7 @@ module.exports = grammar({
         ),
       ),
     typemod: ($) => choice($.structmod, "open", "extend", "co", "rec"),
-    structmod: (_) => choice("value", "reference"),
+    structmod: (_) => choice("value", "ref", "reference"),
     effectmod: (_) => choice("rec", "linear", seq("linear", "rec")),
     typebody: ($) =>
       seq(
@@ -425,7 +432,13 @@ module.exports = grammar({
       ),
     literal: ($) => choice($.int, $.float, $.char, $.string),
     mask: ($) =>
-      seq("mask", optional("behind"), $._open_angle_brace, $.tbasic, ">"),
+      seq(
+        "mask",
+        optional(choice("behind", "other")),
+        $._open_angle_brace,
+        $.tbasic,
+        ">",
+      ),
     arguments: ($) => sep1($.argument, $._comma),
     argument: ($) => seq(optional(seq($.identifier, "=")), $.expr),
     parameters: ($) => sep1($.parameter, $._comma),

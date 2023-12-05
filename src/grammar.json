@@ -569,8 +569,17 @@
               "value": "extern"
             },
             {
-              "type": "STRING",
-              "value": "import"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "import"
+                },
+                {
+                  "type": "STRING",
+                  "value": "include"
+                }
+              ]
             },
             {
               "type": "SYMBOL",
@@ -1312,6 +1321,10 @@
         {
           "type": "STRING",
           "value": "value"
+        },
+        {
+          "type": "STRING",
+          "value": "ref"
         },
         {
           "type": "STRING",
@@ -3066,8 +3079,17 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "behind"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "behind"
+                },
+                {
+                  "type": "STRING",
+                  "value": "other"
+                }
+              ]
             },
             {
               "type": "BLANK"
