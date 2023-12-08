@@ -131,17 +131,22 @@
   "infix"
   "infixl"
   "infixr"
+  "inject"
   "mask"
   "other"
   "pub"
+  "public"
   "some"
 ] @keyword
 
 [
   "con"
+  "control"
   "ctl"
   "fn"
   "fun"
+  "rawctl"
+  "rcontrol"
 ] @keyword.function
 
 "with" @keyword.control

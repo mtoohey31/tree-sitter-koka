@@ -267,8 +267,17 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "pub"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "pub"
+                },
+                {
+                  "type": "STRING",
+                  "value": "public"
+                }
+              ]
             },
             {
               "type": "BLANK"
@@ -3072,8 +3081,17 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "mask"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "mask"
+            },
+            {
+              "type": "STRING",
+              "value": "inject"
+            }
+          ]
         },
         {
           "type": "CHOICE",
@@ -4255,17 +4273,39 @@
               "type": "CHOICE",
               "members": [
                 {
-                  "type": "SYMBOL",
-                  "name": "controlmod"
+                  "type": "STRING",
+                  "value": "control"
                 },
                 {
-                  "type": "BLANK"
+                  "type": "STRING",
+                  "value": "rcontrol"
+                },
+                {
+                  "type": "STRING",
+                  "value": "rawctl"
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "controlmod"
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "ctl"
+                    }
+                  ]
                 }
               ]
-            },
-            {
-              "type": "STRING",
-              "value": "ctl"
             },
             {
               "type": "SYMBOL",

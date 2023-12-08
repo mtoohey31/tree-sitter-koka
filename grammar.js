@@ -65,7 +65,7 @@ module.exports = grammar({
     _close_brace_: ($) => alias($._close_brace, "}"),
     importdecl: ($) =>
       seq(
-        optional("pub"),
+        optional(choice("pub", "public")),
         "import",
         $.modulepath,
         optional(seq("=", $.modulepath)),
@@ -433,7 +433,7 @@ module.exports = grammar({
     literal: ($) => choice($.int, $.float, $.char, $.string),
     mask: ($) =>
       seq(
-        "mask",
+        choice("mask", "inject"),
         optional(choice("behind", "other")),
         $._open_angle_brace,
         $.tbasic,
@@ -547,8 +547,12 @@ module.exports = grammar({
         seq("val", $.qidentifier, ":", $.type, "=", $.blockexpr),
         seq("fun", $.qidentifier, $.opparams, $.bodyexpr),
         seq(
-          optional($.controlmod),
-          "ctl",
+          choice(
+            "control",
+            "rcontrol",
+            "rawctl",
+            seq(optional($.controlmod), "ctl"),
+          ),
           $.qidentifier,
           $.opparams,
           $.bodyexpr,
