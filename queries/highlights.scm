@@ -11,7 +11,8 @@
           (qidop)
           (identifier
             [(varid) (idop)] @function)
-        ] @function))))
+        ] @function)))
+  ["(" (block) (fnexpr)])
 
 (ntlappexpr
   function: (ntlappexpr
@@ -22,7 +23,8 @@
           (qidop)
           (identifier
             [(varid) (idop)] @function)
-        ] @function))))
+        ] @function)))
+  ["(" (block) (fnexpr)])
 
 (appexpr
   field: (atom
@@ -34,6 +36,18 @@
           [(varid) (idop)] @function)
       ] @function)))
 
+(appexpr
+  (appexpr
+    field: (atom
+      (qidentifier
+        [
+          (qvarid)
+          (qidop)
+          (identifier
+            [(varid) (idop)] @variable)
+        ] @variable)))
+  "[")
+
 (ntlappexpr
   field: (atom
     (qidentifier
@@ -43,6 +57,18 @@
         (identifier
           [(varid) (idop)] @function)
       ] @function)))
+
+(ntlappexpr
+  (ntlappexpr
+    field: (atom
+      (qidentifier
+        [
+          (qvarid)
+          (qidop)
+          (identifier
+            [(varid) (idop)] @variable)
+        ] @variable)))
+  "[")
 
 [
   "initially"
