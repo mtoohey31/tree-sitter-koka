@@ -7,11 +7,11 @@
     (atom
       (qidentifier
         [
-          (qvarid)
-          (qidop)
+          (qvarid) @function
+          (qidop) @function
           (identifier
             [(varid) (idop)] @function)
-        ] @function)))
+        ])))
   ["(" (block) (fnexpr)])
 
 (ntlappexpr
@@ -19,55 +19,55 @@
     (atom
       (qidentifier
         [
-          (qvarid)
-          (qidop)
+          (qvarid) @function
+          (qidop) @function
           (identifier
             [(varid) (idop)] @function)
-        ] @function)))
+        ])))
   ["(" (block) (fnexpr)])
 
 (appexpr
   field: (atom
     (qidentifier
       [
-        (qvarid)
-        (qidop)
+        (qvarid) @function
+        (qidop) @function
         (identifier
           [(varid) (idop)] @function)
-      ] @function)))
+      ])))
 
 (appexpr
   (appexpr
     field: (atom
       (qidentifier
         [
-          (qvarid)
-          (qidop)
+          (qvarid) @variable
+          (qidop) @variable
           (identifier
             [(varid) (idop)] @variable)
-        ] @variable)))
+        ])))
   "[")
 
 (ntlappexpr
   field: (atom
     (qidentifier
       [
-        (qvarid)
-        (qidop)
+        (qvarid) @function
+        (qidop) @function
         (identifier
           [(varid) (idop)] @function)
-      ] @function)))
+      ])))
 
 (ntlappexpr
   (ntlappexpr
     field: (atom
       (qidentifier
         [
-          (qvarid)
-          (qidop)
+          (qvarid) @variable
+          (qidop) @variable
           (identifier
             [(varid) (idop)] @variable)
-        ] @variable)))
+        ])))
   "[")
 
 [

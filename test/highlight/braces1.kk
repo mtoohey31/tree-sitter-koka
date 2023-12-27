@@ -79,7 +79,7 @@ fip fun map(f,xs) {
     //              ^ keyword.storage.type
     //                  ^ variable
     //                    ^ operator
-    //                       ^ function
+    //                       ^ variable.parameter
     //                        ^ punctuation.bracket
     //                          ^ punctuation.bracket
     //                           ^ punctuation.delimiter
