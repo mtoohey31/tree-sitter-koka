@@ -110,6 +110,10 @@
   (identifier
     (varid) @variable.parameter))
 
+(typedecl
+  "effect"
+  (varid) @type)
+
 (typeid
   (varid) @type)
 
