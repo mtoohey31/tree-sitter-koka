@@ -4,13 +4,15 @@
   (atom ["[" "("]) ; Lists and tuples.
   (program (moduledecl "{")) ; Braced module declarations.
   (funbody)
+  (block)
+  (handlerexpr)
+  (opclausex)
 ] @indent
 
 [
   (typedecl
     [(typeid) (opdecls)]) ; Avoid matching single-operation effects.
   (externdecl)
-  (block)
   (matchexpr)
   (matchrule)
 
