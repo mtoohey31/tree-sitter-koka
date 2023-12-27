@@ -1845,7 +1845,36 @@
                 },
                 {
                   "type": "STRING",
-                  "value": "ctl"
+                  "value": "control"
+                },
+                {
+                  "type": "STRING",
+                  "value": "rcontrol"
+                },
+                {
+                  "type": "STRING",
+                  "value": "rawctl"
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SYMBOL",
+                          "name": "controlmod"
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "ctl"
+                    }
+                  ]
                 }
               ]
             },

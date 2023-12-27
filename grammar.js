@@ -278,7 +278,13 @@ module.exports = grammar({
         ),
         seq(
           optional("pub"),
-          choice("fun", "ctl"),
+          choice(
+            "fun",
+            "control",
+            "rcontrol",
+            "rawctl",
+            seq(optional($.controlmod), "ctl"),
+          ),
           $.identifier,
           optional($.typeparams),
           $._open_round_brace,

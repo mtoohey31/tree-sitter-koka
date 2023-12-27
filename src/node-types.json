@@ -1387,6 +1387,10 @@
       "required": true,
       "types": [
         {
+          "type": "controlmod",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },
