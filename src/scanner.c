@@ -341,13 +341,22 @@ AFTER_WHITESPACE:
       break;
     }
 
-    // TODO: Pop multiple when it makes sense to assist error recovery.
-
-    scanner_pop_indent(scanner);
-    lexer->result_symbol = Semi;
     advance(lexer);
     lexer->mark_end(lexer);
-    scanner->close_braces_to_insert = 1;
+
+    indent_length = found_eol ? indent_length : lexer->get_column(lexer);
+
+    // do ... while ensures we pop at least one. We don't have to check
+    // scanner->stack_len != 0 before the first loop because that is guaranteed
+    // if valid_symbols[CloseBrace].
+    do {
+      scanner->close_braces_to_insert++;
+      scanner->semis_to_insert++;
+      scanner_pop_indent(scanner);
+    } while (scanner->stack_len != 0 &&
+             scanner->stack[scanner->stack_len - 1] > indent_length);
+
+    lexer->result_symbol = Semi;
     return true;
 
   case ';':

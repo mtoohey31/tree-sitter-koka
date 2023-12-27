@@ -2900,3 +2900,107 @@ fbip(1) fun ins( t : tree, k : int, v : bool ): tree
                                                               (identifier
                                                                 (varid
                                                                   (id))))))))))))))))))))))))))))))))))
+
+============================
+block argument with handler
+============================
+
+fun to-pull-stream()
+  Stream({
+    handle g
+      ctl yield(b)
+        Just(1)
+  })
+
+pub type parse-result
+  ParseOk
+
+---
+
+(program
+  (moduledecl)
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (bodyexpr
+            (blockexpr
+              (expr
+                (block
+                  (statements
+                    (statement
+                      (basicexpr
+                        (opexpr
+                          (prefixexpr
+                            (appexpr
+                              (appexpr
+                                (atom
+                                  (qconstructor
+                                    (conid))))
+                              (arguments
+                                (argument
+                                  (expr
+                                    (block
+                                      (statements
+                                        (statement
+                                          (basicexpr
+                                            (handlerexpr
+                                              (ntlexpr
+                                                (ntlopexpr
+                                                  (ntlprefixexpr
+                                                    (ntlappexpr
+                                                      (atom
+                                                        (qidentifier
+                                                          (identifier
+                                                            (varid
+                                                              (id)))))))))
+                                              (opclauses
+                                                (opclausex
+                                                  (opclause
+                                                    (qidentifier
+                                                      (identifier
+                                                        (varid
+                                                          (id))))
+                                                    (opparams
+                                                      (opparam
+                                                        (paramid
+                                                          (identifier
+                                                            (varid
+                                                              (id))))))
+                                                    (bodyexpr
+                                                      (blockexpr
+                                                        (expr
+                                                          (block
+                                                            (statements
+                                                              (statement
+                                                                (basicexpr
+                                                                  (opexpr
+                                                                    (prefixexpr
+                                                                      (appexpr
+                                                                        (appexpr
+                                                                          (atom
+                                                                            (qconstructor
+                                                                              (conid))))
+                                                                        (arguments
+                                                                          (argument
+                                                                            (expr
+                                                                              (basicexpr
+                                                                                (opexpr
+                                                                                  (prefixexpr
+                                                                                    (appexpr
+                                                                                      (atom
+                                                                                        (literal
+                                                                                          (int))))))))))))))))))))))))))))))))))))))))))))
+    (topdecl
+      (typedecl
+        (typeid
+          (varid
+            (id)))
+        (typebody
+          (constructors
+            (constructor
+              (conid))))))))
