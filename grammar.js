@@ -367,7 +367,7 @@ module.exports = grammar({
     matchexpr: ($) =>
       seq(
         "match",
-        $.ntlexpr,
+        $.expr,
         $._open_brace_,
         optional($._semis),
         optional($.matchrules),
@@ -379,7 +379,7 @@ module.exports = grammar({
       prec.right(
         seq(
           "if",
-          $.ntlexpr,
+          $.expr,
           choice(
             seq("then", $.blockexpr, optional($.elifs)),
             seq("return", $.expr),
@@ -388,7 +388,7 @@ module.exports = grammar({
       ),
     elifs: ($) =>
       seq(
-        repeat(seq("elif", $.ntlexpr, "then", $.blockexpr)),
+        repeat(seq("elif", $.expr, "then", $.blockexpr)),
         "else",
         $.blockexpr,
       ),
@@ -408,23 +408,6 @@ module.exports = grammar({
           ),
         ),
         seq($.appexpr, ".", field("field", $.atom)),
-        $.atom,
-      ),
-    ntlexpr: ($) => $.ntlopexpr,
-    ntlopexpr: ($) =>
-      seq($.ntlprefixexpr, repeat(seq($.qoperator, $.ntlprefixexpr))),
-    ntlprefixexpr: ($) =>
-      choice(seq(choice("!", "~"), $.ntlprefixexpr), $.ntlappexpr),
-    ntlappexpr: ($) =>
-      choice(
-        seq(
-          field("function", $.ntlappexpr),
-          choice(
-            seq($._open_round_brace, optional($.arguments), ")"),
-            seq($._open_square_brace, optional($.arguments), "]"),
-          ),
-        ),
-        seq($.ntlappexpr, ".", field("field", $.atom)),
         $.atom,
       ),
     atom: ($) =>
@@ -515,7 +498,7 @@ module.exports = grammar({
           optional(choice("override", "named")),
           "handle",
           optional($.witheff),
-          $.ntlexpr,
+          $.expr,
           $.opclauses,
         ),
       ),

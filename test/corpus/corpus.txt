@@ -1115,15 +1115,16 @@ val a = if b
           (expr
             (basicexpr
               (ifexpr
-                (ntlexpr
-                  (ntlopexpr
-                    (ntlprefixexpr
-                      (ntlappexpr
-                        (atom
-                          (qidentifier
-                            (identifier
-                              (varid
-                                (id)))))))))
+                (expr
+                  (basicexpr
+                    (opexpr
+                      (prefixexpr
+                        (appexpr
+                          (atom
+                            (qidentifier
+                              (identifier
+                                (varid
+                                  (id))))))))))
                 (blockexpr
                   (expr
                     (basicexpr
@@ -1136,15 +1137,16 @@ val a = if b
                                   (varid
                                     (id)))))))))))
                 (elifs
-                  (ntlexpr
-                    (ntlopexpr
-                      (ntlprefixexpr
-                        (ntlappexpr
-                          (atom
-                            (qidentifier
-                              (identifier
-                                (varid
-                                  (id)))))))))
+                  (expr
+                    (basicexpr
+                      (opexpr
+                        (prefixexpr
+                          (appexpr
+                            (atom
+                              (qidentifier
+                                (identifier
+                                  (varid
+                                    (id))))))))))
                 (blockexpr
                   (expr
                     (basicexpr
@@ -1177,15 +1179,16 @@ val a = if b
           (expr
             (basicexpr
               (ifexpr
-                (ntlexpr
-                  (ntlopexpr
-                    (ntlprefixexpr
-                      (ntlappexpr
-                        (atom
-                          (qidentifier
-                            (identifier
-                              (varid
-                                (id)))))))))
+                (expr
+                  (basicexpr
+                    (opexpr
+                      (prefixexpr
+                        (appexpr
+                          (atom
+                            (qidentifier
+                              (identifier
+                                (varid
+                                  (id))))))))))
                 (blockexpr
                   (expr
                     (basicexpr
@@ -1251,15 +1254,16 @@ fun a()
                     (statement
                       (basicexpr
                         (ifexpr
-                          (ntlexpr
-                            (ntlopexpr
-                              (ntlprefixexpr
-                                (ntlappexpr
-                                  (atom
-                                    (qidentifier
-                                      (identifier
-                                        (varid
-                                          (id)))))))))
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (atom
+                                      (qidentifier
+                                        (identifier
+                                          (varid
+                                            (id))))))))))
                           (blockexpr
                             (expr
                               (block
@@ -1284,15 +1288,16 @@ fun a()
                                                   (varid
                                                     (id))))))))))))))
                           (elifs
-                            (ntlexpr
-                              (ntlopexpr
-                                (ntlprefixexpr
-                                  (ntlappexpr
-                                    (atom
-                                      (qidentifier
-                                        (identifier
-                                          (varid
-                                            (id)))))))))
+                            (expr
+                              (basicexpr
+                                (opexpr
+                                  (prefixexpr
+                                    (appexpr
+                                      (atom
+                                        (qidentifier
+                                          (identifier
+                                            (varid
+                                              (id))))))))))
                             (blockexpr
                               (expr
                                 (block
@@ -1540,15 +1545,16 @@ fun a()
                     (statement
                       (basicexpr
                         (matchexpr
-                          (ntlexpr
-                            (ntlopexpr
-                              (ntlprefixexpr
-                                (ntlappexpr
-                                  (atom
-                                    (qidentifier
-                                      (identifier
-                                        (varid
-                                          (id)))))))))
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (atom
+                                      (qidentifier
+                                        (identifier
+                                          (varid
+                                            (id))))))))))
                           (matchrules
                             (matchrule
                               (patterns
@@ -1773,15 +1779,16 @@ fun a()
                     (statement
                       (basicexpr
                         (ifexpr
-                          (ntlexpr
-                            (ntlopexpr
-                              (ntlprefixexpr
-                                (ntlappexpr
-                                  (atom
-                                    (qidentifier
-                                      (identifier
-                                        (varid
-                                          (id)))))))))
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (atom
+                                      (qidentifier
+                                        (identifier
+                                          (varid
+                                            (id))))))))))
                           (blockexpr
                             (expr
                               (basicexpr
@@ -1978,16 +1985,17 @@ noinline fun prints( s : string ) : console ()
                                               (statement
                                                 (basicexpr
                                                   (matchexpr
-                                                    (ntlexpr
-                                                      (ntlopexpr
-                                                        (ntlprefixexpr
-                                                          (ntlprefixexpr
-                                                            (ntlappexpr
-                                                              (atom
-                                                                (qidentifier
-                                                                  (identifier
-                                                                    (varid
-                                                                      (id))))))))))
+                                                    (expr
+                                                      (basicexpr
+                                                        (opexpr
+                                                          (prefixexpr
+                                                            (prefixexpr
+                                                              (appexpr
+                                                                (atom
+                                                                  (qidentifier
+                                                                    (identifier
+                                                                      (varid
+                                                                        (id)))))))))))
                                                     (matchrules
                                                       (matchrule
                                                         (patterns
@@ -2278,22 +2286,23 @@ fbip(1) fun ins( t : tree, k : int, v : bool ): tree
               (statement
                 (basicexpr
                   (ifexpr
-                    (ntlexpr
-                      (ntlopexpr
-                        (ntlprefixexpr
-                          (ntlappexpr
-                            (atom
-                              (qidentifier
-                                (identifier
-                                  (varid
-                                    (id)))))))
-                        (qoperator
-                          (op))
-                        (ntlprefixexpr
-                          (ntlappexpr
-                            (atom
-                              (literal
-                                (int)))))))
+                    (expr
+                      (basicexpr
+                        (opexpr
+                          (prefixexpr
+                            (appexpr
+                              (atom
+                                (qidentifier
+                                  (identifier
+                                    (varid
+                                      (id)))))))
+                          (qoperator
+                            (op))
+                          (prefixexpr
+                            (appexpr
+                              (atom
+                                (literal
+                                  (int))))))))
                     (blockexpr
                       (expr
                         (block
@@ -2498,15 +2507,16 @@ fbip(1) fun ins( t : tree, k : int, v : bool ): tree
               (statement
                 (basicexpr
                   (matchexpr
-                    (ntlexpr
-                      (ntlopexpr
-                        (ntlprefixexpr
-                          (ntlappexpr
-                            (atom
-                              (qidentifier
-                                (identifier
-                                  (varid
-                                    (id)))))))))
+                    (expr
+                      (basicexpr
+                        (opexpr
+                          (prefixexpr
+                            (appexpr
+                              (atom
+                                (qidentifier
+                                  (identifier
+                                    (varid
+                                      (id))))))))))
                     (matchrules
                       (matchrule
                         (patterns
@@ -2612,24 +2622,25 @@ fbip(1) fun ins( t : tree, k : int, v : bool ): tree
                           (expr
                             (basicexpr
                               (ifexpr
-                                (ntlexpr
-                                  (ntlopexpr
-                                    (ntlprefixexpr
-                                      (ntlappexpr
-                                        (atom
-                                          (qidentifier
-                                            (identifier
-                                              (varid
-                                                (id)))))))
-                                    (qoperator
-                                      (op))
-                                    (ntlprefixexpr
-                                      (ntlappexpr
-                                        (atom
-                                          (qidentifier
-                                            (identifier
-                                              (varid
-                                                (id)))))))))
+                                (expr
+                                  (basicexpr
+                                    (opexpr
+                                      (prefixexpr
+                                        (appexpr
+                                          (atom
+                                            (qidentifier
+                                              (identifier
+                                                (varid
+                                                  (id)))))))
+                                      (qoperator
+                                        (op))
+                                      (prefixexpr
+                                        (appexpr
+                                          (atom
+                                            (qidentifier
+                                              (identifier
+                                                (varid
+                                                  (id))))))))))
                                 (blockexpr
                                   (expr
                                     (basicexpr
@@ -2768,46 +2779,47 @@ fbip(1) fun ins( t : tree, k : int, v : bool ): tree
                           (expr
                             (basicexpr
                               (ifexpr
-                                (ntlexpr
-                                  (ntlopexpr
-                                    (ntlprefixexpr
-                                      (ntlappexpr
-                                        (atom
-                                          (qidentifier
-                                            (identifier
-                                              (varid
-                                                (id)))))))
-                                    (qoperator
-                                      (op))
-                                    (ntlprefixexpr
-                                      (ntlappexpr
-                                        (atom
-                                          (qidentifier
-                                            (identifier
-                                              (varid
-                                                (id)))))))
-                                    (qoperator
-                                      (op))
-                                    (ntlprefixexpr
-                                      (ntlappexpr
-                                        (ntlappexpr
+                                (expr
+                                  (basicexpr
+                                    (opexpr
+                                      (prefixexpr
+                                        (appexpr
                                           (atom
                                             (qidentifier
                                               (identifier
                                                 (varid
-                                                  (id))))))
-                                        (arguments
-                                          (argument
-                                            (expr
-                                              (basicexpr
-                                                (opexpr
-                                                  (prefixexpr
-                                                    (appexpr
-                                                      (atom
-                                                        (qidentifier
-                                                          (identifier
-                                                            (varid
-                                                              (id))))))))))))))))
+                                                  (id)))))))
+                                      (qoperator
+                                        (op))
+                                      (prefixexpr
+                                        (appexpr
+                                          (atom
+                                            (qidentifier
+                                              (identifier
+                                                (varid
+                                                  (id)))))))
+                                      (qoperator
+                                        (op))
+                                      (prefixexpr
+                                        (appexpr
+                                          (appexpr
+                                            (atom
+                                              (qidentifier
+                                                (identifier
+                                                  (varid
+                                                    (id))))))
+                                          (arguments
+                                            (argument
+                                              (expr
+                                                (basicexpr
+                                                  (opexpr
+                                                    (prefixexpr
+                                                      (appexpr
+                                                        (atom
+                                                          (qidentifier
+                                                            (identifier
+                                                              (varid
+                                                                (id)))))))))))))))))
                                 (blockexpr
                                   (expr
                                     (basicexpr
@@ -2949,15 +2961,16 @@ pub type parse-result
                                         (statement
                                           (basicexpr
                                             (handlerexpr
-                                              (ntlexpr
-                                                (ntlopexpr
-                                                  (ntlprefixexpr
-                                                    (ntlappexpr
-                                                      (atom
-                                                        (qidentifier
-                                                          (identifier
-                                                            (varid
-                                                              (id)))))))))
+                                              (expr
+                                                (basicexpr
+                                                  (opexpr
+                                                    (prefixexpr
+                                                      (appexpr
+                                                        (atom
+                                                          (qidentifier
+                                                            (identifier
+                                                              (varid
+                                                                (id))))))))))
                                               (opclauses
                                                 (opclausex
                                                   (opclause

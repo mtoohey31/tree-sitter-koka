@@ -520,7 +520,7 @@
           "named": true
         },
         {
-          "type": "ntlexpr",
+          "type": "expr",
           "named": true
         }
       ]
@@ -885,7 +885,7 @@
       "required": true,
       "types": [
         {
-          "type": "ntlexpr",
+          "type": "expr",
           "named": true
         },
         {
@@ -941,10 +941,6 @@
         },
         {
           "type": "expr",
-          "named": true
-        },
-        {
-          "type": "ntlexpr",
           "named": true
         }
       ]
@@ -1089,11 +1085,11 @@
       "required": true,
       "types": [
         {
-          "type": "matchrules",
+          "type": "expr",
           "named": true
         },
         {
-          "type": "ntlexpr",
+          "type": "matchrules",
           "named": true
         }
       ]
@@ -1179,103 +1175,6 @@
         },
         {
           "type": "varid",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ntlappexpr",
-    "named": true,
-    "fields": {
-      "field": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "atom",
-            "named": true
-          }
-        ]
-      },
-      "function": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "ntlappexpr",
-            "named": true
-          }
-        ]
-      }
-    },
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "arguments",
-          "named": true
-        },
-        {
-          "type": "atom",
-          "named": true
-        },
-        {
-          "type": "ntlappexpr",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ntlexpr",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "ntlopexpr",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ntlopexpr",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "ntlprefixexpr",
-          "named": true
-        },
-        {
-          "type": "qoperator",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ntlprefixexpr",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "ntlappexpr",
-          "named": true
-        },
-        {
-          "type": "ntlprefixexpr",
           "named": true
         }
       ]

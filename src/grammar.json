@@ -2492,7 +2492,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "ntlexpr"
+          "name": "expr"
         },
         {
           "type": "SYMBOL",
@@ -2566,7 +2566,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "ntlexpr"
+            "name": "expr"
           },
           {
             "type": "CHOICE",
@@ -2628,7 +2628,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "ntlexpr"
+                "name": "expr"
               },
               {
                 "type": "STRING",
@@ -2835,164 +2835,6 @@
             {
               "type": "SYMBOL",
               "name": "appexpr"
-            },
-            {
-              "type": "STRING",
-              "value": "."
-            },
-            {
-              "type": "FIELD",
-              "name": "field",
-              "content": {
-                "type": "SYMBOL",
-                "name": "atom"
-              }
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "atom"
-        }
-      ]
-    },
-    "ntlexpr": {
-      "type": "SYMBOL",
-      "name": "ntlopexpr"
-    },
-    "ntlopexpr": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "ntlprefixexpr"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "qoperator"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "ntlprefixexpr"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "ntlprefixexpr": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "!"
-                },
-                {
-                  "type": "STRING",
-                  "value": "~"
-                }
-              ]
-            },
-            {
-              "type": "SYMBOL",
-              "name": "ntlprefixexpr"
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "ntlappexpr"
-        }
-      ]
-    },
-    "ntlappexpr": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "FIELD",
-              "name": "function",
-              "content": {
-                "type": "SYMBOL",
-                "name": "ntlappexpr"
-              }
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "_open_round_brace"
-                    },
-                    {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "SYMBOL",
-                          "name": "arguments"
-                        },
-                        {
-                          "type": "BLANK"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ")"
-                    }
-                  ]
-                },
-                {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "_open_square_brace"
-                    },
-                    {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "SYMBOL",
-                          "name": "arguments"
-                        },
-                        {
-                          "type": "BLANK"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "STRING",
-                      "value": "]"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "ntlappexpr"
             },
             {
               "type": "STRING",
@@ -3966,7 +3808,7 @@
             },
             {
               "type": "SYMBOL",
-              "name": "ntlexpr"
+              "name": "expr"
             },
             {
               "type": "SYMBOL",

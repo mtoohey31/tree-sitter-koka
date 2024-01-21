@@ -14,18 +14,6 @@
         ])))
   ["(" (block) (fnexpr)])
 
-(ntlappexpr
-  function: (ntlappexpr
-    (atom
-      (qidentifier
-        [
-          (qvarid) @function
-          (qidop) @function
-          (identifier
-            [(varid) (idop)] @function)
-        ])))
-  ["(" (block) (fnexpr)])
-
 (appexpr
   field: (atom
     (qidentifier
@@ -38,28 +26,6 @@
 
 (appexpr
   (appexpr
-    field: (atom
-      (qidentifier
-        [
-          (qvarid) @variable
-          (qidop) @variable
-          (identifier
-            [(varid) (idop)] @variable)
-        ])))
-  "[")
-
-(ntlappexpr
-  field: (atom
-    (qidentifier
-      [
-        (qvarid) @function
-        (qidop) @function
-        (identifier
-          [(varid) (idop)] @function)
-      ])))
-
-(ntlappexpr
-  (ntlappexpr
     field: (atom
       (qidentifier
         [
