@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <tree_sitter/parser.h>
 
@@ -37,15 +38,9 @@ void scanner_push_indent(struct scanner *scanner, int indent_length) {
   if (scanner->stack_len == scanner->stack_cap) {
     // Full, so grow.
     size_t new_stack_cap = scanner->stack_cap == 0 ? 8 : scanner->stack_cap * 2;
-
-    int *new_stack = malloc(sizeof(int) * new_stack_cap);
-    assert(new_stack);
-    memcpy(new_stack, scanner->stack, scanner->stack_len * sizeof(int));
-
-    free(scanner->stack);
-
+    scanner->stack = realloc(scanner->stack, sizeof(int) * new_stack_cap);
+    assert(scanner->stack);
     scanner->stack_cap = new_stack_cap;
-    scanner->stack = new_stack;
   }
 
   scanner->stack[scanner->stack_len++] = indent_length;
