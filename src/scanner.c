@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <tree_sitter/parser.h>
@@ -14,6 +13,7 @@ enum TokenType {
 
 struct scanner {
   int close_braces_to_insert;
+  bool insert_open_brace;
   int semis_to_insert;
   bool no_final_semi_insert;
   bool eof_semi_inserted;
@@ -25,6 +25,7 @@ struct scanner {
 
 void scanner_reset(struct scanner *scanner) {
   scanner->close_braces_to_insert = 0;
+  scanner->insert_open_brace = false;
   scanner->semis_to_insert = 0;
   scanner->no_final_semi_insert = false;
   scanner->eof_semi_inserted = false;
@@ -191,6 +192,12 @@ bool tree_sitter_koka_external_scanner_scan(void *payload, TSLexer *lexer,
     lexer->result_symbol = Semi;
     return true;
   }
+  if (scanner->insert_open_brace) {
+    scanner->insert_open_brace = false;
+    if (valid_symbols[OpenBrace])
+      lexer->result_symbol = OpenBrace;
+    return true;
+  }
 
   lexer->mark_end(lexer);
 
@@ -302,6 +309,15 @@ AFTER_WHITESPACE:
         scanner->no_final_semi_insert = true;
       }
       lexer->result_symbol = Semi;
+
+      prev_indent_length =
+          scanner->stack_len != 0 ? scanner->stack[scanner->stack_len - 1] : 0;
+      if (prev_indent_length < indent_length) {
+        scanner->insert_open_brace = true;
+        scanner_push_indent(scanner, indent_length);
+        scanner->no_final_semi_insert = true;
+      }
+
       return true;
     }
   }

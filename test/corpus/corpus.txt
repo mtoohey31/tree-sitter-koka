@@ -3074,3 +3074,73 @@ fun foo()
                                           (atom
                                             (literal
                                               (int))))))))))))))))))))))))
+
+=========================
+block argument with mask
+=========================
+
+fun foo() {
+  match mask<bar>
+      baz
+    Quux -> 32
+
+---
+
+(program
+  (moduledecl)
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (bodyexpr
+            (blockexpr
+              (expr
+                (block
+                  (statements
+                    (statement
+                      (basicexpr
+                        (matchexpr
+                          (expr
+                            (basicexpr
+                              (opexpr
+                                (prefixexpr
+                                  (appexpr
+                                    (appexpr
+                                      (atom
+                                        (mask
+                                          (tbasic
+                                            (typeapp
+                                              (typecon
+                                                (varid
+                                                  (id))))))))
+                                    (block
+                                      (statements
+                                        (statement
+                                          (basicexpr
+                                            (opexpr
+                                              (prefixexpr
+                                                (appexpr
+                                                  (atom
+                                                    (qidentifier
+                                                      (identifier
+                                                        (varid
+                                                          (id)))))))))))))))))
+                          (matchrules
+                            (matchrule
+                              (patterns
+                                (pattern
+                                  (qconstructor
+                                    (conid))))
+                              (blockexpr
+                                (expr
+                                  (basicexpr
+                                    (opexpr
+                                      (prefixexpr
+                                        (appexpr
+                                          (atom
+                                            (literal
+                                              (int))))))))))))))))))))))))
