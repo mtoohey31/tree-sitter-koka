@@ -3017,3 +3017,60 @@ pub type parse-result
           (constructors
             (constructor
               (conid))))))))
+
+============
+match block
+============
+
+fun foo()
+  match { bar }
+    Baz -> 32
+
+---
+
+(program
+  (moduledecl)
+  (modulebody
+    (topdecl
+      (puredecl
+        (funid
+          (identifier
+            (varid
+              (id))))
+        (funbody
+          (bodyexpr
+            (blockexpr
+              (expr
+                (block
+                  (statements
+                    (statement
+                      (basicexpr
+                        (matchexpr
+                          (expr
+                            (block
+                              (statements
+                                (statement
+                                  (basicexpr
+                                    (opexpr
+                                      (prefixexpr
+                                        (appexpr
+                                          (atom
+                                            (qidentifier
+                                              (identifier
+                                                (varid
+                                                  (id)))))))))))))
+                          (matchrules
+                            (matchrule
+                              (patterns
+                                (pattern
+                                  (qconstructor
+                                    (conid))))
+                              (blockexpr
+                                (expr
+                                  (basicexpr
+                                    (opexpr
+                                      (prefixexpr
+                                        (appexpr
+                                          (atom
+                                            (literal
+                                              (int))))))))))))))))))))))))

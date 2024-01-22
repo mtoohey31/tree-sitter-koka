@@ -355,6 +355,7 @@ AFTER_WHITESPACE:
       scanner_pop_indent(scanner);
     } while (scanner->stack_len != 0 &&
              scanner->stack[scanner->stack_len - 1] > indent_length);
+    scanner->no_final_semi_insert = true;
 
     lexer->result_symbol = Semi;
     return true;
