@@ -28,6 +28,8 @@ dist/
 *.so.*
 *.dylib
 *.dll
+*.lib
+*.exp
 *.pc
 
 # Example dirs
